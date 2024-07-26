@@ -1,0 +1,37 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_unsigned.all;
+
+entity instruction_decoder is
+    port (
+        clk : in std_logic;
+        reset : in std_logic;
+        instruction_in : in std_logic_vector(31 downto 0);
+        rs1 : out std_logic_vector(4 downto 0);
+        rs2 : out std_logic_vector(4 downto 0);
+        rd : out std_logic_vector(4 downto 0);
+        write : out std_logic;
+        alu_operation : std_logic_vector(3 downto 0)
+    );
+end entity instruction_decoder;
+
+architecture rtl of instruction_decoder is
+begin
+
+    instruction_decoder : process (all) is
+    begin
+
+        if (reset = '1') then
+            rs1 <= (others => '0');
+            rs2 <= (others => '0');
+            rd <= (others => '0');
+            write <= '0';
+            alu_operation <= (others => '0');
+        elsif (rising_edge(clk)) then
+            -- placeholder
+        end if;
+
+    end process instruction_decoder;
+
+end architecture rtl;
