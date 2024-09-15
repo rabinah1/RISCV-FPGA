@@ -14,7 +14,7 @@ entity alu is
     );
 end entity alu;
 
-architecture rt of alu is
+architecture rtl of alu is
 begin
 
     alu : process (all) is
