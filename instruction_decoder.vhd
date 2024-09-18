@@ -12,7 +12,11 @@ entity instruction_decoder is
         rs2 : out std_logic_vector(4 downto 0);
         rd : out std_logic_vector(4 downto 0);
         write : out std_logic;
-        alu_operation : std_logic_vector(3 downto 0)
+        alu_operation : out std_logic_vector(3 downto 0);
+        alu_source : out std_logic;
+        immediate : out std_logic_vector(31 downto 0);
+        load : out std_logic;
+        store : out std_logic
     );
 end entity instruction_decoder;
 
@@ -28,8 +32,12 @@ begin
             rd <= (others => '0');
             write <= '0';
             alu_operation <= (others => '0');
+            alu_source <= '0';
+            immediate <= (others => '0');
+            load <= '0';
+            store <= '0';
         elsif (rising_edge(clk)) then
-            -- placeholder
+            immediate <= instruction_in; -- placeholder
         end if;
 
     end process instruction_decoder;

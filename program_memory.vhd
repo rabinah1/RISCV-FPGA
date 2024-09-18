@@ -16,7 +16,7 @@ architecture rtl of program_memory is
 
     type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
 
-    signal prog_mem : memory;
+    signal prog_mem : memory := (others => (others => '0'));
 
 begin
 
@@ -24,7 +24,6 @@ begin
     begin
 
         if (reset = '1') then
-            prog_mem <= (others => (others => '0'));
             instruction_reg <= (others => '0');
         elsif (rising_edge(clk)) then
             instruction_reg <= prog_mem(to_integer(unsigned(pc_in)));

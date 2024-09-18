@@ -23,7 +23,7 @@ begin
         if (reset = '1') then
             alu_output <= (others => '0');
         elsif (rising_edge(clk)) then
-            -- placeholder
+            alu_output <= input_1; -- placeholder
         end if;
 
     end process alu;
