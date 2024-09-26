@@ -3,3 +3,4 @@ db/
 riscv.qws
 c5_pin_model_dump.txt
 incremental_db/
+vunit_out/
