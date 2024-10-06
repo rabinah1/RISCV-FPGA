@@ -3,8 +3,8 @@ from pathlib import Path
 from vunit import VUnit
 
 root = Path(__file__).resolve().parent
-dut_path = root
-test_path = root / "test"
+dut_path = root/".."/ "src"
+test_path = root
 
 VU = VUnit.from_argv()
 VU.add_vhdl_builtins()
