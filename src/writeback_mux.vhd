@@ -3,16 +3,17 @@ use ieee.std_logic_1164.all;
 
 entity writeback_mux is
     port (
-        clk : in std_logic;
-        reset : in std_logic;
-        control : in std_logic;
-        alu_res : in std_logic_vector(31 downto 0);
-        dmem_data : in std_logic_vector(31 downto 0);
-        data_out : out std_logic_vector(31 downto 0)
+        clk       : in    std_logic;
+        reset     : in    std_logic;
+        control   : in    std_logic;
+        alu_res   : in    std_logic_vector(31 downto 0);
+        dmem_data : in    std_logic_vector(31 downto 0);
+        data_out  : out   std_logic_vector(31 downto 0)
     );
 end entity writeback_mux;
 
 architecture rtl of writeback_mux is
+
 begin
 
     writeback_mux : process (all) is

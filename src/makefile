@@ -1,7 +1,20 @@
 SHELL = /bin/bash
 
 .DELETE_ON_ERROR:
-.PHONY: bitstream synthesis fitting timing_analysis netlist clean check
+.PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta
+
+STYLE_CHECK_FILES = \
+	alu_src.vhd \
+	alu.vhd \
+	data_memory.vhd \
+	instruction_decoder.vhd \
+	pc_offset_mux.vhd \
+	program_counter.vhd \
+	program_memory.vhd \
+	register_file.vhd \
+	riscv.vhd \
+	writeback_mux.vhd \
+	../test/tb_program_counter.vhd
 
 FILES_TO_REMOVE = \
 	db \
@@ -27,6 +40,11 @@ netlist: synthesis
 
 check:
 	python3 ../test/run.py
+
+sta:
+	@for file in $(STYLE_CHECK_FILES); do \
+		vsg -f $${file} -c vsg_config.json; \
+	done
 
 clean:
 	@for file in $(FILES_TO_REMOVE); do \

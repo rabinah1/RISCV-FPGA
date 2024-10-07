@@ -5,10 +5,10 @@ use ieee.std_logic_unsigned.all;
 
 entity program_memory is
     port (
-        clk : in std_logic;
-        reset : in std_logic;
-        pc_in : in std_logic_vector(31 downto 0);
-        instruction_reg : out std_logic_vector(31 downto 0)
+        clk             : in    std_logic;
+        reset           : in    std_logic;
+        pc_in           : in    std_logic_vector(31 downto 0);
+        instruction_reg : out   std_logic_vector(31 downto 0)
     );
 end entity program_memory;
 
