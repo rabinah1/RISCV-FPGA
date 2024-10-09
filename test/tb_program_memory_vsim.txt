@@ -1,0 +1,6 @@
+add wave \
+sim:/tb_program_memory/clk \
+sim:/tb_program_memory/reset \
+sim:/tb_program_memory/pc_in \
+sim:/tb_program_memory/instruction_reg
+run 1ms

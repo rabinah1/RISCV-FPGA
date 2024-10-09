@@ -14,7 +14,8 @@ STYLE_CHECK_FILES = \
 	register_file.vhd \
 	riscv.vhd \
 	writeback_mux.vhd \
-	../test/tb_program_counter.vhd
+	../test/tb_program_counter.vhd \
+	../test/tb_program_memory.vhd
 
 FILES_TO_REMOVE = \
 	db \

@@ -66,8 +66,7 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset      <= '1';
                 address_in <= std_logic_vector(to_unsigned(60, 32));
-                wait until rising_edge(clk);
-                wait until rising_edge(clk);
+                wait for CLK_PERIOD * 2;
                 check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing address_out against reference.");
                 check_sig  <= 1;
@@ -77,11 +76,10 @@ begin
                 info("TEST CASE: test_output_address_follows_input_address_if_reset_is_disabled");
                 info("--------------------------------------------------------------------------------");
                 reset      <= '1';
-                wait until rising_edge(clk);
+                wait for CLK_PERIOD * 2;
                 reset      <= '0';
                 address_in <= std_logic_vector(to_unsigned(123, 32));
-                wait until rising_edge(clk);
-                wait until rising_edge(clk);
+                wait for CLK_PERIOD * 2;
                 check_equal(address_out, address_in, "Comparing address_out against reference.");
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
