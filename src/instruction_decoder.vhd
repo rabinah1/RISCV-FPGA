@@ -38,7 +38,10 @@ begin
             load          <= '0';
             store         <= '0';
         elsif (rising_edge(clk)) then
-            immediate <= instruction_in; -- placeholder
+            rd            <= instruction_in(11 downto 7);
+            alu_operation <= instruction_in(30) & instruction_in(14 downto 12);
+            rs1           <= instruction_in(19 downto 15);
+            rs2           <= instruction_in(24 downto 20);
         end if;
 
     end process instruction_decoder;
