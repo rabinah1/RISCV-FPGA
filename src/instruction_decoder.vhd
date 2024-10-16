@@ -21,10 +21,12 @@ entity instruction_decoder is
 end entity instruction_decoder;
 
 architecture rtl of instruction_decoder is
-
 begin
 
     instruction_decoder : process (all) is
+
+        variable opcode : std_logic_vector(6 downto 0);
+
     begin
 
         if (reset = '1') then
@@ -37,8 +39,39 @@ begin
             immediate     <= (others => '0');
             load          <= '0';
             store         <= '0';
+            opcode        := (others => '0');
         elsif (rising_edge(clk)) then
-            immediate <= instruction_in; -- placeholder
+            opcode            := instruction_in(6 downto 0);
+            if (opcode = "0110011") then -- R-type
+                rd            <= instruction_in(11 downto 7);
+                alu_operation <= instruction_in(30) & instruction_in(14 downto 12);
+                rs1           <= instruction_in(19 downto 15);
+                rs2           <= instruction_in(24 downto 20);
+            elsif (opcode = "0010011") then -- I-type
+                rd                      <= instruction_in(11 downto 7);
+                alu_operation           <= '0' & instruction_in(14 downto 12);
+                rs1                     <= instruction_in(19 downto 15);
+                immediate(11 downto 0)  <= instruction_in(31 downto 20);
+                immediate(31 downto 12) <= (others => instruction_in(31));
+            elsif (opcode = "0000011") then -- Load
+                rd            <= instruction_in(11 downto 7);
+                alu_operation <= '0' & instruction_in(14 downto 12);
+                rs1           <= instruction_in(19 downto 15);
+                immediate(11 downto 0)     <= instruction_in(31 downto 20);
+                immediate(31 downto 12) <= (others => instruction_in(31));
+            elsif (opcode = "0100011") then -- Store
+                immediate(11 downto 0)     <= instruction_in(31 downto 25) & instruction_in(11 downto 7);
+                immediate(31 downto 12) <= (others => instruction_in(31));
+                rs2           <= instruction_in(24 downto 20);
+                rs1           <= instruction_in(19 downto 15);
+                alu_operation <= '0' & instruction_in(14 downto 12);
+            elsif (opcode = "1100011") then -- Conditional
+                immediate(11 downto 0)     <= instruction_in(31) & instruction_in(7) & instruction_in(30 downto 25) & instruction_in(11 downto 8);
+                immediate(31 downto 12) <= (others => instruction_in(31));
+                rs2           <= instruction_in(24 downto 20);
+                rs1           <= instruction_in(19 downto 15);
+                alu_operation <= '0' & instruction_in(14 downto 12);
+            end if;
         end if;
 
     end process instruction_decoder;
