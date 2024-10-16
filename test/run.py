@@ -27,5 +27,7 @@ if tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_program_counter_vsim.txt"])
     elif "tb_program_memory" in tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_program_memory_vsim.txt"])
+    elif "tb_instruction_decoder" in tb_name:
+        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_instruction_decoder_vsim.txt"])
 
 VU.main()

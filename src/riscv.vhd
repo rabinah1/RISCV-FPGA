@@ -28,6 +28,7 @@ architecture struct of riscv is
     signal dmem_data_int  : std_logic_vector(31 downto 0);
     signal dmem_write     : std_logic;
     signal offset_int     : std_logic_vector(31 downto 0);
+    signal branch_int     : std_logic;
 
     component alu is
         port (
@@ -85,7 +86,8 @@ architecture struct of riscv is
             alu_source     : out   std_logic;
             immediate      : out   std_logic_vector(31 downto 0);
             load           : out   std_logic;
-            store          : out   std_logic
+            store          : out   std_logic;
+            branch         : out   std_logic
         );
     end component instruction_decoder;
 
@@ -186,7 +188,8 @@ begin
             alu_source     => alu_src_ctrl,
             immediate      => immediate_int,
             load           => writeback_ctrl,
-            store          => dmem_write
+            store          => dmem_write,
+            branch         => branch_int
         );
 
     alu_src_unit : component alu_src
@@ -223,7 +226,7 @@ begin
         port map (
             clk        => clk,
             reset      => reset,
-            control    => alu_out(0),
+            control    => alu_out(0) and branch_int,
             offset_in  => immediate_int,
             offset_out => offset_int
         );
