@@ -1,0 +1,8 @@
+add wave \
+sim:/tb_alu_src/clk \
+sim:/tb_alu_src/reset \
+sim:/tb_alu_src/control \
+sim:/tb_alu_src/immediate \
+sim:/tb_alu_src/register_in \
+sim:/tb_alu_src/data_out
+run 1ms
