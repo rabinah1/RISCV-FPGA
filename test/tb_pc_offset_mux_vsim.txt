@@ -1,0 +1,7 @@
+add wave \
+sim:/tb_pc_offset_mux/clk \
+sim:/tb_pc_offset_mux/reset \
+sim:/tb_pc_offset_mux/control \
+sim:/tb_pc_offset_mux/offset_in \
+sim:/tb_pc_offset_mux/offset_out
+run 1ms

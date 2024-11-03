@@ -24,7 +24,7 @@ begin
             offset_out <= (others => '0');
         elsif (rising_edge(clk)) then
             if (control = '0') then
-                offset_out <= std_logic_vector(to_unsigned(4, 32));
+                offset_out <= std_logic_vector(to_unsigned(1, 32));
             else
                 offset_out <= offset_in;
             end if;
