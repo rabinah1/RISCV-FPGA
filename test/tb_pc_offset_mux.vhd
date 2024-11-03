@@ -71,7 +71,8 @@ begin
                 control   <= '0';
                 offset_in <= std_logic_vector(to_unsigned(123, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(offset_out, std_logic_vector(to_unsigned(0, 32)), "Comparing offset_out against reference.");
+                check_equal(offset_out, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing offset_out against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_offset_out_is_one_when_control_is_zero") then
@@ -84,7 +85,8 @@ begin
                 control   <= '0';
                 offset_in <= std_logic_vector(to_unsigned(123, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(offset_out, std_logic_vector(to_unsigned(1, 32)), "Comparing offset_out against reference.");
+                check_equal(offset_out, std_logic_vector(to_unsigned(1, 32)),
+                            "Comparing offset_out against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_offset_out_is_offset_in_when_control_is_one") then
