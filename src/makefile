@@ -19,7 +19,8 @@ STYLE_CHECK_FILES = \
 	../test/tb_instruction_decoder.vhd \
 	../test/tb_alu_src.vhd \
 	../test/tb_writeback_mux.vhd \
-	../test/tb_pc_offset_mux.vhd
+	../test/tb_pc_offset_mux.vhd \
+	../test/tb_register_file.vhd
 
 FILES_TO_REMOVE = \
 	db \

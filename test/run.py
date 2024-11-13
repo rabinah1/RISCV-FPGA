@@ -35,5 +35,9 @@ if tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_writeback_mux_vsim.txt"])
     elif "tb_pc_offset_mux" in tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_pc_offset_mux_vsim.txt"])
+    elif "tb_register_file" in tb_name:
+        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_register_file_vsim.txt"])
 
 VU.main()
+
+# Example command: python3 run.py tb_lib.tb_program_memory.test_output_instruction_is_read_correctly_with_specific_address --gui
