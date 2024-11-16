@@ -37,6 +37,8 @@ if tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_pc_offset_mux_vsim.txt"])
     elif "tb_register_file" in tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_register_file_vsim.txt"])
+    elif "tb_data_memory" in tb_name:
+        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_data_memory_vsim.txt"])
 
 VU.main()
 

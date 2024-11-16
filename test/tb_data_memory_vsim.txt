@@ -1,0 +1,8 @@
+add wave \
+sim:/tb_data_memory/clk \
+sim:/tb_data_memory/reset \
+sim:/tb_data_memory/address \
+sim:/tb_data_memory/data_in \
+sim:/tb_data_memory/write_enable \
+sim:/tb_data_memory/data_out
+run 10ms
