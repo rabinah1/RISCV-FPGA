@@ -19,7 +19,7 @@ architecture tb of tb_instruction_decoder is
     signal   rs2            : std_logic_vector(4 downto 0);
     signal   rd             : std_logic_vector(4 downto 0);
     signal   write          : std_logic;
-    signal   alu_operation  : std_logic_vector(3 downto 0);
+    signal   alu_operation  : std_logic_vector(10 downto 0);
     signal   alu_source     : std_logic;
     signal   immediate      : std_logic_vector(31 downto 0);
     signal   load           : std_logic;
@@ -37,7 +37,7 @@ architecture tb of tb_instruction_decoder is
             rs2            : out   std_logic_vector(4 downto 0);
             rd             : out   std_logic_vector(4 downto 0);
             write          : out   std_logic;
-            alu_operation  : out   std_logic_vector(3 downto 0);
+            alu_operation  : out   std_logic_vector(10 downto 0);
             alu_source     : out   std_logic;
             immediate      : out   std_logic_vector(31 downto 0);
             load           : out   std_logic;
@@ -98,7 +98,7 @@ begin
                 check_equal(rs2, std_logic_vector(to_unsigned(0, 5)), "Comparing rs2 against reference.");
                 check_equal(rd, std_logic_vector(to_unsigned(0, 5)), "Comparing rd against reference.");
                 check_equal(write, '0', "Comparing write against reference.");
-                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 4)),
+                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 11)),
                             "Comparing alu_operation against reference.");
                 check_equal(alu_source, '0', "Comparing alu_source against reference.");
                 check_equal(immediate, std_logic_vector(to_unsigned(0, 32)), "Comparing immediate against reference.");
@@ -117,7 +117,7 @@ begin
                 instruction_in <= "10101010101010101010101010110011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction_in(11 downto 7), "Comparing rd against reference.");
-                check_equal(alu_operation, instruction_in(30) & instruction_in(14 downto 12),
+                check_equal(alu_operation, "0110011" & instruction_in(30) & instruction_in(14 downto 12),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, instruction_in(19 downto 15), "Comparing rs1 against reference.");
                 check_equal(rs2, instruction_in(24 downto 20), "Comparing rs2 against reference.");
@@ -139,7 +139,7 @@ begin
                 instruction_in <= "10101010101010101010101010010011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction_in(11 downto 7), "Comparing rd against reference.");
-                check_equal(alu_operation, '0' & instruction_in(14 downto 12),
+                check_equal(alu_operation, "0010011" & '0' & instruction_in(14 downto 12),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, instruction_in(19 downto 15), "Comparing rs1 against reference.");
                 check_equal(rs2, std_logic_vector(to_unsigned(0, 5)), "Comparing rs2 against reference.");
@@ -162,7 +162,7 @@ begin
                 instruction_in <= "10101010101010101010101010000011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction_in(11 downto 7), "Comparing rd against reference.");
-                check_equal(alu_operation, '0' & instruction_in(14 downto 12),
+                check_equal(alu_operation, "0000011" & '0' & instruction_in(14 downto 12),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, instruction_in(19 downto 15), "Comparing rs1 against reference.");
                 check_equal(rs2, std_logic_vector(to_unsigned(0, 5)), "Comparing rs2 against reference.");
@@ -185,7 +185,7 @@ begin
                 instruction_in <= "10101010101010101010101010100011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, std_logic_vector(to_unsigned(0, 5)), "Comparing rd against reference.");
-                check_equal(alu_operation, '0' & instruction_in(14 downto 12),
+                check_equal(alu_operation, "0100011" & '0' & instruction_in(14 downto 12),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, instruction_in(19 downto 15), "Comparing rs1 against reference.");
                 check_equal(rs2, instruction_in(24 downto 20), "Comparing rs2 against reference.");
@@ -208,7 +208,7 @@ begin
                 instruction_in <= "11010101010101010100101011100011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, std_logic_vector(to_unsigned(0, 5)), "Comparing rd against reference.");
-                check_equal(alu_operation, '0' & instruction_in(14 downto 12),
+                check_equal(alu_operation, "1100011" & '0' & instruction_in(14 downto 12),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, instruction_in(19 downto 15), "Comparing rs1 against reference.");
                 check_equal(rs2, instruction_in(24 downto 20), "Comparing rs2 against reference.");
@@ -232,7 +232,7 @@ begin
                 instruction_in <= "01010101010101010100101011101111";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction_in(11 downto 7), "Comparing rd against reference.");
-                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 4)),
+                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 11)),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, std_logic_vector(to_unsigned(0, 5)), "Comparing rs1 against reference.");
                 check_equal(rs2, std_logic_vector(to_unsigned(0, 5)), "Comparing rs2 against reference.");
@@ -256,7 +256,7 @@ begin
                 instruction_in <= "01010101010101010100101011100111";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction_in(11 downto 7), "Comparing rd against reference.");
-                check_equal(alu_operation, '0' & instruction_in(14 downto 12),
+                check_equal(alu_operation, "1100111" & '0' & instruction_in(14 downto 12),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, instruction_in(19 downto 15), "Comparing rs1 against reference.");
                 check_equal(rs2, std_logic_vector(to_unsigned(0, 5)), "Comparing rs2 against reference.");

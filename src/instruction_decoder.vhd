@@ -12,7 +12,7 @@ entity instruction_decoder is
         rs2            : out   std_logic_vector(4 downto 0);
         rd             : out   std_logic_vector(4 downto 0);
         write          : out   std_logic;
-        alu_operation  : out   std_logic_vector(3 downto 0);
+        alu_operation  : out   std_logic_vector(10 downto 0);
         alu_source     : out   std_logic;
         immediate      : out   std_logic_vector(31 downto 0);
         load           : out   std_logic;
@@ -47,7 +47,7 @@ begin
             opcode := instruction_in(6 downto 0);
             if (opcode = "0110011") then -- R-type
                 rd            <= instruction_in(11 downto 7);
-                alu_operation <= instruction_in(30) & instruction_in(14 downto 12);
+                alu_operation <= opcode & instruction_in(30) & instruction_in(14 downto 12);
                 rs1           <= instruction_in(19 downto 15);
                 rs2           <= instruction_in(24 downto 20);
                 write         <= '1';
@@ -58,7 +58,7 @@ begin
                 branch        <= '0';
             elsif (opcode = "0010011") then -- I-type
                 rd                      <= instruction_in(11 downto 7);
-                alu_operation           <= '0' & instruction_in(14 downto 12);
+                alu_operation           <= opcode & '0' & instruction_in(14 downto 12);
                 rs1                     <= instruction_in(19 downto 15);
                 rs2                     <= (others => '0');
                 write                   <= '1';
@@ -70,7 +70,7 @@ begin
                 branch                  <= '0';
             elsif (opcode = "0000011") then -- Load
                 rd                      <= instruction_in(11 downto 7);
-                alu_operation           <= '0' & instruction_in(14 downto 12);
+                alu_operation           <= opcode & '0' & instruction_in(14 downto 12);
                 rs1                     <= instruction_in(19 downto 15);
                 rs2                     <= (others => '0');
                 write                   <= '1';
@@ -85,7 +85,7 @@ begin
                 immediate(31 downto 12) <= (others => instruction_in(31));
                 rs2                     <= instruction_in(24 downto 20);
                 rs1                     <= instruction_in(19 downto 15);
-                alu_operation           <= '0' & instruction_in(14 downto 12);
+                alu_operation           <= opcode & '0' & instruction_in(14 downto 12);
                 store                   <= '1';
                 load                    <= '0';
                 rd                      <= (others => '0');
@@ -98,7 +98,7 @@ begin
                 immediate(31 downto 13) <= (others => instruction_in(31));
                 rs2                     <= instruction_in(24 downto 20);
                 rs1                     <= instruction_in(19 downto 15);
-                alu_operation           <= '0' & instruction_in(14 downto 12);
+                alu_operation           <= opcode & '0' & instruction_in(14 downto 12);
                 store                   <= '0';
                 load                    <= '0';
                 rd                      <= (others => '0');
@@ -122,7 +122,7 @@ begin
                 immediate(11 downto 0)  <= instruction_in(31 downto 20);
                 immediate(31 downto 12) <= (others => instruction_in(31));
                 rs1                     <= instruction_in(19 downto 15);
-                alu_operation           <= '0' & instruction_in(14 downto 12);
+                alu_operation           <= opcode & '0' & instruction_in(14 downto 12);
                 rd                      <= instruction_in(11 downto 7);
                 store                   <= '0';
                 load                    <= '0';

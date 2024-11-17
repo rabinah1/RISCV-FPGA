@@ -12,7 +12,7 @@ architecture struct of riscv is
 
     signal alu_input_1    : std_logic_vector(31 downto 0);
     signal alu_input_2    : std_logic_vector(31 downto 0);
-    signal alu_operand    : std_logic_vector(3 downto 0);
+    signal alu_operand    : std_logic_vector(10 downto 0);
     signal alu_out        : std_logic_vector(31 downto 0);
     signal pc_address     : std_logic_vector(31 downto 0);
     signal instruction    : std_logic_vector(31 downto 0);
@@ -36,7 +36,7 @@ architecture struct of riscv is
             reset      : in    std_logic;
             input_1    : in    std_logic_vector(31 downto 0);
             input_2    : in    std_logic_vector(31 downto 0);
-            operand    : in    std_logic_vector(3 downto 0);
+            operand    : in    std_logic_vector(10 downto 0);
             alu_output : out   std_logic_vector(31 downto 0)
         );
     end component alu;
@@ -82,7 +82,7 @@ architecture struct of riscv is
             rs2            : out   std_logic_vector(4 downto 0);
             rd             : out   std_logic_vector(4 downto 0);
             write          : out   std_logic;
-            alu_operation  : out   std_logic_vector(3 downto 0);
+            alu_operation  : out   std_logic_vector(10 downto 0);
             alu_source     : out   std_logic;
             immediate      : out   std_logic_vector(31 downto 0);
             load           : out   std_logic;
