@@ -15,16 +15,20 @@ architecture tb of tb_instruction_decoder is
     signal   clk            : std_logic := '0';
     signal   reset          : std_logic := '0';
     signal   instruction_in : std_logic_vector(31 downto 0);
+    signal   pc_in          : std_logic_vector(31 downto 0);
     signal   rs1            : std_logic_vector(4 downto 0);
     signal   rs2            : std_logic_vector(4 downto 0);
     signal   rd             : std_logic_vector(4 downto 0);
     signal   write          : std_logic;
     signal   alu_operation  : std_logic_vector(10 downto 0);
-    signal   alu_source     : std_logic;
+    signal   alu_source     : std_logic_vector(1 downto 0);
     signal   immediate      : std_logic_vector(31 downto 0);
     signal   load           : std_logic;
     signal   store          : std_logic;
     signal   branch         : std_logic;
+    signal   jump           : std_logic;
+    signal   jalr_flag      : std_logic;
+    signal   pc_out         : std_logic_vector(31 downto 0);
     signal   check_sig      : natural := 0;
     constant CLK_PERIOD     : time := 250 us;
 
@@ -33,16 +37,20 @@ architecture tb of tb_instruction_decoder is
             clk            : in    std_logic;
             reset          : in    std_logic;
             instruction_in : in    std_logic_vector(31 downto 0);
+            pc_in          : in    std_logic_vector(31 downto 0);
             rs1            : out   std_logic_vector(4 downto 0);
             rs2            : out   std_logic_vector(4 downto 0);
             rd             : out   std_logic_vector(4 downto 0);
             write          : out   std_logic;
             alu_operation  : out   std_logic_vector(10 downto 0);
-            alu_source     : out   std_logic;
+            alu_source     : out   std_logic_vector(1 downto 0);
             immediate      : out   std_logic_vector(31 downto 0);
             load           : out   std_logic;
             store          : out   std_logic;
-            branch         : out   std_logic
+            branch         : out   std_logic;
+            jump           : out   std_logic;
+            jalr_flag      : out   std_logic;
+            pc_out         : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -53,6 +61,7 @@ begin
             clk            => clk,
             reset          => reset,
             instruction_in => instruction_in,
+            pc_in          => pc_in,
             rs1            => rs1,
             rs2            => rs2,
             rd             => rd,
@@ -62,7 +71,10 @@ begin
             immediate      => immediate,
             load           => load,
             store          => store,
-            branch         => branch
+            branch         => branch,
+            jump           => jump,
+            jalr_flag      => jalr_flag,
+            pc_out         => pc_out
         );
 
     clk_process : process is
@@ -100,11 +112,14 @@ begin
                 check_equal(write, '0', "Comparing write against reference.");
                 check_equal(alu_operation, std_logic_vector(to_unsigned(0, 11)),
                             "Comparing alu_operation against reference.");
-                check_equal(alu_source, '0', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("00")), "Comparing alu_source against reference.");
                 check_equal(immediate, std_logic_vector(to_unsigned(0, 32)), "Comparing immediate against reference.");
                 check_equal(load, '0', "Comparing load against reference.");
                 check_equal(store, '0', "Comparing store against reference.");
                 check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '0', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_R_type_instruction") then
@@ -125,8 +140,11 @@ begin
                 check_equal(store, '0', "Comparing store against reference.");
                 check_equal(load, '0', "Comparing load against reference.");
                 check_equal(immediate, std_logic_vector(to_unsigned(0, 32)), "Comparing immediate against reference.");
-                check_equal(alu_source, '1', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("01")), "Comparing alu_source against reference.");
                 check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '0', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_I_type_instruction") then
@@ -148,8 +166,11 @@ begin
                 check_equal(load, '0', "Comparing load against reference.");
                 check_equal(immediate, "11111111111111111111" & instruction_in(31 downto 20),
                             "Comparing immediate against reference.");
-                check_equal(alu_source, '0', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("00")), "Comparing alu_source against reference.");
                 check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '0', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_load_instruction") then
@@ -171,8 +192,11 @@ begin
                 check_equal(load, '1', "Comparing load against reference.");
                 check_equal(immediate, "11111111111111111111" & instruction_in(31 downto 20),
                             "Comparing immediate against reference.");
-                check_equal(alu_source, '0', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("00")), "Comparing alu_source against reference.");
                 check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '0', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_store_instruction") then
@@ -194,8 +218,11 @@ begin
                 check_equal(load, '0', "Comparing load against reference.");
                 check_equal(immediate, "11111111111111111111" & instruction_in(31 downto 25) &
                             instruction_in(11 downto 7), "Comparing immediate against reference.");
-                check_equal(alu_source, '0', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("00")), "Comparing alu_source against reference.");
                 check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '0', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_conditional_instruction") then
@@ -218,8 +245,11 @@ begin
                 check_equal(immediate, "1111111111111111111" & instruction_in(31) & instruction_in(7) &
                             instruction_in(30 downto 25) & instruction_in(11 downto 8) & '0',
                             "Comparing immediate against reference.");
-                check_equal(alu_source, '1', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("01")), "Comparing alu_source against reference.");
                 check_equal(branch, '1', "Comparing branch against reference.");
+                check_equal(jump, '0', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_jal_instruction") then
@@ -230,9 +260,10 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset          <= '0';
                 instruction_in <= "01010101010101010100101011101111";
+                pc_in          <= std_logic_vector(to_unsigned(568, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction_in(11 downto 7), "Comparing rd against reference.");
-                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 11)),
+                check_equal(alu_operation, std_logic_vector(unsigned'("11011110000")),
                             "Comparing alu_operation against reference.");
                 check_equal(rs1, std_logic_vector(to_unsigned(0, 5)), "Comparing rs1 against reference.");
                 check_equal(rs2, std_logic_vector(to_unsigned(0, 5)), "Comparing rs2 against reference.");
@@ -242,8 +273,11 @@ begin
                 check_equal(immediate, "00000000000" & instruction_in(31) & instruction_in(19 downto 12) &
                             instruction_in(20) & instruction_in(30 downto 21) & '0',
                             "Comparing immediate against reference.");
-                check_equal(alu_source, '0', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("10")), "Comparing alu_source against reference.");
                 check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '1', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, pc_in, "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_jalr_instruction") then
@@ -265,8 +299,11 @@ begin
                 check_equal(load, '0', "Comparing load against reference.");
                 check_equal(immediate, "00000000000000000000" & instruction_in(31 downto 20),
                             "Comparing immediate against reference.");
-                check_equal(alu_source, '0', "Comparing alu_source against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("10")), "Comparing alu_source against reference.");
                 check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '1', "Comparing jump against reference.");
+                check_equal(jalr_flag, '1', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig      <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

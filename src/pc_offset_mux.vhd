@@ -8,7 +8,8 @@ entity pc_offset_mux is
         clk        : in    std_logic;
         reset      : in    std_logic;
         control    : in    std_logic;
-        offset_in  : in    std_logic_vector(31 downto 0);
+        input_1    : in    std_logic_vector(31 downto 0);
+        input_2    : in    std_logic_vector(31 downto 0);
         offset_out : out   std_logic_vector(31 downto 0)
     );
 end entity pc_offset_mux;
@@ -24,9 +25,9 @@ begin
             offset_out <= (others => '0');
         elsif (rising_edge(clk)) then
             if (control = '0') then
-                offset_out <= std_logic_vector(to_unsigned(1, 32));
+                offset_out <= input_1;
             else
-                offset_out <= offset_in;
+                offset_out <= input_2;
             end if;
         end if;
 

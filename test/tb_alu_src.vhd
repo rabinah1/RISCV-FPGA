@@ -14,9 +14,10 @@ architecture tb of tb_alu_src is
 
     signal   clk         : std_logic := '0';
     signal   reset       : std_logic := '0';
-    signal   control     : std_logic := '0';
+    signal   control     : std_logic_vector(1 downto 0) := (others => '0');
     signal   immediate   : std_logic_vector(31 downto 0) := (others => '0');
     signal   register_in : std_logic_vector(31 downto 0) := (others => '0');
+    signal   pc_in       : std_logic_vector(31 downto 0) := (others => '0');
     signal   data_out    : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig   : natural := 0;
     constant CLK_PERIOD  : time := 250 us;
@@ -25,9 +26,10 @@ architecture tb of tb_alu_src is
         port (
             clk         : in    std_logic;
             reset       : in    std_logic;
-            control     : in    std_logic;
+            control     : in    std_logic_vector(1 downto 0);
             immediate   : in    std_logic_vector(31 downto 0);
             register_in : in    std_logic_vector(31 downto 0);
+            pc_in       : in    std_logic_vector(31 downto 0);
             data_out    : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -41,6 +43,7 @@ begin
             control     => control,
             immediate   => immediate,
             register_in => register_in,
+            pc_in       => pc_in,
             data_out    => data_out
         );
 
@@ -71,9 +74,10 @@ begin
                 info("TEST CASE: test_data_out_is_zero_if_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
-                control     <= '1';
+                control     <= "01";
                 immediate   <= std_logic_vector(to_unsigned(123, 32));
                 register_in <= std_logic_vector(to_unsigned(456, 32));
+                pc_in       <= std_logic_vector(to_unsigned(789, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(data_out, std_logic_vector(to_unsigned(0, 32)), "Comparing data_out against reference.");
                 check_sig   <= 1;
@@ -85,9 +89,10 @@ begin
                 reset       <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
-                control     <= '0';
+                control     <= "00";
                 immediate   <= std_logic_vector(to_unsigned(123, 32));
                 register_in <= std_logic_vector(to_unsigned(456, 32));
+                pc_in       <= std_logic_vector(to_unsigned(789, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(data_out, immediate, "Comparing data_out against reference.");
                 check_sig   <= 1;
@@ -99,11 +104,27 @@ begin
                 reset       <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
-                control     <= '1';
+                control     <= "01";
                 immediate   <= std_logic_vector(to_unsigned(123, 32));
                 register_in <= std_logic_vector(to_unsigned(456, 32));
+                pc_in       <= std_logic_vector(to_unsigned(789, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(data_out, register_in, "Comparing data_out against reference.");
+                check_sig   <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_data_out_is_pc_in_when_control_is_two") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_data_out_is_reg_in_when_control_is_one");
+                info("--------------------------------------------------------------------------------");
+                reset       <= '1';
+                wait for CLK_PERIOD * 2;
+                reset       <= '0';
+                control     <= "10";
+                immediate   <= std_logic_vector(to_unsigned(123, 32));
+                register_in <= std_logic_vector(to_unsigned(456, 32));
+                pc_in       <= std_logic_vector(to_unsigned(789, 32));
+                wait for CLK_PERIOD * 2;
+                check_equal(data_out, pc_in, "Comparing data_out against reference.");
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

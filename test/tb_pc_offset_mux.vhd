@@ -15,7 +15,8 @@ architecture tb of tb_pc_offset_mux is
     signal   clk        : std_logic := '0';
     signal   reset      : std_logic := '0';
     signal   control    : std_logic := '0';
-    signal   offset_in  : std_logic_vector(31 downto 0) := (others => '0');
+    signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
+    signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   offset_out : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
     constant CLK_PERIOD : time := 250 us;
@@ -25,7 +26,8 @@ architecture tb of tb_pc_offset_mux is
             clk        : in    std_logic;
             reset      : in    std_logic;
             control    : in    std_logic;
-            offset_in  : in    std_logic_vector(31 downto 0);
+            input_1    : in    std_logic_vector(31 downto 0);
+            input_2    : in    std_logic_vector(31 downto 0);
             offset_out : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -37,7 +39,8 @@ begin
             clk        => clk,
             reset      => reset,
             control    => control,
-            offset_in  => offset_in,
+            input_1    => input_1,
+            input_2    => input_2,
             offset_out => offset_out
         );
 
@@ -69,7 +72,7 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 control   <= '0';
-                offset_in <= std_logic_vector(to_unsigned(123, 32));
+                input_1   <= std_logic_vector(to_unsigned(123, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(offset_out, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing offset_out against reference.");
@@ -77,29 +80,30 @@ begin
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_offset_out_is_one_when_control_is_zero") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_offset_out_is_one_when_control_is_zero");
+                info("TEST CASE: test_offset_out_is_input_1_when_control_is_zero");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 control   <= '0';
-                offset_in <= std_logic_vector(to_unsigned(123, 32));
+                input_1   <= std_logic_vector(to_unsigned(123, 32));
+                input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(offset_out, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing offset_out against reference.");
+                check_equal(offset_out, input_1, "Comparing offset_out against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_offset_out_is_offset_in_when_control_is_one") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_offset_out_is_offset_in_when_control_is_one");
+                info("TEST CASE: test_offset_out_is_input_2_when_control_is_one");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 control   <= '1';
-                offset_in <= std_logic_vector(to_unsigned(123, 32));
+                input_1   <= std_logic_vector(to_unsigned(123, 32));
+                input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(offset_out, offset_in, "Comparing offset_out against reference.");
+                check_equal(offset_out, input_2, "Comparing offset_out against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

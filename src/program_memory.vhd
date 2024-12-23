@@ -8,6 +8,7 @@ entity program_memory is
         clk             : in    std_logic;
         reset           : in    std_logic;
         pc_in           : in    std_logic_vector(31 downto 0);
+        pc_out          : out   std_logic_vector(31 downto 0);
         instruction_reg : out   std_logic_vector(31 downto 0)
     );
 end entity program_memory;
@@ -25,8 +26,10 @@ begin
 
         if (reset = '1') then
             instruction_reg <= (others => '0');
+            pc_out          <= (others => '0');
         elsif (rising_edge(clk)) then
             instruction_reg <= prog_mem(to_integer(unsigned(pc_in)));
+            pc_out          <= pc_in;
         end if;
 
     end process program_memory;

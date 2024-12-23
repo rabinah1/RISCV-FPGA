@@ -170,6 +170,14 @@ begin
                         alu_output <= (others => '0');
                     end if;
 
+                when JAL =>
+
+                    alu_output <= input_2 + std_logic_vector(to_unsigned(1, 32));
+
+                when JALR =>
+
+                    alu_output <= input_2 + std_logic_vector(to_unsigned(1, 32));
+
                 when others =>
 
                     alu_output <= (others => '0');

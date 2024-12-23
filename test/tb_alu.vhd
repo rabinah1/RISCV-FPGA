@@ -508,6 +508,21 @@ begin
                             "Comparing alu_output against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_jal_instruction") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_jal_instruction");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                input_1   <= std_logic_vector(to_unsigned(24, 32));
+                input_2   <= std_logic_vector(to_unsigned(157, 32));
+                operand   <= "11011110000";
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(alu_output, std_logic_vector(to_unsigned(158, 32)),
+                            "Comparing alu_output against reference.");
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
             end if;
 
         end loop;

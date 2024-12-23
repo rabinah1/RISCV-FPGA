@@ -28,5 +28,7 @@ package opcode_pkg is
     constant BGE    : std_logic_vector(10 downto 0) := "11000110101";
     constant BLTU   : std_logic_vector(10 downto 0) := "11000110110";
     constant BGEU   : std_logic_vector(10 downto 0) := "11000110111";
+    constant JAL    : std_logic_vector(10 downto 0) := "11011110000";
+    constant JALR   : std_logic_vector(10 downto 0) := "11001110000";
 
 end package opcode_pkg;
