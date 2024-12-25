@@ -15,6 +15,7 @@ STYLE_CHECK_FILES = \
 	riscv.vhd \
 	writeback_mux.vhd \
 	opcode_pkg.vhd \
+	pc_adder.vhd \
 	../test/tb_program_counter.vhd \
 	../test/tb_program_memory.vhd \
 	../test/tb_instruction_decoder.vhd \
@@ -23,7 +24,8 @@ STYLE_CHECK_FILES = \
 	../test/tb_pc_offset_mux.vhd \
 	../test/tb_register_file.vhd \
 	../test/tb_data_memory.vhd \
-	../test/tb_alu.vhd
+	../test/tb_alu.vhd \
+	../test/tb_pc_adder.vhd
 
 FILES_TO_REMOVE = \
 	db \

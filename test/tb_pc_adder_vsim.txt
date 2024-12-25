@@ -1,0 +1,7 @@
+add wave \
+sim:/tb_pc_adder/clk \
+sim:/tb_pc_adder/reset \
+sim:/tb_pc_adder/input_1 \
+sim:/tb_pc_adder/input_2 \
+sim:/tb_pc_adder/sum
+run 10ms

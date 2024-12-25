@@ -15,6 +15,7 @@ architecture struct of riscv is
     signal alu_operand    : std_logic_vector(10 downto 0);
     signal alu_out        : std_logic_vector(31 downto 0);
     signal pc_address     : std_logic_vector(31 downto 0);
+    signal pc_address_in  : std_logic_vector(31 downto 0);
     signal instruction    : std_logic_vector(31 downto 0);
     signal rs1_int        : std_logic_vector(4 downto 0);
     signal rs2_int        : std_logic_vector(4 downto 0);
@@ -134,6 +135,16 @@ architecture struct of riscv is
         );
     end component pc_offset_mux;
 
+    component pc_adder is
+        port (
+            clk     : in    std_logic;
+            reset   : in    std_logic;
+            input_1 : in    std_logic_vector(31 downto 0);
+            input_2 : in    std_logic_vector(31 downto 0);
+            sum     : out   std_logic_vector(31 downto 0)
+        );
+    end component pc_adder;
+
 begin
 
     alu_unit : component alu
@@ -150,7 +161,7 @@ begin
         port map (
             clk         => clk,
             reset       => reset,
-            address_in  => offset_int,
+            address_in  => pc_address_in,
             address_out => pc_address
         );
 
@@ -229,6 +240,15 @@ begin
             control    => alu_out(0) and branch_int,
             offset_in  => immediate_int,
             offset_out => offset_int
+        );
+
+    pc_adder_unit : component pc_adder
+        port map (
+            clk     => clk,
+            reset   => reset,
+            input_1 => offset_int,
+            input_2 => pc_address,
+            sum     => pc_address_in
         );
 
 end architecture struct;

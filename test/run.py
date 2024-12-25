@@ -41,6 +41,8 @@ if tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_data_memory_vsim.txt"])
     elif "tb_alu" in tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_alu_vsim.txt"])
+    elif "tb_pc_adder" in tb_name:
+        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_pc_adder_vsim.txt"])
 
 VU.main()
 
