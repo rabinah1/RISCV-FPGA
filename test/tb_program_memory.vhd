@@ -12,19 +12,21 @@ end entity tb_program_memory;
 
 architecture tb of tb_program_memory is
 
-    signal   clk             : std_logic;
-    signal   reset           : std_logic;
-    signal   pc_in           : std_logic_vector(31 downto 0);
-    signal   instruction_reg : std_logic_vector(31 downto 0);
-    signal   check_sig       : natural := 0;
-    constant CLK_PERIOD      : time := 250 us;
+    signal   clk         : std_logic;
+    signal   reset       : std_logic;
+    signal   address_in  : std_logic_vector(31 downto 0);
+    signal   address_out : std_logic_vector(31 downto 0);
+    signal   instruction : std_logic_vector(31 downto 0);
+    signal   check_sig   : natural := 0;
+    constant CLK_PERIOD  : time := 250 us;
 
     component program_memory is
         port (
-            clk             : in    std_logic;
-            reset           : in    std_logic;
-            pc_in           : in    std_logic_vector(31 downto 0);
-            instruction_reg : out   std_logic_vector(31 downto 0)
+            clk         : in    std_logic;
+            reset       : in    std_logic;
+            address_in  : in    std_logic_vector(31 downto 0);
+            address_out : out   std_logic_vector(31 downto 0);
+            instruction : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -32,10 +34,11 @@ begin
 
     program_memory_instance : component program_memory
         port map (
-            clk             => clk,
-            reset           => reset,
-            pc_in           => pc_in,
-            instruction_reg => instruction_reg
+            clk         => clk,
+            reset       => reset,
+            address_in  => address_in,
+            address_out => address_out,
+            instruction => instruction
         );
 
     clk_process : process is
@@ -64,15 +67,17 @@ begin
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_output_instruction_is_read_correctly_with_specific_address");
                 info("--------------------------------------------------------------------------------");
-                reset     <= '1';
-                pc_in     <= (others => '0');
+                reset      <= '1';
+                address_in <= (others => '0');
                 wait for CLK_PERIOD * 2;
-                reset     <= '0';
-                pc_in     <= std_logic_vector(to_unsigned(123, 32));
+                reset      <= '0';
+                address_in <= std_logic_vector(to_unsigned(123, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(instruction_reg, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing instruction_reg against reference.");
-                check_sig <= 1;
+                check_equal(instruction, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing instruction against reference.");
+                check_equal(address_out, std_logic_vector(to_unsigned(123, 32)),
+                            "Comparing address_out against reference.");
+                check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
 

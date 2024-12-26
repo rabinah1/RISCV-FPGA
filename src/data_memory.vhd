@@ -8,9 +8,9 @@ entity data_memory is
         clk          : in    std_logic;
         reset        : in    std_logic;
         address      : in    std_logic_vector(31 downto 0);
-        data_in      : in    std_logic_vector(31 downto 0);
+        write_data   : in    std_logic_vector(31 downto 0);
         write_enable : in    std_logic;
-        data_out     : out   std_logic_vector(31 downto 0)
+        output       : out   std_logic_vector(31 downto 0)
     );
 end entity data_memory;
 
@@ -25,13 +25,13 @@ begin
     data_memory : process (all) is
     begin
 
-        data_out <= data_mem(to_integer(unsigned(address)));
+        output <= data_mem(to_integer(unsigned(address)));
 
         if (reset = '1') then
-            data_out <= (others => '0');
+            output <= (others => '0');
         elsif (rising_edge(clk)) then
             if (write_enable = '1') then
-                data_mem(to_integer(unsigned(address))) <= data_in;
+                data_mem(to_integer(unsigned(address))) <= write_data;
             end if;
         end if;
 

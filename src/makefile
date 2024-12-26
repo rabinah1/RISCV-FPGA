@@ -4,24 +4,22 @@ SHELL = /bin/bash
 .PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta
 
 STYLE_CHECK_FILES = \
-	alu_src.vhd \
+	mux_3_inputs.vhd \
+	mux_2_inputs.vhd \
 	alu.vhd \
 	data_memory.vhd \
 	instruction_decoder.vhd \
-	pc_offset_mux.vhd \
 	program_counter.vhd \
 	program_memory.vhd \
 	register_file.vhd \
 	riscv.vhd \
-	writeback_mux.vhd \
 	opcode_pkg.vhd \
 	pc_adder.vhd \
 	../test/tb_program_counter.vhd \
 	../test/tb_program_memory.vhd \
 	../test/tb_instruction_decoder.vhd \
-	../test/tb_alu_src.vhd \
-	../test/tb_writeback_mux.vhd \
-	../test/tb_pc_offset_mux.vhd \
+	../test/tb_mux_3_inputs.vhd \
+	../test/tb_mux_2_inputs.vhd \
 	../test/tb_register_file.vhd \
 	../test/tb_data_memory.vhd \
 	../test/tb_alu.vhd \

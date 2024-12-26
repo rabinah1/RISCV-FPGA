@@ -3,6 +3,6 @@ sim:/tb_alu/clk \
 sim:/tb_alu/reset \
 sim:/tb_alu/input_1 \
 sim:/tb_alu/input_2 \
-sim:/tb_alu/operand \
-sim:/tb_alu/alu_output
-run 10ms
+sim:/tb_alu/operator \
+sim:/tb_alu/result
+run 100ms

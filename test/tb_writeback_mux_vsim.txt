@@ -1,8 +1,0 @@
-add wave \
-sim:/tb_writeback_mux/clk \
-sim:/tb_writeback_mux/reset \
-sim:/tb_writeback_mux/control \
-sim:/tb_writeback_mux/alu_res \
-sim:/tb_writeback_mux/dmem_data \
-sim:/tb_writeback_mux/data_out
-run 1ms

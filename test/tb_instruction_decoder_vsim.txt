@@ -1,7 +1,8 @@
 add wave \
 sim:/tb_instruction_decoder/clk \
 sim:/tb_instruction_decoder/reset \
-sim:/tb_instruction_decoder/instruction_in \
+sim:/tb_instruction_decoder/instruction \
+sim:/tb_instruction_decoder/pc_in \
 sim:/tb_instruction_decoder/rs1 \
 sim:/tb_instruction_decoder/rs2 \
 sim:/tb_instruction_decoder/rd \
@@ -11,5 +12,8 @@ sim:/tb_instruction_decoder/alu_source \
 sim:/tb_instruction_decoder/immediate \
 sim:/tb_instruction_decoder/load \
 sim:/tb_instruction_decoder/store \
-sim:/tb_instruction_decoder/branch
-run 1ms
+sim:/tb_instruction_decoder/branch \
+sim:/tb_instruction_decoder/jump \
+sim:/tb_instruction_decoder/jalr_flag \
+sim:/tb_instruction_decoder/pc_out
+run 100ms

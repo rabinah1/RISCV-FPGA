@@ -1,0 +1,8 @@
+add wave \
+sim:/tb_mux_2_inputs/clk \
+sim:/tb_mux_2_inputs/reset \
+sim:/tb_mux_2_inputs/control \
+sim:/tb_mux_2_inputs/input_1 \
+sim:/tb_mux_2_inputs/input_2 \
+sim:/tb_mux_2_inputs/output
+run 100ms

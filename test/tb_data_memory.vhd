@@ -15,9 +15,9 @@ architecture tb of tb_data_memory is
     signal   clk          : std_logic := '0';
     signal   reset        : std_logic := '0';
     signal   address      : std_logic_vector(31 downto 0) := (others => '0');
-    signal   data_in      : std_logic_vector(31 downto 0) := (others => '0');
+    signal   write_data   : std_logic_vector(31 downto 0) := (others => '0');
     signal   write_enable : std_logic := '0';
-    signal   data_out     : std_logic_vector(31 downto 0) := (others => '0');
+    signal   output       : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig    : natural := 0;
     constant CLK_PERIOD   : time := 250 us;
 
@@ -26,9 +26,9 @@ architecture tb of tb_data_memory is
             clk          : in    std_logic;
             reset        : in    std_logic;
             address      : in    std_logic_vector(31 downto 0);
-            data_in      : in    std_logic_vector(31 downto 0);
+            write_data   : in    std_logic_vector(31 downto 0);
             write_enable : in    std_logic;
-            data_out     : out   std_logic_vector(31 downto 0)
+            output       : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -39,9 +39,9 @@ begin
             clk          => clk,
             reset        => reset,
             address      => address,
-            data_in      => data_in,
+            write_data   => write_data,
             write_enable => write_enable,
-            data_out     => data_out
+            output       => output
         );
 
     clk_process : process is
@@ -66,16 +66,16 @@ begin
 
         test_cases_loop : while test_suite loop
 
-            if run("test_data_out_is_zero_if_reset_is_enabled") then
+            if run("test_output_is_zero_if_reset_is_enabled") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_data_out_is_zero_if_reset_is_enabled");
+                info("TEST CASE: test_output_is_zero_if_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
                 reset        <= '1';
                 write_enable <= '0';
                 address      <= std_logic_vector(to_unsigned(100, 32));
-                data_in      <= std_logic_vector(to_unsigned(123, 32));
+                write_data   <= std_logic_vector(to_unsigned(123, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(data_out, std_logic_vector(to_unsigned(0, 32)), "Comparing data_out against reference.");
+                check_equal(output, std_logic_vector(to_unsigned(0, 32)), "Comparing output against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_read_and_write") then
@@ -86,12 +86,12 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset        <= '0';
                 write_enable <= '1';
-                data_in      <= std_logic_vector(to_unsigned(155, 32));
+                write_data   <= std_logic_vector(to_unsigned(155, 32));
                 address      <= std_logic_vector(to_unsigned(25, 32));
                 wait for CLK_PERIOD * 2;
                 write_enable <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(data_out, std_logic_vector(to_unsigned(155, 32)), "Comparing data_out against reference.");
+                check_equal(output, std_logic_vector(to_unsigned(155, 32)), "Comparing output against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

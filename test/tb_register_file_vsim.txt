@@ -8,4 +8,4 @@ sim:/tb_register_file/write \
 sim:/tb_register_file/write_data \
 sim:/tb_register_file/reg_out_1 \
 sim:/tb_register_file/reg_out_2
-run 10ms
+run 100ms
