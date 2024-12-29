@@ -1,6 +1,7 @@
 add wave \
 sim:/tb_register_file/clk \
 sim:/tb_register_file/reset \
+sim:/tb_register_file/enable \
 sim:/tb_register_file/rs1 \
 sim:/tb_register_file/rs2 \
 sim:/tb_register_file/rd \

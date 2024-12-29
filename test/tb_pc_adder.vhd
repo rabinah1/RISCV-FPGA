@@ -14,6 +14,7 @@ architecture tb of tb_pc_adder is
 
     signal   clk        : std_logic := '0';
     signal   reset      : std_logic := '0';
+    signal   enable     : std_logic := '0';
     signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   sum        : std_logic_vector(31 downto 0) := (others => '0');
@@ -24,6 +25,7 @@ architecture tb of tb_pc_adder is
         port (
             clk     : in    std_logic;
             reset   : in    std_logic;
+            enable  : in    std_logic;
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
             sum     : out   std_logic_vector(31 downto 0)
@@ -36,6 +38,7 @@ begin
         port map (
             clk     => clk,
             reset   => reset,
+            enable  => enable,
             input_1 => input_1,
             input_2 => input_2,
             sum     => sum
@@ -68,6 +71,7 @@ begin
                 info("TEST CASE: test_sum_is_zero_when_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(333, 32));
                 wait for CLK_PERIOD * 2;
@@ -80,6 +84,7 @@ begin
                 info("TEST CASE: test_adder_when_reset_is_disabled");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 input_1   <= std_logic_vector(to_unsigned(123, 32));

@@ -7,6 +7,7 @@ entity register_file is
     port (
         clk        : in    std_logic;
         reset      : in    std_logic;
+        enable     : in    std_logic;
         rs1        : in    std_logic_vector(4 downto 0);
         rs2        : in    std_logic_vector(4 downto 0);
         rd         : in    std_logic_vector(4 downto 0);
@@ -35,7 +36,7 @@ begin
             reg_out_1 <= (others => '0');
             reg_out_2 <= (others => '0');
         elsif (rising_edge(clk)) then
-            if (write = '1' and rd /= "00000") then
+            if (write = '1' and rd /= "00000" and enable = '1') then
                 regs(to_integer(unsigned(rd))) <= write_data;
             end if;
         end if;

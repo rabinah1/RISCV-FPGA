@@ -14,6 +14,7 @@ architecture tb of tb_register_file is
 
     signal   clk        : std_logic := '0';
     signal   reset      : std_logic := '0';
+    signal   enable     : std_logic := '0';
     signal   rs1        : std_logic_vector(4 downto 0) := (others => '0');
     signal   rs2        : std_logic_vector(4 downto 0) := (others => '0');
     signal   rd         : std_logic_vector(4 downto 0) := (others => '0');
@@ -28,6 +29,7 @@ architecture tb of tb_register_file is
         port (
             clk        : in    std_logic;
             reset      : in    std_logic;
+            enable     : in    std_logic;
             rs1        : in    std_logic_vector(4 downto 0);
             rs2        : in    std_logic_vector(4 downto 0);
             rd         : in    std_logic_vector(4 downto 0);
@@ -44,6 +46,7 @@ begin
         port map (
             clk        => clk,
             reset      => reset,
+            enable     => enable,
             rs1        => rs1,
             rs2        => rs2,
             rd         => rd,
@@ -80,6 +83,7 @@ begin
                 info("TEST CASE: test_outputs_are_zero_if_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 write     <= '1';
                 rs1       <= std_logic_vector(to_unsigned(12, 5));
                 rs2       <= std_logic_vector(to_unsigned(6, 5));
@@ -93,6 +97,7 @@ begin
                 info("TEST CASE: test_read_and_write");
                 info("--------------------------------------------------------------------------------");
                 reset      <= '1';
+                enable     <= '1';
                 wait for CLK_PERIOD * 2;
                 reset      <= '0';
                 write      <= '1';
@@ -118,6 +123,7 @@ begin
                 info("TEST CASE: test_write_to_address_0_is_blocked");
                 info("--------------------------------------------------------------------------------");
                 reset      <= '1';
+                enable     <= '1';
                 wait for CLK_PERIOD * 2;
                 reset      <= '0';
                 write      <= '1';

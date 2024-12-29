@@ -14,6 +14,7 @@ architecture tb of tb_instruction_decoder is
 
     signal   clk           : std_logic := '0';
     signal   reset         : std_logic := '0';
+    signal   enable        : std_logic := '0';
     signal   instruction   : std_logic_vector(31 downto 0);
     signal   pc_in         : std_logic_vector(31 downto 0);
     signal   rs1           : std_logic_vector(4 downto 0);
@@ -36,6 +37,7 @@ architecture tb of tb_instruction_decoder is
         port (
             clk           : in    std_logic;
             reset         : in    std_logic;
+            enable        : in    std_logic;
             instruction   : in    std_logic_vector(31 downto 0);
             pc_in         : in    std_logic_vector(31 downto 0);
             rs1           : out   std_logic_vector(4 downto 0);
@@ -60,6 +62,7 @@ begin
         port map (
             clk           => clk,
             reset         => reset,
+            enable        => enable,
             instruction   => instruction,
             pc_in         => pc_in,
             rs1           => rs1,
@@ -104,6 +107,7 @@ begin
                 info("TEST CASE: test_all_outputs_are_zero_when_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 instruction <= "01010101010101010101010101010101";
                 wait for CLK_PERIOD * 2;
                 check_equal(rs1, std_logic_vector(to_unsigned(0, 5)), "Comparing rs1 against reference.");
@@ -127,6 +131,7 @@ begin
                 info("TEST CASE: test_decode_R_type_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
                 instruction <= "10101010101010101010101010110011";
@@ -152,6 +157,7 @@ begin
                 info("TEST CASE: test_decode_I_type_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
                 instruction <= "10101010101010101010101010010011";
@@ -178,6 +184,7 @@ begin
                 info("TEST CASE: test_decode_load_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
                 instruction <= "10101010101010101010101010000011";
@@ -204,6 +211,7 @@ begin
                 info("TEST CASE: test_decode_store_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
                 instruction <= "10101010101010101010101010100011";
@@ -230,6 +238,7 @@ begin
                 info("TEST CASE: test_decode_conditional_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
                 instruction <= "11010101010101010100101011100011";
@@ -257,6 +266,7 @@ begin
                 info("TEST CASE: test_decode_jal_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
                 instruction <= "01010101010101010100101011101111";
@@ -285,6 +295,7 @@ begin
                 info("TEST CASE: test_decode_jalr_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset       <= '1';
+                enable      <= '1';
                 wait for CLK_PERIOD * 2;
                 reset       <= '0';
                 instruction <= "01010101010101010100101011100111";

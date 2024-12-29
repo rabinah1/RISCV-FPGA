@@ -1,6 +1,7 @@
 add wave \
 sim:/tb_alu/clk \
 sim:/tb_alu/reset \
+sim:/tb_alu/enable \
 sim:/tb_alu/input_1 \
 sim:/tb_alu/input_2 \
 sim:/tb_alu/operator \

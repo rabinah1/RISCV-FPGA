@@ -7,6 +7,7 @@ entity pc_adder is
     port (
         clk     : in    std_logic;
         reset   : in    std_logic;
+        enable  : in    std_logic;
         input_1 : in    std_logic_vector(31 downto 0);
         input_2 : in    std_logic_vector(31 downto 0);
         sum     : out   std_logic_vector(31 downto 0)
@@ -23,7 +24,9 @@ begin
         if (reset = '1') then
             sum <= (others => '0');
         elsif (rising_edge(clk)) then
-            sum <= input_1 + input_2;
+            if (enable = '1') then
+                sum <= input_1 + input_2;
+            end if;
         end if;
 
     end process pc_adder;

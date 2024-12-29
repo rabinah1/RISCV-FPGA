@@ -1,7 +1,7 @@
 SHELL = /bin/bash
 
 .DELETE_ON_ERROR:
-.PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta
+.PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta full_clean
 
 STYLE_CHECK_FILES = \
 	mux_3_inputs.vhd \
@@ -15,6 +15,8 @@ STYLE_CHECK_FILES = \
 	riscv.vhd \
 	opcode_pkg.vhd \
 	pc_adder.vhd \
+	state_machine.vhd \
+	states_package.vhd \
 	../test/tb_program_counter.vhd \
 	../test/tb_program_memory.vhd \
 	../test/tb_instruction_decoder.vhd \
@@ -23,7 +25,8 @@ STYLE_CHECK_FILES = \
 	../test/tb_register_file.vhd \
 	../test/tb_data_memory.vhd \
 	../test/tb_alu.vhd \
-	../test/tb_pc_adder.vhd
+	../test/tb_pc_adder.vhd \
+	../test/tb_state_machine.vhd
 
 FILES_TO_REMOVE = \
 	db \
@@ -59,3 +62,6 @@ clean:
 	@for file in $(FILES_TO_REMOVE); do \
 		rm -rf $${file}; \
 	done
+
+full_clean: clean
+	rm -rf ../venv

@@ -14,6 +14,7 @@ architecture tb of tb_alu is
 
     signal   clk        : std_logic := '0';
     signal   reset      : std_logic := '0';
+    signal   enable     : std_logic := '0';
     signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   operator   : std_logic_vector(10 downto 0) := (others => '0');
@@ -25,6 +26,7 @@ architecture tb of tb_alu is
         port (
             clk      : in    std_logic;
             reset    : in    std_logic;
+            enable   : in    std_logic;
             input_1  : in    std_logic_vector(31 downto 0);
             input_2  : in    std_logic_vector(31 downto 0);
             operator : in    std_logic_vector(10 downto 0);
@@ -38,6 +40,7 @@ begin
         port map (
             clk      => clk,
             reset    => reset,
+            enable   => enable,
             input_1  => input_1,
             input_2  => input_2,
             operator => operator,
@@ -71,6 +74,7 @@ begin
                 info("TEST CASE: test_output_is_zero_if_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 operator  <= (others => '0');
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
@@ -84,6 +88,7 @@ begin
                 info("TEST CASE: test_add_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
                 operator  <= "01100110000";
@@ -99,6 +104,7 @@ begin
                 info("TEST CASE: test_addi_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
                 operator  <= "00100110000";
@@ -114,6 +120,7 @@ begin
                 info("TEST CASE: test_sub_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(100, 32));
                 input_2   <= std_logic_vector(to_unsigned(46, 32));
                 operator  <= "01100111000";
@@ -129,6 +136,7 @@ begin
                 info("TEST CASE: test_sll_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(470, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
                 operator  <= "01100110001";
@@ -144,6 +152,7 @@ begin
                 info("TEST CASE: test_slli_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(470, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
                 operator  <= "00100110001";
@@ -159,6 +168,7 @@ begin
                 info("TEST CASE: test_slt_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
                 operator  <= "01100110010";
@@ -180,6 +190,7 @@ begin
                 info("TEST CASE: test_slti_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
                 operator  <= "00100110010";
@@ -201,6 +212,7 @@ begin
                 info("TEST CASE: test_sltu_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
                 operator  <= "01100110011";
@@ -222,6 +234,7 @@ begin
                 info("TEST CASE: test_sltiu_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
                 operator  <= "00100110011";
@@ -243,6 +256,7 @@ begin
                 info("TEST CASE: test_xor_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
                 operator  <= "01100110100";
@@ -258,6 +272,7 @@ begin
                 info("TEST CASE: test_xori_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
                 operator  <= "00100110100";
@@ -273,6 +288,7 @@ begin
                 info("TEST CASE: test_srl_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(2670, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
                 operator  <= "01100110101";
@@ -288,6 +304,7 @@ begin
                 info("TEST CASE: test_srli_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(2670, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
                 operator  <= "00100110101";
@@ -303,6 +320,7 @@ begin
                 info("TEST CASE: test_or_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
                 operator  <= "01100110110";
@@ -318,6 +336,7 @@ begin
                 info("TEST CASE: test_ori_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
                 operator  <= "00100110110";
@@ -333,6 +352,7 @@ begin
                 info("TEST CASE: test_and_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
                 operator  <= "01100110111";
@@ -348,6 +368,7 @@ begin
                 info("TEST CASE: test_andi_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
                 operator  <= "00100110111";
@@ -363,6 +384,7 @@ begin
                 info("TEST CASE: test_lw_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
                 operator  <= "00000110010";
@@ -378,6 +400,7 @@ begin
                 info("TEST CASE: test_sw_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
                 operator  <= "01000110010";
@@ -393,6 +416,7 @@ begin
                 info("TEST CASE: test_beq_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(105, 32));
                 input_2   <= std_logic_vector(to_unsigned(105, 32));
                 operator  <= "11000110000";
@@ -413,6 +437,7 @@ begin
                 info("TEST CASE: test_bne_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(103, 32));
                 input_2   <= std_logic_vector(to_unsigned(105, 32));
                 operator  <= "11000110001";
@@ -433,6 +458,7 @@ begin
                 info("TEST CASE: test_blt_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(57, 32));
                 operator  <= "11000110100";
@@ -453,6 +479,7 @@ begin
                 info("TEST CASE: test_bge_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(50, 32));
                 operator  <= "11000110101";
@@ -473,6 +500,7 @@ begin
                 info("TEST CASE: test_bltu_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(57, 32));
                 operator  <= "11000110110";
@@ -493,6 +521,7 @@ begin
                 info("TEST CASE: test_bgeu_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(50, 32));
                 operator  <= "11000110111";
@@ -513,6 +542,7 @@ begin
                 info("TEST CASE: test_jal_instruction");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
+                enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
                 operator  <= "11011110000";

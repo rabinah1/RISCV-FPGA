@@ -4,8 +4,9 @@ use ieee.numeric_std.all;
 
 entity riscv is
     port (
-        clk   : in    std_logic;
-        reset : in    std_logic
+        clk           : in    std_logic;
+        reset         : in    std_logic;
+        start_program : in    std_logic -- Connect this to push button
     );
 end entity riscv;
 
@@ -36,11 +37,16 @@ architecture struct of riscv is
     signal data_memory_output                : std_logic_vector(31 downto 0);
     signal pc_offset_mux_output              : std_logic_vector(31 downto 0);
     signal pc_input_mux_output               : std_logic_vector(31 downto 0);
+    signal state_machine_fetch_enable        : std_logic;
+    signal state_machine_decode_enable       : std_logic;
+    signal state_machine_execute_enable      : std_logic;
+    signal state_machine_write_back_enable   : std_logic;
 
     component alu is
         port (
             clk      : in    std_logic;
             reset    : in    std_logic;
+            enable   : in    std_logic;
             input_1  : in    std_logic_vector(31 downto 0);
             input_2  : in    std_logic_vector(31 downto 0);
             operator : in    std_logic_vector(10 downto 0);
@@ -71,6 +77,7 @@ architecture struct of riscv is
         port (
             clk        : in    std_logic;
             reset      : in    std_logic;
+            enable     : in    std_logic;
             rs1        : in    std_logic_vector(4 downto 0);
             rs2        : in    std_logic_vector(4 downto 0);
             rd         : in    std_logic_vector(4 downto 0);
@@ -85,6 +92,7 @@ architecture struct of riscv is
         port (
             clk           : in    std_logic;
             reset         : in    std_logic;
+            enable        : in    std_logic;
             instruction   : in    std_logic_vector(31 downto 0);
             pc_in         : in    std_logic_vector(31 downto 0);
             rs1           : out   std_logic_vector(4 downto 0);
@@ -141,11 +149,24 @@ architecture struct of riscv is
         port (
             clk     : in    std_logic;
             reset   : in    std_logic;
+            enable  : in    std_logic;
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
             sum     : out   std_logic_vector(31 downto 0)
         );
     end component pc_adder;
+
+    component state_machine is
+        port (
+            clk                : in    std_logic;
+            reset              : in    std_logic;
+            trig_state_machine : in    std_logic;
+            fetch_enable       : out   std_logic;
+            decode_enable      : out   std_logic;
+            execute_enable     : out   std_logic;
+            write_back_enable  : out   std_logic
+        );
+    end component state_machine;
 
 begin
 
@@ -153,6 +174,7 @@ begin
         port map (
             clk      => clk,
             reset    => reset,
+            enable   => state_machine_execute_enable,
             input_1  => register_file_reg_out_1,
             input_2  => alu_src_mux_output,
             operator => instruction_decoder_alu_operation,
@@ -180,6 +202,7 @@ begin
         port map (
             clk        => clk,
             reset      => reset,
+            enable     => state_machine_write_back_enable,
             rs1        => instruction_decoder_rs1,
             rs2        => instruction_decoder_rs2,
             rd         => instruction_decoder_rd,
@@ -193,6 +216,7 @@ begin
         port map (
             clk           => clk,
             reset         => reset,
+            enable        => state_machine_decode_enable,
             instruction   => program_memory_instruction,
             pc_in         => program_memory_address_out,
             rs1           => instruction_decoder_rs1,
@@ -265,9 +289,21 @@ begin
         port map (
             clk     => clk,
             reset   => reset,
+            enable  => state_machine_fetch_enable,
             input_1 => pc_offset_mux_output,
             input_2 => pc_input_mux_output,
             sum     => pc_adder_sum
+        );
+
+    state_machine_unit : component state_machine
+        port map (
+            clk                => clk,
+            reset              => reset,
+            trig_state_machine => start_program,
+            fetch_enable       => state_machine_fetch_enable,
+            decode_enable      => state_machine_decode_enable,
+            execute_enable     => state_machine_execute_enable,
+            write_back_enable  => state_machine_write_back_enable
         );
 
 end architecture struct;
