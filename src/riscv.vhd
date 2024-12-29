@@ -4,8 +4,9 @@ use ieee.numeric_std.all;
 
 entity riscv is
     port (
-        clk   : in    std_logic;
-        reset : in    std_logic
+        clk           : in    std_logic;
+        reset         : in    std_logic;
+        start_program : in    std_logic -- Connect this to push button
     );
 end entity riscv;
 
