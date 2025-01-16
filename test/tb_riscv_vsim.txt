@@ -1,0 +1,28 @@
+add wave \
+sim:/tb_riscv/clk \
+sim:/tb_riscv/reset \
+sim:/tb_riscv/start_program \
+sim:/tb_riscv/riscv_instance/program_counter_unit/address_in \
+sim:/tb_riscv/riscv_instance/program_counter_unit/address_out \
+sim:/tb_riscv/riscv_instance/alu_unit/input_1 \
+sim:/tb_riscv/riscv_instance/alu_unit/input_2 \
+sim:/tb_riscv/riscv_instance/alu_unit/operator \
+sim:/tb_riscv/riscv_instance/alu_unit/result \
+sim:/tb_riscv/riscv_instance/data_memory_unit/address \
+sim:/tb_riscv/riscv_instance/data_memory_unit/write_data \
+sim:/tb_riscv/riscv_instance/data_memory_unit/write_enable \
+sim:/tb_riscv/riscv_instance/data_memory_unit/output \
+sim:/tb_riscv/riscv_instance/instruction_decoder_unit/instruction \
+sim:/tb_riscv/riscv_instance/state_machine_unit/fetch_enable \
+sim:/tb_riscv/riscv_instance/state_machine_unit/decode_enable \
+sim:/tb_riscv/riscv_instance/state_machine_unit/execute_enable \
+sim:/tb_riscv/riscv_instance/state_machine_unit/write_back_enable \
+sim:/tb_riscv/riscv_instance/register_file_unit/enable \
+sim:/tb_riscv/riscv_instance/register_file_unit/rs1 \
+sim:/tb_riscv/riscv_instance/register_file_unit/rs2 \
+sim:/tb_riscv/riscv_instance/register_file_unit/rd \
+sim:/tb_riscv/riscv_instance/register_file_unit/write \
+sim:/tb_riscv/riscv_instance/register_file_unit/write_data \
+sim:/tb_riscv/riscv_instance/register_file_unit/reg_out_1 \
+sim:/tb_riscv/riscv_instance/register_file_unit/reg_out_2
+run 1000ms

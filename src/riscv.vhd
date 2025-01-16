@@ -65,11 +65,12 @@ architecture struct of riscv is
 
     component program_memory is
         port (
-            clk         : in    std_logic;
-            reset       : in    std_logic;
-            address_in  : in    std_logic_vector(31 downto 0);
-            address_out : out   std_logic_vector(31 downto 0);
-            instruction : out   std_logic_vector(31 downto 0)
+            clk           : in    std_logic;
+            reset         : in    std_logic;
+            decode_enable : in    std_logic;
+            address_in    : in    std_logic_vector(31 downto 0);
+            address_out   : out   std_logic_vector(31 downto 0);
+            instruction   : out   std_logic_vector(31 downto 0)
         );
     end component program_memory;
 
@@ -191,11 +192,12 @@ begin
 
     program_memory_unit : component program_memory
         port map (
-            clk         => clk,
-            reset       => reset,
-            address_in  => program_counter_address_out,
-            address_out => program_memory_address_out,
-            instruction => program_memory_instruction
+            clk           => clk,
+            reset         => reset,
+            decode_enable => state_machine_decode_enable,
+            address_in    => program_counter_address_out,
+            address_out   => program_memory_address_out,
+            instruction   => program_memory_instruction
         );
 
     register_file_unit : component register_file

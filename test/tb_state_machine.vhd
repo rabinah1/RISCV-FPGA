@@ -2,6 +2,7 @@ library ieee;
 library vunit_lib;
     context vunit_lib.vunit_context;
 use ieee.std_logic_1164.all;
+use work.states_package.all;
 
 entity tb_state_machine is
     generic (
@@ -61,6 +62,10 @@ begin
     end process clk_process;
 
     test_runner : process is
+
+        alias state      is <<signal .tb_state_machine.state_machine_instance.state : instruction_state>>;
+        alias next_state is <<signal .tb_state_machine.state_machine_instance.next_state : instruction_state>>;
+
     begin
 
         test_runner_setup(runner, runner_cfg);
@@ -78,71 +83,91 @@ begin
                 check_equal(decode_enable, '0', "Comparing decode_enable against reference.");
                 check_equal(execute_enable, '0', "Comparing execute_enable against reference.");
                 check_equal(write_back_enable, '0', "Comparing write_back_enable against reference.");
+                assert state = nop;
+                assert next_state = nop;
                 check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_nop_state_when_trig_state_machine_is_one") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_nop_state_when_trig_state_machine_is_one");
+                info("--------------------------------------------------------------------------------");
+                reset              <= '1';
+                trig_state_machine <= '0';
+                state              <= force nop;
+                wait for CLK_PERIOD * 2;
+                reset              <= '0';
+                trig_state_machine <= '1';
+                wait for CLK_PERIOD * 2;
+                check_equal(fetch_enable, '0', "Comparing fetch_enable against reference.");
+                check_equal(decode_enable, '0', "Comparing decode_enable against reference.");
+                check_equal(execute_enable, '0', "Comparing execute_enable against reference.");
+                check_equal(write_back_enable, '0', "Comparing write_back_enable against reference.");
+                assert next_state = fetch;
+                check_sig          <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_fetch_state") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_fetch_state");
                 info("--------------------------------------------------------------------------------");
-                reset              <= '1';
-                trig_state_machine <= '0';
+                reset     <= '1';
+                state     <= force fetch;
                 wait for CLK_PERIOD * 2;
-                reset              <= '0';
-                trig_state_machine <= '1';
+                reset     <= '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(fetch_enable, '1', "Comparing fetch_enable against reference.");
                 check_equal(decode_enable, '0', "Comparing decode_enable against reference.");
                 check_equal(execute_enable, '0', "Comparing execute_enable against reference.");
                 check_equal(write_back_enable, '0', "Comparing write_back_enable against reference.");
-                check_sig          <= 1;
+                assert next_state = decode;
+                check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_state") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_decode_state");
                 info("--------------------------------------------------------------------------------");
-                reset              <= '1';
-                trig_state_machine <= '0';
+                reset     <= '1';
+                state     <= force decode;
                 wait for CLK_PERIOD * 2;
-                reset              <= '0';
-                trig_state_machine <= '1';
-                wait for CLK_PERIOD * 3;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
                 check_equal(fetch_enable, '0', "Comparing fetch_enable against reference.");
                 check_equal(decode_enable, '1', "Comparing decode_enable against reference.");
                 check_equal(execute_enable, '0', "Comparing execute_enable against reference.");
                 check_equal(write_back_enable, '0', "Comparing write_back_enable against reference.");
-                check_sig          <= 1;
+                assert next_state = execute;
+                check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_execute_state") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_execute_state");
                 info("--------------------------------------------------------------------------------");
-                reset              <= '1';
-                trig_state_machine <= '0';
+                reset     <= '1';
+                state     <= force execute;
                 wait for CLK_PERIOD * 2;
-                reset              <= '0';
-                trig_state_machine <= '1';
-                wait for CLK_PERIOD * 4;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
                 check_equal(fetch_enable, '0', "Comparing fetch_enable against reference.");
                 check_equal(decode_enable, '0', "Comparing decode_enable against reference.");
                 check_equal(execute_enable, '1', "Comparing execute_enable against reference.");
                 check_equal(write_back_enable, '0', "Comparing write_back_enable against reference.");
-                check_sig          <= 1;
+                assert next_state = write_back;
+                check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_write_back_state") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_write_back_state");
                 info("--------------------------------------------------------------------------------");
-                reset              <= '1';
-                trig_state_machine <= '0';
+                reset     <= '1';
+                state     <= force write_back;
                 wait for CLK_PERIOD * 2;
-                reset              <= '0';
-                trig_state_machine <= '1';
-                wait for CLK_PERIOD * 5;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
                 check_equal(fetch_enable, '0', "Comparing fetch_enable against reference.");
                 check_equal(decode_enable, '0', "Comparing decode_enable against reference.");
                 check_equal(execute_enable, '0', "Comparing execute_enable against reference.");
                 check_equal(write_back_enable, '1', "Comparing write_back_enable against reference.");
-                check_sig          <= 1;
+                assert next_state = fetch;
+                check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
 

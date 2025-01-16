@@ -1,6 +1,7 @@
 add wave \
 sim:/tb_program_memory/clk \
 sim:/tb_program_memory/reset \
+sim:/tb_program_memory/decode_enable \
 sim:/tb_program_memory/address_in \
 sim:/tb_program_memory/address_out \
 sim:/tb_program_memory/instruction

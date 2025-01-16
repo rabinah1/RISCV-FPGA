@@ -3,6 +3,8 @@ import os
 import sys
 from vunit import VUnit
 
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+
 tb_name = None
 for arg in sys.argv:
     if arg.startswith("tb_lib"):
@@ -21,6 +23,9 @@ design_lib.add_source_files([os.path.join(src_dir, "*.vhd")])
 
 tb_lib = VU.add_library("tb_lib")
 tb_lib.add_source_files([os.path.join(test_dir, "*.vhd")])
+tb_lib.add_source_files([os.path.join(src_dir, "*states_package.vhd")])
+
+VU.set_sim_option("modelsim.vsim_flags", [f"-ginput_file={SCRIPT_DIR}/riscv_stimulus.txt"])
 
 if tb_name:
     if "tb_program_counter" in tb_name:
@@ -45,6 +50,8 @@ if tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_pc_adder_vsim.txt"])
     elif "tb_state_machine" in tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_state_machine_vsim.txt"])
+    elif "tb_riscv" in tb_name:
+        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_riscv_vsim.txt", f"-ginput_file={SCRIPT_DIR}/riscv_stimulus.txt"])
 
 VU.main()
 

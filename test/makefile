@@ -13,7 +13,8 @@ STYLE_CHECK_FILES = \
 	tb_data_memory.vhd \
 	tb_alu.vhd \
 	tb_pc_adder.vhd \
-	tb_state_machine.vhd
+	tb_state_machine.vhd \
+	tb_riscv.vhd
 
 sta:
 	@for file in $(STYLE_CHECK_FILES); do \

@@ -161,6 +161,34 @@ begin
                     jump                    <= '1';
                     jalr_flag               <= '1';
                     pc_out                  <= (others => '0');
+                elsif (opcode = "0110111") then -- U-type
+                    rd            <= instruction(11 downto 7);
+                    alu_operation <= opcode & "0000";
+                    rs1           <= (others => '0');
+                    rs2           <= (others => '0');
+                    write         <= '1';
+                    immediate     <= instruction(31 downto 12) & "000000000000";
+                    store         <= '0';
+                    load          <= '0';
+                    alu_source    <= "00";
+                    branch        <= '0';
+                    jump          <= '0';
+                    jalr_flag     <= '0';
+                    pc_out        <= (others => '0');
+                else
+                    rd            <= (others => '0');
+                    alu_operation <= (others => '0');
+                    rs1           <= (others => '0');
+                    rs2           <= (others => '0');
+                    write         <= '0';
+                    immediate     <= (others => '0');
+                    store         <= '0';
+                    load          <= '0';
+                    alu_source    <= "00";
+                    branch        <= '0';
+                    jump          <= '0';
+                    jalr_flag     <= '0';
+                    pc_out        <= (others => '0');
                 end if;
             end if;
         end if;

@@ -180,6 +180,10 @@ begin
 
                         result <= input_2 + std_logic_vector(to_unsigned(1, 32));
 
+                    when LUI =>
+
+                        result <= input_2;
+
                     when others =>
 
                         result <= (others => '0');

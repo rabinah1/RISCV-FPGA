@@ -4024,7 +4024,7 @@
       "disable": false,
       "fixable": false,
       "indentSize": 4,
-      "length": 500,
+      "length": 1000,
       "phase": 7,
       "severity": "Warning"
     },

@@ -22,7 +22,8 @@ architecture rtl of register_file is
 
     type memory is array(31 downto 0) of std_logic_vector(31 downto 0);
 
-    signal regs : memory := (others => (others => '0'));
+    signal regs : memory := (2 => std_logic_vector(to_unsigned(64, 32)),
+                              others => (others => '0'));
 
 begin
 
@@ -35,7 +36,7 @@ begin
         if (reset = '1') then
             reg_out_1 <= (others => '0');
             reg_out_2 <= (others => '0');
-        elsif (rising_edge(clk)) then
+        elsif (falling_edge(clk)) then
             if (write = '1' and rd /= "00000" and enable = '1') then
                 regs(to_integer(unsigned(rd))) <= write_data;
             end if;

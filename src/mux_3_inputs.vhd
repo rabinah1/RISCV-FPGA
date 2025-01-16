@@ -22,7 +22,7 @@ begin
 
         if (reset = '1') then
             output <= (others => '0');
-        elsif (rising_edge(clk)) then
+        else -- Use a latch so that it's executed at the same time with "decode" step.
             if (control = "00") then
                 output <= input_1;
             elsif (control = "01") then

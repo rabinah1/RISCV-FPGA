@@ -553,6 +553,22 @@ begin
                             "Comparing result against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_lui_instruction") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_lui_instruction");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                enable    <= '1';
+                input_1   <= std_logic_vector(to_unsigned(24, 32));
+                input_2   <= std_logic_vector(to_unsigned(157, 32));
+                operator  <= "01101110000";
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(result, std_logic_vector(to_unsigned(157, 32)),
+                            "Comparing result against reference.");
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
             end if;
 
         end loop;
