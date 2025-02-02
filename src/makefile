@@ -16,17 +16,7 @@ STYLE_CHECK_FILES = \
 	opcode_pkg.vhd \
 	pc_adder.vhd \
 	state_machine.vhd \
-	states_package.vhd \
-	../test/tb_program_counter.vhd \
-	../test/tb_program_memory.vhd \
-	../test/tb_instruction_decoder.vhd \
-	../test/tb_mux_3_inputs.vhd \
-	../test/tb_mux_2_inputs.vhd \
-	../test/tb_register_file.vhd \
-	../test/tb_data_memory.vhd \
-	../test/tb_alu.vhd \
-	../test/tb_pc_adder.vhd \
-	../test/tb_state_machine.vhd
+	states_package.vhd
 
 FILES_TO_REMOVE = \
 	db \
@@ -50,18 +40,12 @@ netlist: synthesis
 	@quartus_npp ./riscv -c riscv --netlist_type=sgate
 	@qnui ./riscv
 
-check:
-	python3 ../test/run.py
-
 sta:
 	@for file in $(STYLE_CHECK_FILES); do \
-		vsg -f $${file} -c vsg_config.json; \
+		vsg -f $${file} -c ../vsg_config.json; \
 	done
 
 clean:
 	@for file in $(FILES_TO_REMOVE); do \
 		rm -rf $${file}; \
 	done
-
-full_clean: clean
-	rm -rf ../venv
