@@ -14,7 +14,8 @@ entity register_file is
         write      : in    std_logic;
         write_data : in    std_logic_vector(31 downto 0);
         reg_out_1  : out   std_logic_vector(31 downto 0);
-        reg_out_2  : out   std_logic_vector(31 downto 0)
+        reg_out_2  : out   std_logic_vector(31 downto 0);
+        cpu_reg    : out   std_logic_vector(31 downto 0)
     );
 end entity register_file;
 
@@ -32,10 +33,12 @@ begin
 
         reg_out_1 <= regs(to_integer(unsigned(rs1)));
         reg_out_2 <= regs(to_integer(unsigned(rs2)));
+        cpu_reg   <= regs(10);
 
         if (reset = '1') then
             reg_out_1 <= (others => '0');
             reg_out_2 <= (others => '0');
+            cpu_reg   <= (others => '0');
         elsif (falling_edge(clk)) then
             if (write = '1' and rd /= "00000" and enable = '1') then
                 regs(to_integer(unsigned(rd))) <= write_data;

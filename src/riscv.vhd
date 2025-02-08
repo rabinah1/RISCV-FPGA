@@ -6,7 +6,8 @@ entity riscv is
     port (
         clk           : in    std_logic;
         reset         : in    std_logic;
-        start_program : in    std_logic -- Connect this to push button
+        start_program : in    std_logic; -- Connect this to push button
+        cpu_reg       : out   std_logic_vector(31 downto 0)
     );
 end entity riscv;
 
@@ -41,6 +42,7 @@ architecture struct of riscv is
     signal state_machine_decode_enable       : std_logic;
     signal state_machine_execute_enable      : std_logic;
     signal state_machine_write_back_enable   : std_logic;
+    signal clk_1mhz                          : std_logic;
 
     component alu is
         port (
@@ -85,7 +87,8 @@ architecture struct of riscv is
             write      : in    std_logic;
             write_data : in    std_logic_vector(31 downto 0);
             reg_out_1  : out   std_logic_vector(31 downto 0);
-            reg_out_2  : out   std_logic_vector(31 downto 0)
+            reg_out_2  : out   std_logic_vector(31 downto 0);
+            cpu_reg    : out   std_logic_vector(31 downto 0)
         );
     end component register_file;
 
@@ -169,11 +172,19 @@ architecture struct of riscv is
         );
     end component state_machine;
 
+    component clk_div is
+        port (
+            clk_in   : in    std_logic;
+            reset    : in    std_logic;
+            clk_1mhz : out   std_logic
+        );
+    end component clk_div;
+
 begin
 
     alu_unit : component alu
         port map (
-            clk      => clk,
+            clk      => clk_1mhz,
             reset    => reset,
             enable   => state_machine_execute_enable,
             input_1  => register_file_reg_out_1,
@@ -184,7 +195,7 @@ begin
 
     program_counter_unit : component program_counter
         port map (
-            clk         => clk,
+            clk         => clk_1mhz,
             reset       => reset,
             address_in  => pc_adder_sum,
             address_out => program_counter_address_out
@@ -192,7 +203,7 @@ begin
 
     program_memory_unit : component program_memory
         port map (
-            clk           => clk,
+            clk           => clk_1mhz,
             reset         => reset,
             decode_enable => state_machine_decode_enable,
             address_in    => program_counter_address_out,
@@ -202,7 +213,7 @@ begin
 
     register_file_unit : component register_file
         port map (
-            clk        => clk,
+            clk        => clk_1mhz,
             reset      => reset,
             enable     => state_machine_write_back_enable,
             rs1        => instruction_decoder_rs1,
@@ -211,12 +222,13 @@ begin
             write      => instruction_decoder_write,
             write_data => writeback_mux_output,
             reg_out_1  => register_file_reg_out_1,
-            reg_out_2  => register_file_reg_out_2
+            reg_out_2  => register_file_reg_out_2,
+            cpu_reg    => cpu_reg
         );
 
     instruction_decoder_unit : component instruction_decoder
         port map (
-            clk           => clk,
+            clk           => clk_1mhz,
             reset         => reset,
             enable        => state_machine_decode_enable,
             instruction   => program_memory_instruction,
@@ -238,7 +250,7 @@ begin
 
     alu_src_mux : component mux_3_inputs
         port map (
-            clk     => clk,
+            clk     => clk_1mhz,
             reset   => reset,
             control => instruction_decoder_alu_source,
             input_1 => instruction_decoder_immediate,
@@ -249,7 +261,7 @@ begin
 
     writeback_mux : component mux_2_inputs
         port map (
-            clk     => clk,
+            clk     => clk_1mhz,
             reset   => reset,
             control => instruction_decoder_load,
             input_1 => alu_result,
@@ -259,7 +271,7 @@ begin
 
     data_memory_unit : component data_memory
         port map (
-            clk          => clk,
+            clk          => clk_1mhz,
             reset        => reset,
             address      => alu_result,
             write_data   => register_file_reg_out_2,
@@ -269,7 +281,7 @@ begin
 
     pc_offset_mux : component mux_2_inputs
         port map (
-            clk     => clk,
+            clk     => clk_1mhz,
             reset   => reset,
             control => (alu_result(0) and instruction_decoder_branch) or instruction_decoder_jump,
             input_1 => std_logic_vector(to_unsigned(1, 32)),
@@ -279,7 +291,7 @@ begin
 
     pc_input_mux : component mux_2_inputs
         port map (
-            clk     => clk,
+            clk     => clk_1mhz,
             reset   => reset,
             control => instruction_decoder_jalr_flag,
             input_1 => program_counter_address_out,
@@ -289,7 +301,7 @@ begin
 
     pc_adder_unit : component pc_adder
         port map (
-            clk     => clk,
+            clk     => clk_1mhz,
             reset   => reset,
             enable  => state_machine_fetch_enable,
             input_1 => pc_offset_mux_output,
@@ -299,13 +311,20 @@ begin
 
     state_machine_unit : component state_machine
         port map (
-            clk                => clk,
+            clk                => clk_1mhz,
             reset              => reset,
             trig_state_machine => start_program,
             fetch_enable       => state_machine_fetch_enable,
             decode_enable      => state_machine_decode_enable,
             execute_enable     => state_machine_execute_enable,
             write_back_enable  => state_machine_write_back_enable
+        );
+
+    clk_div_unit : component clk_div
+        port map (
+            clk_in   => clk,
+            reset    => reset,
+            clk_1mhz => clk_1mhz
         );
 
 end architecture struct;
