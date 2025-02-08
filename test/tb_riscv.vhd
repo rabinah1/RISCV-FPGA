@@ -57,13 +57,14 @@ begin
 
         type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
 
-        alias    regs           is <<signal .tb_riscv.riscv_instance.register_file_unit.regs : reg_mem>>;
-        alias    prog_mem       is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : memory>>;
-        alias    data_mem       is <<signal .tb_riscv.riscv_instance.data_memory_unit.data_mem : memory>>;
-        file     stimulus_file  : text open read_mode is input_file;
-        variable linein         : line;
-        variable binary_command : std_logic_vector(31 downto 0);
-        variable address        : integer;
+        alias    regs                is <<signal .tb_riscv.riscv_instance.register_file_unit.regs : reg_mem>>;
+        alias    prog_mem            is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : memory>>;
+        alias    data_mem            is <<signal .tb_riscv.riscv_instance.data_memory_unit.data_mem : memory>>;
+        alias    prog_mem_address_in is <<signal .tb_riscv.riscv_instance.program_memory_unit.address_in : std_logic_vector(31 downto 0)>>;
+        file     stimulus_file       : text open read_mode is input_file;
+        variable linein              : line;
+        variable binary_command      : std_logic_vector(31 downto 0);
+        variable address             : integer;
 
     begin
 
@@ -97,9 +98,11 @@ begin
                 reset         <= '0';
                 wait for CLK_PERIOD * 2;
                 start_program <= '1';
-                wait for CLK_PERIOD * 20 * 10;
+                wait for CLK_PERIOD * 5;
+                wait until prog_mem_address_in = std_logic_vector(to_unsigned(0, 32));
                 start_program <= '0';
-                assert regs(10) = std_logic_vector(to_unsigned(3, 32));
+                check_equal(regs(10), std_logic_vector(to_unsigned(3, 32)),
+                            "Comparing result against reference.");
                 check_sig     <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
