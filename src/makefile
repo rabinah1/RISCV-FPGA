@@ -1,7 +1,8 @@
 SHELL = /bin/bash
+CC = /opt/riscv/bin/riscv32-unknown-linux-gnu-gcc
 
 .DELETE_ON_ERROR:
-.PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta full_clean
+.PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta full_clean sw
 
 STYLE_CHECK_FILES = \
 	mux_3_inputs.vhd \
@@ -22,7 +23,11 @@ FILES_TO_REMOVE = \
 	db \
 	incremental_db \
 	output_files \
-	c5_pin_model_dump.txt
+	c5_pin_model_dump.txt \
+	test
+
+sw:
+	@$(CC) -march=rv32imfd -c test.c -o test
 
 bitstream: synthesis fitting timing_analysis
 	@quartus_asm --write_settings_files=off ./riscv -c riscv

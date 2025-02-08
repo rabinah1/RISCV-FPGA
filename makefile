@@ -3,9 +3,12 @@ SRC_DIR = ./src
 TEST_DIR = ./test
 
 .DELETE_ON_ERROR:
-.PHONY: all bitstream synthesis fitting timing_analysis netlist sta check clean full_clean
+.PHONY: all bitstream synthesis fitting timing_analysis netlist sta check clean full_clean sw
 
-all: bitstream sta check
+all: sw bitstream sta check
+
+sw:
+	@$(MAKE) -C $(SRC_DIR) sw
 
 bitstream:
 	@$(MAKE) -C $(SRC_DIR) bitstream
