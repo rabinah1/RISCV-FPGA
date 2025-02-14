@@ -6110,7 +6110,7 @@
     "signal_400": {
       "align_left": "no",
       "align_paren": "yes",
-      "disable": false,
+      "disable": true,
       "fixable": true,
       "indentSize": 4,
       "phase": 5,

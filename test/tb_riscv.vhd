@@ -60,7 +60,8 @@ begin
         alias    regs                is <<signal .tb_riscv.riscv_instance.register_file_unit.regs : reg_mem>>;
         alias    prog_mem            is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : memory>>;
         alias    data_mem            is <<signal .tb_riscv.riscv_instance.data_memory_unit.data_mem : memory>>;
-        alias    prog_mem_address_in is <<signal .tb_riscv.riscv_instance.program_memory_unit.address_in : std_logic_vector(31 downto 0)>>;
+        alias    prog_mem_address_in is <<signal .tb_riscv.riscv_instance.program_memory_unit.
+            address_in : std_logic_vector(31 downto 0)>>;
         file     stimulus_file       : text open read_mode is input_file;
         variable linein              : line;
         variable binary_command      : std_logic_vector(31 downto 0);

@@ -18,7 +18,6 @@ architecture rtl of program_memory is
 
     type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
 
-    -- signal prog_mem : memory := (others => (others => '0'));
     signal prog_mem : memory := (0 => "11111110000000010000000100010011",
                                  1 => "00000000000100010010111000100011",
                                  2 => "00000000100000010010110000100011",
