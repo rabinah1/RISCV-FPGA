@@ -38,3 +38,19 @@ clean:
 
 full_clean: clean
 	rm -rf venv
+
+help:
+	@echo "Available targets for this makefile are:"
+	@echo ""
+	@echo "'all' (default): Build, run tests and run style check for HW design, and build test SW."
+	@echo "'sw': Build test SW."
+	@echo "'bitstream': Generate the bitstream."
+	@echo "'synthesis': Run synthesis."
+	@echo "'fitting': Run place-and-route."
+	@echo "'timing_analysis': Run timing analysis."
+	@echo "'netlist': Create and open the netlist."
+	@echo "'sta': Run style check."
+	@echo "'check': Run unit tests."
+	@echo "'clean': Remove all makefile-generated files."
+	@echo "'full_clean': Same as 'clean', but also remove venv-folder."
+	@echo "'help': Print this help text."
