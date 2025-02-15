@@ -19,7 +19,7 @@ architecture tb of tb_data_memory is
     signal   write_enable : std_logic := '0';
     signal   output       : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig    : natural := 0;
-    constant CLK_PERIOD   : time := 250 us;
+    constant CLK_PERIOD   : time := 20 ns;
 
     component data_memory is
         port (

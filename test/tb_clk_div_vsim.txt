@@ -1,0 +1,5 @@
+add wave \
+sim:/tb_clk_div/clk_in \
+sim:/tb_clk_div/reset \
+sim:/tb_clk_div/clk_1mhz
+run 100ms

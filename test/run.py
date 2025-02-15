@@ -52,6 +52,8 @@ if tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_state_machine_vsim.txt"])
     elif "tb_riscv" in tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_riscv_vsim.txt", f"-ginput_file={SCRIPT_DIR}/riscv_stimulus.txt"])
+    elif "tb_clk_div" in tb_name:
+        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_clk_div_vsim.txt"])
 
 VU.main()
 

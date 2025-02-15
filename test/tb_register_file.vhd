@@ -23,7 +23,7 @@ architecture tb of tb_register_file is
     signal   reg_out_1  : std_logic_vector(31 downto 0) := (others => '0');
     signal   reg_out_2  : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 250 us;
+    constant CLK_PERIOD : time := 20 ns;
 
     component register_file is
         port (

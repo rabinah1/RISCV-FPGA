@@ -19,7 +19,7 @@ architecture tb of tb_mux_2_inputs is
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   output     : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 250 us;
+    constant CLK_PERIOD : time := 20 ns;
 
     component mux_2_inputs is
         port (

@@ -19,7 +19,7 @@ architecture tb of tb_program_memory is
     signal   address_out   : std_logic_vector(31 downto 0);
     signal   instruction   : std_logic_vector(31 downto 0);
     signal   check_sig     : natural := 0;
-    constant CLK_PERIOD    : time := 250 us;
+    constant CLK_PERIOD    : time := 20 ns;
 
     type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
 

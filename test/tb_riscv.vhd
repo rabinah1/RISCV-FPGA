@@ -18,7 +18,7 @@ architecture tb of tb_riscv is
     signal   reset         : std_logic := '0';
     signal   start_program : std_logic := '0';
     signal   check_sig     : natural := 0;
-    constant CLK_PERIOD    : time := 250 us;
+    constant CLK_PERIOD    : time := 20 ns;
 
     component riscv is
         port (
