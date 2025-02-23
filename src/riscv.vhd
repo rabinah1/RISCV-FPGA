@@ -117,7 +117,6 @@ architecture struct of riscv is
 
     component mux_3_inputs is
         port (
-            clk     : in    std_logic;
             reset   : in    std_logic;
             control : in    std_logic_vector(1 downto 0);
             input_1 : in    std_logic_vector(31 downto 0);
@@ -137,6 +136,16 @@ architecture struct of riscv is
             output  : out   std_logic_vector(31 downto 0)
         );
     end component mux_2_inputs;
+
+    component writeback_mux is
+        port (
+            reset   : in    std_logic;
+            control : in    std_logic;
+            input_1 : in    std_logic_vector(31 downto 0);
+            input_2 : in    std_logic_vector(31 downto 0);
+            output  : out   std_logic_vector(31 downto 0)
+        );
+    end component writeback_mux;
 
     component data_memory is
         port (
@@ -250,7 +259,6 @@ begin
 
     alu_src_mux : component mux_3_inputs
         port map (
-            clk     => clk_1mhz,
             reset   => reset,
             control => instruction_decoder_alu_source,
             input_1 => instruction_decoder_immediate,
@@ -259,9 +267,8 @@ begin
             output  => alu_src_mux_output
         );
 
-    writeback_mux : component mux_2_inputs
+    writeback_mux_unit : component writeback_mux
         port map (
-            clk     => clk_1mhz,
             reset   => reset,
             control => instruction_decoder_load,
             input_1 => alu_result,

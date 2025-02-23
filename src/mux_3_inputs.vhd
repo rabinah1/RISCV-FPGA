@@ -3,7 +3,6 @@ use ieee.std_logic_1164.all;
 
 entity mux_3_inputs is
     port (
-        clk     : in    std_logic;
         reset   : in    std_logic;
         control : in    std_logic_vector(1 downto 0);
         input_1 : in    std_logic_vector(31 downto 0);

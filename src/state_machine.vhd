@@ -35,9 +35,6 @@ begin
     end process state_change;
 
     state_machine : process (all) is
-
-        variable wait_cycle : std_logic;
-
     begin
 
         if (reset = '1') then
@@ -46,7 +43,6 @@ begin
             execute_enable    <= '0';
             write_back_enable <= '0';
             next_state        <= nop;
-            wait_cycle        := '1';
         elsif (rising_edge(clk)) then
 
             case state is
@@ -60,13 +56,7 @@ begin
                     if (trig_state_machine = '0') then
                         next_state <= nop;
                     else
-                        if (wait_cycle = '1') then
-                            next_state <= nop;
-                            wait_cycle := '0';
-                        else
-                            next_state <= fetch;
-                            wait_cycle := '1';
-                        end if;
+                        next_state <= fetch;
                     end if;
 
                 when fetch =>
@@ -75,13 +65,7 @@ begin
                     decode_enable     <= '0';
                     execute_enable    <= '0';
                     write_back_enable <= '0';
-                    if (wait_cycle = '1') then
-                        next_state <= fetch;
-                        wait_cycle := '0';
-                    else
-                        next_state <= decode;
-                        wait_cycle := '1';
-                    end if;
+                    next_state        <= decode;
 
                 when decode =>
 
@@ -89,13 +73,7 @@ begin
                     decode_enable     <= '1';
                     execute_enable    <= '0';
                     write_back_enable <= '0';
-                    if (wait_cycle = '1') then
-                        next_state <= decode;
-                        wait_cycle := '0';
-                    else
-                        next_state <= execute;
-                        wait_cycle := '1';
-                    end if;
+                    next_state        <= execute;
 
                 when execute =>
 
@@ -103,13 +81,7 @@ begin
                     decode_enable     <= '0';
                     execute_enable    <= '1';
                     write_back_enable <= '0';
-                    if (wait_cycle = '1') then
-                        next_state <= execute;
-                        wait_cycle := '0';
-                    else
-                        next_state <= write_back;
-                        wait_cycle := '1';
-                    end if;
+                    next_state        <= write_back;
 
                 when write_back =>
 
@@ -117,13 +89,7 @@ begin
                     decode_enable     <= '0';
                     execute_enable    <= '0';
                     write_back_enable <= '1';
-                    if (wait_cycle = '1') then
-                        next_state <= write_back;
-                        wait_cycle := '0';
-                    else
-                        next_state <= fetch;
-                        wait_cycle := '1';
-                    end if;
+                    next_state        <= fetch;
 
             end case;
 

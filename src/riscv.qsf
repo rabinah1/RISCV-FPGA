@@ -65,6 +65,7 @@ set_global_assignment -name VHDL_FILE opcode_pkg.vhd
 set_global_assignment -name VHDL_FILE instruction_decoder.vhd
 set_global_assignment -name VHDL_FILE register_file.vhd
 set_global_assignment -name VHDL_FILE mux_2_inputs.vhd
+set_global_assignment -name VHDL_FILE writeback_mux.vhd
 set_global_assignment -name VHDL_FILE mux_3_inputs.vhd
 set_global_assignment -name VHDL_FILE program_memory.vhd
 set_global_assignment -name VHDL_FILE data_memory.vhd

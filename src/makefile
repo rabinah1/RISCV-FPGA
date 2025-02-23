@@ -7,6 +7,7 @@ CC = /opt/riscv/bin/riscv32-unknown-linux-gnu-gcc
 STYLE_CHECK_FILES = \
 	mux_3_inputs.vhd \
 	mux_2_inputs.vhd \
+	writeback_mux.vhd \
 	alu.vhd \
 	data_memory.vhd \
 	instruction_decoder.vhd \

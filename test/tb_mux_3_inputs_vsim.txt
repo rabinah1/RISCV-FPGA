@@ -1,5 +1,4 @@
 add wave \
-sim:/tb_mux_3_inputs/clk \
 sim:/tb_mux_3_inputs/reset \
 sim:/tb_mux_3_inputs/control \
 sim:/tb_mux_3_inputs/input_1 \
