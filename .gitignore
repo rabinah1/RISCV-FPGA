@@ -6,3 +6,5 @@ incremental_db/
 vunit_out/
 venv/
 src/test
+src/test.s
+src/test.o
