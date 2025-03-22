@@ -1,2 +1,3 @@
 vsg==3.12.0
 vunit_hdl==4.7.0
+pyserial==3.5

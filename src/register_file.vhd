@@ -33,13 +33,13 @@ begin
 
         reg_out_1 <= regs(to_integer(unsigned(rs1)));
         reg_out_2 <= regs(to_integer(unsigned(rs2)));
-        cpu_reg   <= regs(10);
 
         if (reset = '1') then
             reg_out_1 <= (others => '0');
             reg_out_2 <= (others => '0');
             cpu_reg   <= (others => '0');
         elsif (falling_edge(clk)) then
+            cpu_reg <= regs(10);
             if (write = '1' and rd /= "00000" and enable = '1') then
                 regs(to_integer(unsigned(rd))) <= write_data;
             end if;

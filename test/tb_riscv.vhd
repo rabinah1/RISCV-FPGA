@@ -17,6 +17,8 @@ architecture tb of tb_riscv is
     signal   clk           : std_logic := '0';
     signal   reset         : std_logic := '0';
     signal   start_program : std_logic := '0';
+    signal   data_in       : std_logic := '0';
+    signal   cpu_reg       : std_logic_vector(31 downto 0);
     signal   check_sig     : natural := 0;
     constant CLK_PERIOD    : time := 20 ns;
 
@@ -24,7 +26,9 @@ architecture tb of tb_riscv is
         port (
             clk           : in    std_logic;
             reset         : in    std_logic;
-            start_program : in    std_logic
+            start_program : in    std_logic;
+            data_in       : in    std_logic;
+            cpu_reg       : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -34,7 +38,9 @@ begin
         port map (
             clk           => clk,
             reset         => reset,
-            start_program => start_program
+            start_program => start_program,
+            data_in       => data_in,
+            cpu_reg       => cpu_reg
         );
 
     clk_process : process is

@@ -20,7 +20,8 @@ STYLE_CHECK_FILES = \
 	opcode_pkg.vhd \
 	pc_adder.vhd \
 	state_machine.vhd \
-	states_package.vhd
+	states_package.vhd \
+	uart.vhd
 
 FILES_TO_REMOVE = \
 	db \

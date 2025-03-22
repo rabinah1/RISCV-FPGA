@@ -7,6 +7,7 @@ entity riscv is
         clk           : in    std_logic;
         reset         : in    std_logic;
         start_program : in    std_logic; -- Connect this to push button
+        data_in       : in    std_logic;
         cpu_reg       : out   std_logic_vector(31 downto 0)
     );
 end entity riscv;
@@ -42,7 +43,10 @@ architecture struct of riscv is
     signal state_machine_decode_enable       : std_logic;
     signal state_machine_execute_enable      : std_logic;
     signal state_machine_write_back_enable   : std_logic;
-    signal clk_1mhz                          : std_logic;
+    signal clk_500khz                        : std_logic;
+    signal uart_write_trig                   : std_logic;
+    signal uart_data_to_imem                 : std_logic_vector(31 downto 0);
+    signal uart_address                      : std_logic_vector(31 downto 0);
 
     component alu is
         port (
@@ -67,12 +71,15 @@ architecture struct of riscv is
 
     component program_memory is
         port (
-            clk           : in    std_logic;
-            reset         : in    std_logic;
-            decode_enable : in    std_logic;
-            address_in    : in    std_logic_vector(31 downto 0);
-            address_out   : out   std_logic_vector(31 downto 0);
-            instruction   : out   std_logic_vector(31 downto 0)
+            clk             : in    std_logic;
+            reset           : in    std_logic;
+            decode_enable   : in    std_logic;
+            write_trig      : in    std_logic;
+            byte_from_uart  : in    std_logic_vector(31 downto 0);
+            uart_address_in : in    std_logic_vector(31 downto 0);
+            address_in      : in    std_logic_vector(31 downto 0);
+            address_out     : out   std_logic_vector(31 downto 0);
+            instruction     : out   std_logic_vector(31 downto 0)
         );
     end component program_memory;
 
@@ -183,17 +190,28 @@ architecture struct of riscv is
 
     component clk_div is
         port (
-            clk_in   : in    std_logic;
-            reset    : in    std_logic;
-            clk_1mhz : out   std_logic
+            clk_in     : in    std_logic;
+            reset      : in    std_logic;
+            clk_500khz : out   std_logic
         );
     end component clk_div;
+
+    component uart is
+        port (
+            clk          : in    std_logic;
+            reset        : in    std_logic;
+            data_in      : in    std_logic;
+            write_trig   : out   std_logic;
+            data_to_imem : out   std_logic_vector(31 downto 0);
+            address      : out   std_logic_vector(31 downto 0)
+        );
+    end component uart;
 
 begin
 
     alu_unit : component alu
         port map (
-            clk      => clk_1mhz,
+            clk      => clk_500khz,
             reset    => reset,
             enable   => state_machine_execute_enable,
             input_1  => register_file_reg_out_1,
@@ -204,7 +222,7 @@ begin
 
     program_counter_unit : component program_counter
         port map (
-            clk         => clk_1mhz,
+            clk         => clk_500khz,
             reset       => reset,
             address_in  => pc_adder_sum,
             address_out => program_counter_address_out
@@ -212,17 +230,20 @@ begin
 
     program_memory_unit : component program_memory
         port map (
-            clk           => clk_1mhz,
-            reset         => reset,
-            decode_enable => state_machine_decode_enable,
-            address_in    => program_counter_address_out,
-            address_out   => program_memory_address_out,
-            instruction   => program_memory_instruction
+            clk             => clk_500khz,
+            reset           => reset,
+            decode_enable   => state_machine_decode_enable,
+            write_trig      => uart_write_trig,
+            byte_from_uart  => uart_data_to_imem,
+            uart_address_in => uart_address,
+            address_in      => program_counter_address_out,
+            address_out     => program_memory_address_out,
+            instruction     => program_memory_instruction
         );
 
     register_file_unit : component register_file
         port map (
-            clk        => clk_1mhz,
+            clk        => clk_500khz,
             reset      => reset,
             enable     => state_machine_write_back_enable,
             rs1        => instruction_decoder_rs1,
@@ -237,7 +258,7 @@ begin
 
     instruction_decoder_unit : component instruction_decoder
         port map (
-            clk           => clk_1mhz,
+            clk           => clk_500khz,
             reset         => reset,
             enable        => state_machine_decode_enable,
             instruction   => program_memory_instruction,
@@ -278,7 +299,7 @@ begin
 
     data_memory_unit : component data_memory
         port map (
-            clk          => clk_1mhz,
+            clk          => clk_500khz,
             reset        => reset,
             address      => alu_result,
             write_data   => register_file_reg_out_2,
@@ -288,7 +309,7 @@ begin
 
     pc_offset_mux : component mux_2_inputs
         port map (
-            clk     => clk_1mhz,
+            clk     => clk_500khz,
             reset   => reset,
             control => (alu_result(0) and instruction_decoder_branch) or instruction_decoder_jump,
             input_1 => std_logic_vector(to_unsigned(1, 32)),
@@ -298,7 +319,7 @@ begin
 
     pc_input_mux : component mux_2_inputs
         port map (
-            clk     => clk_1mhz,
+            clk     => clk_500khz,
             reset   => reset,
             control => instruction_decoder_jalr_flag,
             input_1 => program_counter_address_out,
@@ -308,7 +329,7 @@ begin
 
     pc_adder_unit : component pc_adder
         port map (
-            clk     => clk_1mhz,
+            clk     => clk_500khz,
             reset   => reset,
             enable  => state_machine_fetch_enable,
             input_1 => pc_offset_mux_output,
@@ -318,7 +339,7 @@ begin
 
     state_machine_unit : component state_machine
         port map (
-            clk                => clk_1mhz,
+            clk                => clk_500khz,
             reset              => reset,
             trig_state_machine => start_program,
             fetch_enable       => state_machine_fetch_enable,
@@ -329,9 +350,19 @@ begin
 
     clk_div_unit : component clk_div
         port map (
-            clk_in   => clk,
-            reset    => reset,
-            clk_1mhz => clk_1mhz
+            clk_in     => clk,
+            reset      => reset,
+            clk_500khz => clk_500khz
+        );
+
+    uart_unit : component uart
+        port map (
+            clk          => clk_500khz,
+            reset        => reset,
+            data_in      => data_in,
+            write_trig   => uart_write_trig,
+            data_to_imem => uart_data_to_imem,
+            address      => uart_address
         );
 
 end architecture struct;
