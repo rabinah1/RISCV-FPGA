@@ -29,6 +29,9 @@ sta:
 	@$(MAKE) -C $(SRC_DIR) sta
 	@$(MAKE) -C $(TEST_DIR) sta
 
+load:
+	@$(MAKE) -C $(SRC_DIR) load
+
 check:
 	@$(MAKE) -C $(TEST_DIR) check
 
@@ -50,6 +53,7 @@ help:
 	@echo "'timing_analysis': Run timing analysis."
 	@echo "'netlist': Create and open the netlist."
 	@echo "'sta': Run style check."
+	@echo "'load': Load the bitfile to the FPGA."
 	@echo "'check': Run unit tests."
 	@echo "'clean': Remove all makefile-generated files."
 	@echo "'full_clean': Same as 'clean', but also remove venv-folder."

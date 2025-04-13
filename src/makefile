@@ -2,9 +2,10 @@ SHELL = /bin/bash
 CC = /opt/riscv/bin/riscv32-unknown-linux-gnu-gcc
 LD = /opt/riscv/bin/riscv32-unknown-linux-gnu-ld
 OC = /opt/riscv/bin/riscv32-unknown-linux-gnu-objcopy
+BITFILE = ./output_files/riscv.sof
 
 .DELETE_ON_ERROR:
-.PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta full_clean sw
+.PHONY: bitstream synthesis fitting timing_analysis netlist clean check sta full_clean sw load
 
 STYLE_CHECK_FILES = \
 	mux_3_inputs.vhd \
@@ -58,6 +59,13 @@ sta:
 	@for file in $(STYLE_CHECK_FILES); do \
 		vsg -f $${file} -c ../vsg_config.json; \
 	done
+
+load:
+	@if [[ ! -f $(BITFILE) ]]; then \
+		echo "Error: the bitfile $(BITFILE) was not found."; \
+	else \
+		quartus_pgm -m jtag -o "p;$(BITFILE)@2"; \
+	fi
 
 clean:
 	@for file in $(FILES_TO_REMOVE); do \
