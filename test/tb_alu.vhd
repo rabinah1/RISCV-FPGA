@@ -99,6 +99,22 @@ begin
                             "Comparing result against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_add_instruction_negative") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_add_instruction_negative");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                enable    <= '1';
+                input_1   <= std_logic_vector(to_signed(24, 32));
+                input_2   <= std_logic_vector(to_signed(-50, 32));
+                operator  <= "01100110000";
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(result, std_logic_vector(to_signed(-26, 32)),
+                            "Comparing result against reference.");
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
             elsif run("test_addi_instruction") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_addi_instruction");

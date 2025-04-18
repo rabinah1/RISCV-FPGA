@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.std_logic_unsigned.all;
 
 entity pc_adder is
     port (
@@ -25,7 +24,7 @@ begin
             sum <= (others => '0');
         elsif (rising_edge(clk)) then
             if (enable = '1') then
-                sum <= input_1 + input_2;
+                sum <= std_logic_vector(unsigned(input_1) + unsigned(input_2));
             end if;
         end if;
 

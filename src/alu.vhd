@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.std_logic_unsigned.all;
 use work.opcode_pkg.all;
 
 entity alu is
@@ -32,15 +31,15 @@ begin
 
                     when ADD =>
 
-                        result <= input_1 + input_2;
+                        result <= std_logic_vector(signed(input_1) + signed(input_2));
 
                     when ADDI =>
 
-                        result <= input_1 + input_2;
+                        result <= std_logic_vector(signed(input_1) + signed(input_2));
 
                     when MY_SUB =>
 
-                        result <= input_1 - input_2;
+                        result <= std_logic_vector(signed(input_1) - signed(input_2));
 
                     when MY_SLL =>
 
@@ -117,12 +116,12 @@ begin
                     when LW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= input_1 + input_2;
+                        result <= std_logic_vector(signed(input_1) + signed(input_2));
 
                     when SW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= input_1 + input_2;
+                        result <= std_logic_vector(signed(input_1) + signed(input_2));
 
                     when BEQ =>
 
@@ -174,11 +173,11 @@ begin
 
                     when JAL =>
 
-                        result <= input_2 + std_logic_vector(to_unsigned(1, 32));
+                        result <= std_logic_vector(unsigned(input_2) + to_unsigned(1, 32));
 
                     when JALR =>
 
-                        result <= input_2 + std_logic_vector(to_unsigned(1, 32));
+                        result <= std_logic_vector(unsigned(input_2) + to_unsigned(1, 32));
 
                     when LUI =>
 
