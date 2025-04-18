@@ -19,6 +19,7 @@ STYLE_CHECK_FILES = \
 	tb_writeback_mux.vhd
 
 sta:
+	ruff check
 	@for file in $(STYLE_CHECK_FILES); do \
 		vsg -f $${file} -c ../vsg_config.json; \
 	done

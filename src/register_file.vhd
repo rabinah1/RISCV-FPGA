@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.std_logic_unsigned.all;
 
 entity register_file is
     port (
@@ -23,7 +22,7 @@ architecture rtl of register_file is
 
     type memory is array(31 downto 0) of std_logic_vector(31 downto 0);
 
-    signal regs : memory := (2 => std_logic_vector(to_unsigned(64, 32)),
+    signal regs : memory := (2 => std_logic_vector(to_unsigned(512, 32)),
                               others => (others => '0'));
 
 begin

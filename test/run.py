@@ -29,34 +29,50 @@ VU.set_sim_option("modelsim.vsim_flags", [f"-ginput_file={SCRIPT_DIR}/riscv_stim
 
 if tb_name:
     if "tb_program_counter" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_program_counter_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_program_counter_vsim.txt"])
     elif "tb_program_memory" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_program_memory_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_program_memory_vsim.txt"])
     elif "tb_instruction_decoder" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_instruction_decoder_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_instruction_decoder_vsim.txt"])
     elif "tb_mux_3_inputs" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_mux_3_inputs_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_mux_3_inputs_vsim.txt"])
     elif "tb_writeback_mux" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_writeback_mux_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_writeback_mux_vsim.txt"])
     elif "tb_pc_offset_mux" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_pc_offset_mux_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_pc_offset_mux_vsim.txt"])
     elif "tb_register_file" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_register_file_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_register_file_vsim.txt"])
     elif "tb_data_memory" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_data_memory_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_data_memory_vsim.txt"])
     elif "tb_alu" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_alu_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_alu_vsim.txt"])
     elif "tb_pc_adder" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_pc_adder_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_pc_adder_vsim.txt"])
     elif "tb_state_machine" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_state_machine_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_state_machine_vsim.txt"])
     elif "tb_riscv" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_riscv_vsim.txt", f"-ginput_file={SCRIPT_DIR}/riscv_stimulus.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_riscv_vsim.txt",
+                           f"-ginput_file={SCRIPT_DIR}/riscv_stimulus.txt"])
     elif "tb_clk_div" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_clk_div_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_clk_div_vsim.txt"])
     elif "tb_writeback_mux" in tb_name:
-        VU.set_sim_option("modelsim.vsim_flags.gui", ["-lib design_lib", f"-do {test_dir}/tb_writeback_mux_vsim.txt"])
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_writeback_mux_vsim.txt"])
 
 VU.main()
 
-# Example command: python3 run.py tb_lib.tb_program_memory.test_output_instruction_is_read_correctly_with_specific_address --gui
+# Example command: python3 run.py tb_lib.tb_program_memory.
+# test_output_instruction_is_read_correctly_with_specific_address --gui

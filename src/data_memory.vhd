@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.std_logic_unsigned.all;
 
 entity data_memory is
     port (
@@ -25,13 +24,13 @@ begin
     data_memory : process (all) is
     begin
 
-        output <= data_mem(to_integer(unsigned(address)));
+        output <= data_mem(to_integer(unsigned(address(9 downto 0))));
 
         if (reset = '1') then
             output <= (others => '0');
         elsif (rising_edge(clk)) then
             if (write_enable = '1') then
-                data_mem(to_integer(unsigned(address))) <= write_data;
+                data_mem(to_integer(unsigned(address(9 downto 0)))) <= write_data;
             end if;
         end if;
 

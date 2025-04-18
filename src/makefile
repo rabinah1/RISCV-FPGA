@@ -56,6 +56,7 @@ netlist: synthesis
 	@qnui ./riscv
 
 sta:
+	ruff check
 	@for file in $(STYLE_CHECK_FILES); do \
 		vsg -f $${file} -c ../vsg_config.json; \
 	done

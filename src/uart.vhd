@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.std_logic_unsigned.all;
 
 entity uart is
     port (
@@ -32,7 +31,7 @@ begin
 
     uart : process (all) is
 
-        variable bit_idx : integer;
+        variable bit_idx : integer := 0;
 
     begin
 
@@ -68,7 +67,7 @@ begin
                 write_trig         <= '0';
                 first_bit          <= '1';
                 if (increment_address = '1') then
-                    address           <= address + std_logic_vector(to_unsigned(1, 32));
+                    address           <= std_logic_vector(unsigned(address) + to_unsigned(1, 32));
                     increment_address <= '0';
                 end if;
             elsif (start_bit_detected = '1' and bit_idx < PACKET_SIZE) then
