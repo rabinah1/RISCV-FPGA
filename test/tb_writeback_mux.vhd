@@ -18,7 +18,7 @@ architecture tb of tb_writeback_mux is
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   output     : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 20 ns;
+    constant CLK_PERIOD : time := 2 us;
 
     component writeback_mux is
         port (

@@ -20,7 +20,7 @@ architecture tb of tb_state_machine is
     signal   execute_enable     : std_logic := '0';
     signal   write_back_enable  : std_logic := '0';
     signal   check_sig          : natural := 0;
-    constant CLK_PERIOD         : time := 20 ns;
+    constant CLK_PERIOD         : time := 2 us;
 
     component state_machine is
         port (

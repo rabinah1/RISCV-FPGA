@@ -19,7 +19,7 @@ architecture tb of tb_pc_adder is
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   sum        : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 20 ns;
+    constant CLK_PERIOD : time := 2 us;
 
     component pc_adder is
         port (

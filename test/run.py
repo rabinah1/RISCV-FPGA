@@ -71,6 +71,9 @@ if tb_name:
     elif "tb_writeback_mux" in tb_name:
         VU.set_sim_option("modelsim.vsim_flags.gui",
                           ["-lib design_lib", f"-do {test_dir}/tb_writeback_mux_vsim.txt"])
+    elif "tb_uart" in tb_name:
+        VU.set_sim_option("modelsim.vsim_flags.gui",
+                          ["-lib design_lib", f"-do {test_dir}/tb_uart_vsim.txt"])
 
 VU.main()
 

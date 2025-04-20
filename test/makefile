@@ -16,7 +16,8 @@ STYLE_CHECK_FILES = \
 	tb_state_machine.vhd \
 	tb_riscv.vhd \
 	tb_clk_div.vhd \
-	tb_writeback_mux.vhd
+	tb_writeback_mux.vhd \
+	tb_uart.vhd
 
 sta:
 	ruff check

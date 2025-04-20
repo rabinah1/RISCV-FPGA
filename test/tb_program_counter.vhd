@@ -17,7 +17,7 @@ architecture tb of tb_program_counter is
     signal   address_in  : std_logic_vector(31 downto 0) := (others => '0');
     signal   address_out : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig   : natural := 0;
-    constant CLK_PERIOD  : time := 20 ns;
+    constant CLK_PERIOD  : time := 2 us;
 
     component program_counter is
         port (

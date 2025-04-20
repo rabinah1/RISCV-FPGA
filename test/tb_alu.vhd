@@ -20,7 +20,7 @@ architecture tb of tb_alu is
     signal   operator   : std_logic_vector(10 downto 0) := (others => '0');
     signal   result     : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 20 ns;
+    constant CLK_PERIOD : time := 2 us;
 
     component alu is
         port (
