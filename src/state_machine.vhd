@@ -21,10 +21,10 @@ architecture rtl of state_machine is
 
 begin
 
-    state_change : process (clk, reset) is
+    state_change : process (clk, reset, trig_state_machine) is
     begin
 
-        if (reset = '1') then
+        if (reset = '1' or trig_state_machine = '0') then
             state <= nop;
         elsif (falling_edge(clk)) then
             state <= next_state;

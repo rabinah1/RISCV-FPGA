@@ -12,23 +12,25 @@ end entity tb_uart;
 
 architecture tb of tb_uart is
 
-    signal   clk          : std_logic := '0';
-    signal   reset        : std_logic := '0';
-    signal   data_in      : std_logic := '0';
-    signal   write_trig   : std_logic := '0';
-    signal   data_to_imem : std_logic_vector(31 downto 0) := (others => '0');
-    signal   address      : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig    : natural := 0;
-    constant CLK_PERIOD   : time := 2 us;
+    signal   clk           : std_logic := '0';
+    signal   reset         : std_logic := '0';
+    signal   data_in       : std_logic := '0';
+    signal   start_program : std_logic := '0';
+    signal   write_trig    : std_logic := '0';
+    signal   data_to_imem  : std_logic_vector(31 downto 0) := (others => '0');
+    signal   address       : std_logic_vector(31 downto 0) := (others => '0');
+    signal   check_sig     : natural := 0;
+    constant CLK_PERIOD    : time := 2 us;
 
     component uart is
         port (
-            clk          : in    std_logic;
-            reset        : in    std_logic;
-            data_in      : in    std_logic;
-            write_trig   : out   std_logic;
-            data_to_imem : out   std_logic_vector(31 downto 0);
-            address      : out   std_logic_vector(31 downto 0)
+            clk           : in    std_logic;
+            reset         : in    std_logic;
+            data_in       : in    std_logic;
+            start_program : in    std_logic;
+            write_trig    : out   std_logic;
+            data_to_imem  : out   std_logic_vector(31 downto 0);
+            address       : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -36,12 +38,13 @@ begin
 
     uart_instance : component uart
         port map (
-            clk          => clk,
-            reset        => reset,
-            data_in      => data_in,
-            write_trig   => write_trig,
-            data_to_imem => data_to_imem,
-            address      => address
+            clk           => clk,
+            reset         => reset,
+            data_in       => data_in,
+            start_program => start_program,
+            write_trig    => write_trig,
+            data_to_imem  => data_to_imem,
+            address       => address
         );
 
     clk_process : process is
@@ -61,10 +64,10 @@ begin
     test_runner : process is
 
         alias is_idle            is <<signal .tb_uart.uart_instance.is_idle: std_logic>>;
-        alias imem_idx           is <<signal .tb_uart.uart_instance.imem_idx: integer>>;
+        alias imem_idx           is <<signal .tb_uart.uart_instance.imem_idx: integer range 0 to 4>>;
         alias increment_address  is <<signal .tb_uart.uart_instance.increment_address: std_logic>>;
         alias start_bit_detected is <<signal .tb_uart.uart_instance.start_bit_detected: std_logic>>;
-        alias cycle              is <<signal .tb_uart.uart_instance.cycle: integer>>;
+        alias cycle              is <<signal .tb_uart.uart_instance.cycle: integer range 0 to 78>>;
         alias first_bit          is <<signal .tb_uart.uart_instance.first_bit: std_logic>>;
         alias packet             is <<signal .tb_uart.uart_instance.packet: std_logic_vector(7 downto 0)>>;
 

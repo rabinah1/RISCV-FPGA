@@ -6,7 +6,7 @@ entity riscv is
     port (
         clk           : in    std_logic;
         reset         : in    std_logic;
-        start_program : in    std_logic; -- Connect this to push button
+        start_program : in    std_logic;
         data_in       : in    std_logic;
         cpu_reg       : out   std_logic_vector(31 downto 0)
     );
@@ -62,10 +62,11 @@ architecture struct of riscv is
 
     component program_counter is
         port (
-            clk         : in    std_logic;
-            reset       : in    std_logic;
-            address_in  : in    std_logic_vector(31 downto 0);
-            address_out : out   std_logic_vector(31 downto 0)
+            clk           : in    std_logic;
+            reset         : in    std_logic;
+            start_program : in    std_logic;
+            address_in    : in    std_logic_vector(31 downto 0);
+            address_out   : out   std_logic_vector(31 downto 0)
         );
     end component program_counter;
 
@@ -167,12 +168,13 @@ architecture struct of riscv is
 
     component pc_adder is
         port (
-            clk     : in    std_logic;
-            reset   : in    std_logic;
-            enable  : in    std_logic;
-            input_1 : in    std_logic_vector(31 downto 0);
-            input_2 : in    std_logic_vector(31 downto 0);
-            sum     : out   std_logic_vector(31 downto 0)
+            clk           : in    std_logic;
+            reset         : in    std_logic;
+            enable        : in    std_logic;
+            start_program : in    std_logic;
+            input_1       : in    std_logic_vector(31 downto 0);
+            input_2       : in    std_logic_vector(31 downto 0);
+            sum           : out   std_logic_vector(31 downto 0)
         );
     end component pc_adder;
 
@@ -198,12 +200,13 @@ architecture struct of riscv is
 
     component uart is
         port (
-            clk          : in    std_logic;
-            reset        : in    std_logic;
-            data_in      : in    std_logic;
-            write_trig   : out   std_logic;
-            data_to_imem : out   std_logic_vector(31 downto 0);
-            address      : out   std_logic_vector(31 downto 0)
+            clk           : in    std_logic;
+            reset         : in    std_logic;
+            data_in       : in    std_logic;
+            start_program : in    std_logic;
+            write_trig    : out   std_logic;
+            data_to_imem  : out   std_logic_vector(31 downto 0);
+            address       : out   std_logic_vector(31 downto 0)
         );
     end component uart;
 
@@ -222,10 +225,11 @@ begin
 
     program_counter_unit : component program_counter
         port map (
-            clk         => clk_500khz,
-            reset       => reset,
-            address_in  => pc_adder_sum,
-            address_out => program_counter_address_out
+            clk           => clk_500khz,
+            reset         => reset,
+            start_program => start_program,
+            address_in    => pc_adder_sum,
+            address_out   => program_counter_address_out
         );
 
     program_memory_unit : component program_memory
@@ -329,12 +333,13 @@ begin
 
     pc_adder_unit : component pc_adder
         port map (
-            clk     => clk_500khz,
-            reset   => reset,
-            enable  => state_machine_fetch_enable,
-            input_1 => pc_offset_mux_output,
-            input_2 => pc_input_mux_output,
-            sum     => pc_adder_sum
+            clk           => clk_500khz,
+            reset         => reset,
+            enable        => state_machine_fetch_enable,
+            start_program => start_program,
+            input_1       => pc_offset_mux_output,
+            input_2       => pc_input_mux_output,
+            sum           => pc_adder_sum
         );
 
     state_machine_unit : component state_machine
@@ -357,12 +362,13 @@ begin
 
     uart_unit : component uart
         port map (
-            clk          => clk_500khz,
-            reset        => reset,
-            data_in      => data_in,
-            write_trig   => uart_write_trig,
-            data_to_imem => uart_data_to_imem,
-            address      => uart_address
+            clk           => clk_500khz,
+            reset         => reset,
+            data_in       => data_in,
+            start_program => start_program,
+            write_trig    => uart_write_trig,
+            data_to_imem  => uart_data_to_imem,
+            address       => uart_address
         );
 
 end architecture struct;

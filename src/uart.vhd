@@ -4,12 +4,13 @@ use ieee.numeric_std.all;
 
 entity uart is
     port (
-        clk          : in    std_logic;
-        reset        : in    std_logic;
-        data_in      : in    std_logic;
-        write_trig   : out   std_logic;
-        data_to_imem : out   std_logic_vector(31 downto 0);
-        address      : out   std_logic_vector(31 downto 0)
+        clk           : in    std_logic;
+        reset         : in    std_logic;
+        data_in       : in    std_logic;
+        start_program : in    std_logic;
+        write_trig    : out   std_logic;
+        data_to_imem  : out   std_logic_vector(31 downto 0);
+        address       : out   std_logic_vector(31 downto 0)
     );
 end entity uart;
 
@@ -22,8 +23,8 @@ architecture rtl of uart is
     signal   start_bit_detected      : std_logic;
     signal   is_idle                 : std_logic;
     signal   packet                  : std_logic_vector(7 downto 0);
-    signal   cycle                   : integer := 0;
-    signal   imem_idx                : integer := 0;
+    signal   cycle                   : integer range 0 to 78 := 0;
+    signal   imem_idx                : integer range 0 to 4 := 0;
     signal   increment_address       : std_logic;
     signal   first_bit               : std_logic;
 
@@ -31,11 +32,11 @@ begin
 
     uart : process (all) is
 
-        variable bit_idx : integer := 0;
+        variable bit_idx : integer range 0 to 8 := 0;
 
     begin
 
-        if (reset = '1') then
+        if (reset = '1' or start_program = '1') then
             data_to_imem       <= (others => '0');
             address            <= (others => '0');
             write_trig         <= '0';

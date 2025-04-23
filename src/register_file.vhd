@@ -37,6 +37,8 @@ begin
             reg_out_1 <= (others => '0');
             reg_out_2 <= (others => '0');
             cpu_reg   <= (others => '0');
+            regs      <= (2 => std_logic_vector(to_unsigned(512, 32)),
+                          others => (others => '0'));
         elsif (falling_edge(clk)) then
             cpu_reg <= regs(10);
             if (write = '1' and rd /= "00000" and enable = '1') then
