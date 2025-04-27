@@ -34,8 +34,8 @@ FILES_TO_REMOVE = \
 	test.o
 
 sw:
-	@$(CC) -march=rv32imfd -S test.c
-	@$(CC) -march=rv32imfd -c test.c -o test.o
+	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -S test.c
+	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -c test.c -o test.o
 	@$(LD) -T ./custom.ld -o test test.o
 	@$(OC) -O binary test test
 
