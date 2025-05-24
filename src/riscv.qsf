@@ -86,7 +86,6 @@ set_location_assignment PIN_AE26 -to cpu_reg[5]
 set_location_assignment PIN_Y16 -to cpu_reg[6]
 set_location_assignment PIN_AA23 -to cpu_reg[7]
 set_location_assignment PIN_Y24 -to reset
-set_location_assignment PIN_W24 -to start_program
 set_location_assignment PIN_V11 -to clk
 set_location_assignment PIN_V12 -to data_in
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to data_in

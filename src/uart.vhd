@@ -4,13 +4,14 @@ use ieee.numeric_std.all;
 
 entity uart is
     port (
-        clk           : in    std_logic;
-        reset         : in    std_logic;
-        data_in       : in    std_logic;
-        start_program : in    std_logic;
-        write_trig    : out   std_logic;
-        data_to_imem  : out   std_logic_vector(31 downto 0);
-        address       : out   std_logic_vector(31 downto 0)
+        clk          : in    std_logic;
+        reset        : in    std_logic;
+        data_in      : in    std_logic;
+        halt         : out   std_logic;
+        write_trig   : out   std_logic;
+        write_done   : out   std_logic;
+        data_to_imem : out   std_logic_vector(31 downto 0);
+        address      : out   std_logic_vector(31 downto 0)
     );
 end entity uart;
 
@@ -27,19 +28,21 @@ architecture rtl of uart is
     signal   imem_idx                : integer range 0 to 4 := 0;
     signal   increment_address       : std_logic;
     signal   first_bit               : std_logic;
+    signal   halt_counter            : integer := 0;
 
 begin
 
-    uart : process (all) is
+    rx : process (all) is
 
         variable bit_idx : integer range 0 to 8 := 0;
 
     begin
 
-        if (reset = '1' or start_program = '1') then
+        if (reset = '1') then
             data_to_imem       <= (others => '0');
             address            <= (others => '0');
             write_trig         <= '0';
+            halt               <= '0';
             start_bit_detected <= '0';
             is_idle            <= '1';
             packet             <= (others => '0');
@@ -48,6 +51,8 @@ begin
             imem_idx           <= 0;
             increment_address  <= '0';
             first_bit          <= '1';
+            halt_counter       <= 0;
+            write_done         <= '0';
         elsif (rising_edge(clk)) then
             if (is_idle = '1' and data_in = '1') then  -- idling
                 start_bit_detected <= '0';
@@ -60,6 +65,18 @@ begin
                     write_trig        <= '1';
                     increment_address <= '1';
                 end if;
+                if (halt_counter < 100) then
+                    halt         <= '1';
+                    halt_counter <= halt_counter + 1;
+                    if (halt_counter > 50) then
+                        write_done <= '1';
+                    end if;
+                else
+                    halt       <= '0';
+                    write_trig <= '0';
+                    write_done <= '0';
+                    address    <= (others => '0');
+                end if;
             elsif (is_idle = '1' and data_in = '0') then  -- start bit
                 start_bit_detected <= '1';
                 is_idle            <= '0';
@@ -67,6 +84,7 @@ begin
                 bit_idx            := 0;
                 write_trig         <= '0';
                 first_bit          <= '1';
+                halt_counter       <= 0;
                 if (increment_address = '1') then
                     address           <= std_logic_vector(unsigned(address) + to_unsigned(1, 32));
                     increment_address <= '0';
@@ -77,6 +95,7 @@ begin
                 start_bit_detected <= '1';
                 is_idle            <= '0';
                 increment_address  <= '0';
+                halt_counter       <= 0;
                 if (first_bit = '1') then
                     if (cycle < CYCLES_PER_SAMPLE_FIRST) then
                         cycle <= cycle + 1;
@@ -100,6 +119,7 @@ begin
                 bit_idx            := 0;
                 start_bit_detected <= '0';
                 increment_address  <= '0';
+                halt_counter       <= 0;
                 if (cycle < CYCLES_PER_SAMPLE) then
                     cycle   <= cycle + 1;
                     is_idle <= '0';
@@ -123,6 +143,6 @@ begin
             end if;
         end if;
 
-    end process uart;
+    end process rx;
 
 end architecture rtl;

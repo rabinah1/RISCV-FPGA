@@ -4,11 +4,10 @@ use ieee.numeric_std.all;
 
 entity riscv is
     port (
-        clk           : in    std_logic;
-        reset         : in    std_logic;
-        start_program : in    std_logic;
-        data_in       : in    std_logic;
-        cpu_reg       : out   std_logic_vector(31 downto 0)
+        clk     : in    std_logic;
+        reset   : in    std_logic;
+        data_in : in    std_logic;
+        cpu_reg : out   std_logic_vector(31 downto 0)
     );
 end entity riscv;
 
@@ -47,6 +46,8 @@ architecture struct of riscv is
     signal uart_write_trig                   : std_logic;
     signal uart_data_to_imem                 : std_logic_vector(31 downto 0);
     signal uart_address                      : std_logic_vector(31 downto 0);
+    signal uart_halt                         : std_logic;
+    signal uart_write_done                   : std_logic;
 
     component alu is
         port (
@@ -62,11 +63,11 @@ architecture struct of riscv is
 
     component program_counter is
         port (
-            clk           : in    std_logic;
-            reset         : in    std_logic;
-            start_program : in    std_logic;
-            address_in    : in    std_logic_vector(31 downto 0);
-            address_out   : out   std_logic_vector(31 downto 0)
+            clk         : in    std_logic;
+            reset       : in    std_logic;
+            enable      : in    std_logic;
+            address_in  : in    std_logic_vector(31 downto 0);
+            address_out : out   std_logic_vector(31 downto 0)
         );
     end component program_counter;
 
@@ -74,8 +75,10 @@ architecture struct of riscv is
         port (
             clk             : in    std_logic;
             reset           : in    std_logic;
-            decode_enable   : in    std_logic;
+            fetch_enable    : in    std_logic;
             write_trig      : in    std_logic;
+            halt            : in    std_logic;
+            write_done      : in    std_logic;
             byte_from_uart  : in    std_logic_vector(31 downto 0);
             uart_address_in : in    std_logic_vector(31 downto 0);
             address_in      : in    std_logic_vector(31 downto 0);
@@ -168,25 +171,22 @@ architecture struct of riscv is
 
     component pc_adder is
         port (
-            clk           : in    std_logic;
-            reset         : in    std_logic;
-            enable        : in    std_logic;
-            start_program : in    std_logic;
-            input_1       : in    std_logic_vector(31 downto 0);
-            input_2       : in    std_logic_vector(31 downto 0);
-            sum           : out   std_logic_vector(31 downto 0)
+            reset   : in    std_logic;
+            halt    : in    std_logic;
+            input_1 : in    std_logic_vector(31 downto 0);
+            input_2 : in    std_logic_vector(31 downto 0);
+            sum     : out   std_logic_vector(31 downto 0)
         );
     end component pc_adder;
 
     component state_machine is
         port (
-            clk                : in    std_logic;
-            reset              : in    std_logic;
-            trig_state_machine : in    std_logic;
-            fetch_enable       : out   std_logic;
-            decode_enable      : out   std_logic;
-            execute_enable     : out   std_logic;
-            write_back_enable  : out   std_logic
+            clk               : in    std_logic;
+            reset             : in    std_logic;
+            fetch_enable      : out   std_logic;
+            decode_enable     : out   std_logic;
+            execute_enable    : out   std_logic;
+            write_back_enable : out   std_logic
         );
     end component state_machine;
 
@@ -200,13 +200,14 @@ architecture struct of riscv is
 
     component uart is
         port (
-            clk           : in    std_logic;
-            reset         : in    std_logic;
-            data_in       : in    std_logic;
-            start_program : in    std_logic;
-            write_trig    : out   std_logic;
-            data_to_imem  : out   std_logic_vector(31 downto 0);
-            address       : out   std_logic_vector(31 downto 0)
+            clk          : in    std_logic;
+            reset        : in    std_logic;
+            data_in      : in    std_logic;
+            halt         : out   std_logic;
+            write_trig   : out   std_logic;
+            write_done   : out   std_logic;
+            data_to_imem : out   std_logic_vector(31 downto 0);
+            address      : out   std_logic_vector(31 downto 0)
         );
     end component uart;
 
@@ -225,19 +226,21 @@ begin
 
     program_counter_unit : component program_counter
         port map (
-            clk           => clk_500khz,
-            reset         => reset,
-            start_program => start_program,
-            address_in    => pc_adder_sum,
-            address_out   => program_counter_address_out
+            clk         => clk_500khz,
+            reset       => reset,
+            enable      => state_machine_write_back_enable,
+            address_in  => pc_adder_sum,
+            address_out => program_counter_address_out
         );
 
     program_memory_unit : component program_memory
         port map (
             clk             => clk_500khz,
             reset           => reset,
-            decode_enable   => state_machine_decode_enable,
+            fetch_enable    => state_machine_fetch_enable,
             write_trig      => uart_write_trig,
+            halt            => uart_halt,
+            write_done      => uart_write_done,
             byte_from_uart  => uart_data_to_imem,
             uart_address_in => uart_address,
             address_in      => program_counter_address_out,
@@ -333,24 +336,21 @@ begin
 
     pc_adder_unit : component pc_adder
         port map (
-            clk           => clk_500khz,
-            reset         => reset,
-            enable        => state_machine_fetch_enable,
-            start_program => start_program,
-            input_1       => pc_offset_mux_output,
-            input_2       => pc_input_mux_output,
-            sum           => pc_adder_sum
+            reset   => reset,
+            halt    => uart_halt,
+            input_1 => pc_offset_mux_output,
+            input_2 => pc_input_mux_output,
+            sum     => pc_adder_sum
         );
 
     state_machine_unit : component state_machine
         port map (
-            clk                => clk_500khz,
-            reset              => reset,
-            trig_state_machine => start_program,
-            fetch_enable       => state_machine_fetch_enable,
-            decode_enable      => state_machine_decode_enable,
-            execute_enable     => state_machine_execute_enable,
-            write_back_enable  => state_machine_write_back_enable
+            clk               => clk_500khz,
+            reset             => reset,
+            fetch_enable      => state_machine_fetch_enable,
+            decode_enable     => state_machine_decode_enable,
+            execute_enable    => state_machine_execute_enable,
+            write_back_enable => state_machine_write_back_enable
         );
 
     clk_div_unit : component clk_div
@@ -362,13 +362,14 @@ begin
 
     uart_unit : component uart
         port map (
-            clk           => clk_500khz,
-            reset         => reset,
-            data_in       => data_in,
-            start_program => start_program,
-            write_trig    => uart_write_trig,
-            data_to_imem  => uart_data_to_imem,
-            address       => uart_address
+            clk          => clk_500khz,
+            reset        => reset,
+            data_in      => data_in,
+            halt         => uart_halt,
+            write_trig   => uart_write_trig,
+            write_done   => uart_write_done,
+            data_to_imem => uart_data_to_imem,
+            address      => uart_address
         );
 
 end architecture struct;

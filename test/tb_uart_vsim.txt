@@ -2,8 +2,9 @@ add wave \
 sim:/tb_uart/clk \
 sim:/tb_uart/reset \
 sim:/tb_uart/data_in \
-sim:/tb_uart/start_program \
+sim:/tb_uart/halt \
 sim:/tb_uart/write_trig \
+sim:/tb_uart/write_done \
 sim:/tb_uart/data_to_imem \
 sim:/tb_uart/address
 run 100ms

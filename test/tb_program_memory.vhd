@@ -14,8 +14,10 @@ architecture tb of tb_program_memory is
 
     signal   clk             : std_logic;
     signal   reset           : std_logic;
-    signal   decode_enable   : std_logic;
+    signal   fetch_enable    : std_logic;
     signal   write_trig      : std_logic;
+    signal   halt            : std_logic;
+    signal   write_done      : std_logic;
     signal   byte_from_uart  : std_logic_vector(31 downto 0);
     signal   uart_address_in : std_logic_vector(31 downto 0);
     signal   address_in      : std_logic_vector(31 downto 0);
@@ -24,14 +26,16 @@ architecture tb of tb_program_memory is
     signal   check_sig       : natural := 0;
     constant CLK_PERIOD      : time := 2 us;
 
-    type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
+    type memory is array(511 downto 0) of std_logic_vector(31 downto 0);
 
     component program_memory is
         port (
             clk             : in    std_logic;
             reset           : in    std_logic;
-            decode_enable   : in    std_logic;
+            fetch_enable    : in    std_logic;
             write_trig      : in    std_logic;
+            halt            : in    std_logic;
+            write_done      : in    std_logic;
             byte_from_uart  : in    std_logic_vector(31 downto 0);
             uart_address_in : in    std_logic_vector(31 downto 0);
             address_in      : in    std_logic_vector(31 downto 0);
@@ -46,8 +50,10 @@ begin
         port map (
             clk             => clk,
             reset           => reset,
-            decode_enable   => decode_enable,
+            fetch_enable    => fetch_enable,
             write_trig      => write_trig,
+            halt            => halt,
+            write_done      => write_done,
             byte_from_uart  => byte_from_uart,
             uart_address_in => uart_address_in,
             address_in      => address_in,
@@ -93,38 +99,52 @@ begin
                             "Comparing address_out against reference.");
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_outputs_are_correct_when_halt_is_enabled") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_outputs_are_correct_when_halt_is_enabled");
+                info("--------------------------------------------------------------------------------");
+                reset      <= '0';
+                halt       <= '1';
+                address_in <= std_logic_vector(to_unsigned(111, 32));
+                wait for CLK_PERIOD * 2;
+                check_equal(instruction, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing instruction against reference.");
+                check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing address_out against reference.");
+                check_sig  <= 1;
+                info("===== TEST CASE FINISHED =====");
             elsif run("test_output_instruction_is_read_correctly_with_specific_address") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_output_instruction_is_read_correctly_with_specific_address");
                 info("--------------------------------------------------------------------------------");
-                reset         <= '1';
-                decode_enable <= '1';
-                prog_mem(0)   <= force std_logic_vector(to_unsigned(15, 32));
-                prog_mem(45)  <= force std_logic_vector(to_unsigned(389, 32));
+                reset        <= '1';
+                fetch_enable <= '1';
+                prog_mem(0)  <= force std_logic_vector(to_unsigned(15, 32));
+                prog_mem(45) <= force std_logic_vector(to_unsigned(389, 32));
                 wait for CLK_PERIOD * 2;
-                reset         <= '0';
-                decode_enable <= '0';
-                address_in    <= std_logic_vector(to_unsigned(0, 32));
+                reset        <= '0';
+                fetch_enable <= '1';
+                address_in   <= std_logic_vector(to_unsigned(0, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(15, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing address_out against reference.");
                 wait for CLK_PERIOD;
-                address_in    <= std_logic_vector(to_unsigned(20, 32));
+                address_in   <= std_logic_vector(to_unsigned(20, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(20, 32)),
                             "Comparing address_out against reference.");
                 wait for CLK_PERIOD;
-                address_in    <= std_logic_vector(to_unsigned(45, 32));
+                address_in   <= std_logic_vector(to_unsigned(45, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(389, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(45, 32)),
                             "Comparing address_out against reference.");
-                check_sig     <= 1;
+                check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
 

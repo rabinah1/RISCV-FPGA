@@ -4,13 +4,12 @@ use work.states_package.all;
 
 entity state_machine is
     port (
-        clk                : in    std_logic;
-        reset              : in    std_logic;
-        trig_state_machine : in    std_logic;
-        fetch_enable       : out   std_logic;
-        decode_enable      : out   std_logic;
-        execute_enable     : out   std_logic;
-        write_back_enable  : out   std_logic
+        clk               : in    std_logic;
+        reset             : in    std_logic;
+        fetch_enable      : out   std_logic;
+        decode_enable     : out   std_logic;
+        execute_enable    : out   std_logic;
+        write_back_enable : out   std_logic
     );
 end entity state_machine;
 
@@ -21,11 +20,11 @@ architecture rtl of state_machine is
 
 begin
 
-    state_change : process (clk, reset, trig_state_machine) is
+    state_change : process (clk, reset) is
     begin
 
-        if (reset = '1' or trig_state_machine = '0') then
-            state <= nop;
+        if (reset = '1') then
+            state <= fetch;
         elsif (falling_edge(clk)) then
             state <= next_state;
         end if;
@@ -40,22 +39,10 @@ begin
             decode_enable     <= '0';
             execute_enable    <= '0';
             write_back_enable <= '0';
-            next_state        <= nop;
+            next_state        <= fetch;
         elsif (rising_edge(clk)) then
 
             case state is
-
-                when nop =>
-
-                    fetch_enable      <= '0';
-                    decode_enable     <= '0';
-                    execute_enable    <= '0';
-                    write_back_enable <= '0';
-                    if (trig_state_machine = '0') then
-                        next_state <= nop;
-                    else
-                        next_state <= fetch;
-                    end if;
 
                 when fetch =>
 

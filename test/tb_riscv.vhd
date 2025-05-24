@@ -14,21 +14,19 @@ end entity tb_riscv;
 
 architecture tb of tb_riscv is
 
-    signal   clk           : std_logic := '0';
-    signal   reset         : std_logic := '0';
-    signal   start_program : std_logic := '0';
-    signal   data_in       : std_logic := '0';
-    signal   cpu_reg       : std_logic_vector(31 downto 0);
-    signal   check_sig     : natural := 0;
-    constant CLK_PERIOD    : time := 20 ns;
+    signal   clk        : std_logic := '0';
+    signal   reset      : std_logic := '0';
+    signal   data_in    : std_logic := '0';
+    signal   cpu_reg    : std_logic_vector(31 downto 0);
+    signal   check_sig  : natural := 0;
+    constant CLK_PERIOD : time := 20 ns;
 
     component riscv is
         port (
-            clk           : in    std_logic;
-            reset         : in    std_logic;
-            start_program : in    std_logic;
-            data_in       : in    std_logic;
-            cpu_reg       : out   std_logic_vector(31 downto 0)
+            clk     : in    std_logic;
+            reset   : in    std_logic;
+            data_in : in    std_logic;
+            cpu_reg : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -36,11 +34,10 @@ begin
 
     riscv_instance : component riscv
         port map (
-            clk           => clk,
-            reset         => reset,
-            start_program => start_program,
-            data_in       => data_in,
-            cpu_reg       => cpu_reg
+            clk     => clk,
+            reset   => reset,
+            data_in => data_in,
+            cpu_reg => cpu_reg
         );
 
     clk_process : process is
@@ -61,13 +58,18 @@ begin
 
         type reg_mem is array(31 downto 0) of std_logic_vector(31 downto 0);
 
-        type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
+        type data_memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
+
+        type prog_memory is array(511 downto 0) of std_logic_vector(31 downto 0);
 
         alias    regs                is <<signal .tb_riscv.riscv_instance.register_file_unit.regs : reg_mem>>;
-        alias    prog_mem            is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : memory>>;
-        alias    data_mem            is <<signal .tb_riscv.riscv_instance.data_memory_unit.data_mem : memory>>;
+        alias    prog_mem            is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : prog_memory>>;
+        alias    data_mem            is <<signal .tb_riscv.riscv_instance.data_memory_unit.data_mem : data_memory>>;
         alias    prog_mem_address_in is <<signal .tb_riscv.riscv_instance.program_memory_unit.
             address_in : std_logic_vector(31 downto 0)>>;
+        alias    uart_halt           is <<signal .tb_riscv.riscv_instance.uart_unit.halt : std_logic>>;
+        alias    prog_mem_halt       is <<signal .tb_riscv.riscv_instance.program_memory_unit.halt : std_logic>>;
+        alias    pc_adder_halt       is <<signal .tb_riscv.riscv_instance.pc_adder_unit.halt : std_logic>>;
         file     stimulus_file       : text open read_mode is input_file;
         variable linein              : line;
         variable binary_command      : std_logic_vector(31 downto 0);
@@ -84,9 +86,8 @@ begin
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_program_to_calculate_sum_of_1_and_2");
                 info("--------------------------------------------------------------------------------");
-                reset         <= '1';
-                start_program <= '0';
-                address       := 0;
+                reset   <= '1';
+                address := 0;
                 wait for CLK_PERIOD * 2;
 
                 while (not endfile(stimulus_file)) loop
@@ -103,11 +104,10 @@ begin
 
                 file_close(stimulus_file);
                 reset         <= '0';
-                wait for CLK_PERIOD * 2;
-                start_program <= '1';
-                wait for CLK_PERIOD * 5;
+                uart_halt     <= force '0';
+                prog_mem_halt <= force '0';
+                pc_adder_halt <= force '0';
                 wait until prog_mem_address_in = std_logic_vector(to_unsigned(0, 32));
-                start_program <= '0';
                 check_equal(regs(10), std_logic_vector(to_unsigned(3, 32)),
                             "Comparing result against reference.");
                 check_sig     <= 1;

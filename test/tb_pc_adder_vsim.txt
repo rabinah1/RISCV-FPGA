@@ -1,8 +1,6 @@
 add wave \
-sim:/tb_pc_adder/clk \
 sim:/tb_pc_adder/reset \
-sim:/tb_pc_adder/enable \
-sim:/tb_pc_adder/start_program \
+sim:/tb_pc_adder/halt \
 sim:/tb_pc_adder/input_1 \
 sim:/tb_pc_adder/input_2 \
 sim:/tb_pc_adder/sum
