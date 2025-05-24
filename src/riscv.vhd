@@ -6,7 +6,6 @@ entity riscv is
     port (
         clk           : in    std_logic;
         reset         : in    std_logic;
-        start_program : in    std_logic;
         data_in       : in    std_logic;
         cpu_reg       : out   std_logic_vector(31 downto 0)
     );
@@ -64,7 +63,6 @@ architecture struct of riscv is
         port (
             clk           : in    std_logic;
             reset         : in    std_logic;
-            start_program : in    std_logic;
             address_in    : in    std_logic_vector(31 downto 0);
             address_out   : out   std_logic_vector(31 downto 0)
         );
@@ -168,10 +166,8 @@ architecture struct of riscv is
 
     component pc_adder is
         port (
-            clk           : in    std_logic;
             reset         : in    std_logic;
             enable        : in    std_logic;
-            start_program : in    std_logic;
             input_1       : in    std_logic_vector(31 downto 0);
             input_2       : in    std_logic_vector(31 downto 0);
             sum           : out   std_logic_vector(31 downto 0)
@@ -182,7 +178,6 @@ architecture struct of riscv is
         port (
             clk                : in    std_logic;
             reset              : in    std_logic;
-            trig_state_machine : in    std_logic;
             fetch_enable       : out   std_logic;
             decode_enable      : out   std_logic;
             execute_enable     : out   std_logic;
@@ -203,7 +198,6 @@ architecture struct of riscv is
             clk           : in    std_logic;
             reset         : in    std_logic;
             data_in       : in    std_logic;
-            start_program : in    std_logic;
             write_trig    : out   std_logic;
             data_to_imem  : out   std_logic_vector(31 downto 0);
             address       : out   std_logic_vector(31 downto 0)
@@ -227,7 +221,6 @@ begin
         port map (
             clk           => clk_500khz,
             reset         => reset,
-            start_program => start_program,
             address_in    => pc_adder_sum,
             address_out   => program_counter_address_out
         );
@@ -333,10 +326,8 @@ begin
 
     pc_adder_unit : component pc_adder
         port map (
-            clk           => clk_500khz,
             reset         => reset,
             enable        => state_machine_fetch_enable,
-            start_program => start_program,
             input_1       => pc_offset_mux_output,
             input_2       => pc_input_mux_output,
             sum           => pc_adder_sum
@@ -346,7 +337,6 @@ begin
         port map (
             clk                => clk_500khz,
             reset              => reset,
-            trig_state_machine => start_program,
             fetch_enable       => state_machine_fetch_enable,
             decode_enable      => state_machine_decode_enable,
             execute_enable     => state_machine_execute_enable,
@@ -365,7 +355,6 @@ begin
             clk           => clk_500khz,
             reset         => reset,
             data_in       => data_in,
-            start_program => start_program,
             write_trig    => uart_write_trig,
             data_to_imem  => uart_data_to_imem,
             address       => uart_address

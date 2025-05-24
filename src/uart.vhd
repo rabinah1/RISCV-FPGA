@@ -7,7 +7,6 @@ entity uart is
         clk           : in    std_logic;
         reset         : in    std_logic;
         data_in       : in    std_logic;
-        start_program : in    std_logic;
         write_trig    : out   std_logic;
         data_to_imem  : out   std_logic_vector(31 downto 0);
         address       : out   std_logic_vector(31 downto 0)
@@ -30,13 +29,13 @@ architecture rtl of uart is
 
 begin
 
-    uart : process (all) is
+    rx : process (all) is
 
         variable bit_idx : integer range 0 to 8 := 0;
 
     begin
 
-        if (reset = '1' or start_program = '1') then
+        if (reset = '1') then
             data_to_imem       <= (others => '0');
             address            <= (others => '0');
             write_trig         <= '0';
@@ -123,6 +122,6 @@ begin
             end if;
         end if;
 
-    end process uart;
+    end process rx;
 
 end architecture rtl;
