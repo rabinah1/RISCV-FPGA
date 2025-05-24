@@ -1,7 +1,10 @@
 add wave \
 sim:/tb_riscv/clk \
 sim:/tb_riscv/reset \
-sim:/tb_riscv/start_program \
+sim:/tb_riscv/riscv_instance/pc_adder_unit/halt \
+sim:/tb_riscv/riscv_instance/pc_adder_unit/input_1 \
+sim:/tb_riscv/riscv_instance/pc_adder_unit/input_2 \
+sim:/tb_riscv/riscv_instance/pc_adder_unit/sum \
 sim:/tb_riscv/riscv_instance/program_counter_unit/address_in \
 sim:/tb_riscv/riscv_instance/program_counter_unit/address_out \
 sim:/tb_riscv/riscv_instance/alu_unit/input_1 \

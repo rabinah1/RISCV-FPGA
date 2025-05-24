@@ -4,13 +4,13 @@ use work.states_package.all;
 
 entity state_machine is
     port (
-        clk                : in    std_logic;
-        reset              : in    std_logic;
-        trig_state_machine : in    std_logic;
-        fetch_enable       : out   std_logic;
-        decode_enable      : out   std_logic;
-        execute_enable     : out   std_logic;
-        write_back_enable  : out   std_logic
+        clk               : in    std_logic;
+        reset             : in    std_logic;
+        fetch_enable      : out   std_logic;
+        decode_enable     : out   std_logic;
+        execute_enable    : out   std_logic;
+        write_back_enable : out   std_logic;
+        sleep_enable      : out   std_logic
     );
 end entity state_machine;
 
@@ -21,12 +21,12 @@ architecture rtl of state_machine is
 
 begin
 
-    state_change : process (clk, reset, trig_state_machine) is
+    state_change : process (clk, reset) is
     begin
 
-        if (reset = '1' or trig_state_machine = '0') then
-            state <= nop;
-        elsif (falling_edge(clk)) then
+        if (reset = '1') then
+            state <= fetch;
+        elsif (rising_edge(clk)) then
             state <= next_state;
         end if;
 
@@ -40,22 +40,11 @@ begin
             decode_enable     <= '0';
             execute_enable    <= '0';
             write_back_enable <= '0';
-            next_state        <= nop;
-        elsif (rising_edge(clk)) then
+            sleep_enable      <= '0';
+            next_state        <= fetch;
+        elsif (falling_edge(clk)) then
 
             case state is
-
-                when nop =>
-
-                    fetch_enable      <= '0';
-                    decode_enable     <= '0';
-                    execute_enable    <= '0';
-                    write_back_enable <= '0';
-                    if (trig_state_machine = '0') then
-                        next_state <= nop;
-                    else
-                        next_state <= fetch;
-                    end if;
 
                 when fetch =>
 
@@ -63,6 +52,7 @@ begin
                     decode_enable     <= '0';
                     execute_enable    <= '0';
                     write_back_enable <= '0';
+                    sleep_enable      <= '0';
                     next_state        <= decode;
 
                 when decode =>
@@ -71,6 +61,7 @@ begin
                     decode_enable     <= '1';
                     execute_enable    <= '0';
                     write_back_enable <= '0';
+                    sleep_enable      <= '0';
                     next_state        <= execute;
 
                 when execute =>
@@ -79,6 +70,7 @@ begin
                     decode_enable     <= '0';
                     execute_enable    <= '1';
                     write_back_enable <= '0';
+                    sleep_enable      <= '0';
                     next_state        <= write_back;
 
                 when write_back =>
@@ -87,6 +79,16 @@ begin
                     decode_enable     <= '0';
                     execute_enable    <= '0';
                     write_back_enable <= '1';
+                    sleep_enable      <= '0';
+                    next_state        <= sleep;
+
+                when sleep =>
+
+                    fetch_enable      <= '0';
+                    decode_enable     <= '0';
+                    execute_enable    <= '0';
+                    write_back_enable <= '0';
+                    sleep_enable      <= '1';
                     next_state        <= fetch;
 
             end case;

@@ -15,8 +15,9 @@ architecture tb of tb_uart is
     signal   clk           : std_logic := '0';
     signal   reset         : std_logic := '0';
     signal   data_in       : std_logic := '0';
-    signal   start_program : std_logic := '0';
+    signal   halt          : std_logic := '0';
     signal   write_trig    : std_logic := '0';
+    signal   write_done    : std_logic := '0';
     signal   data_to_imem  : std_logic_vector(31 downto 0) := (others => '0');
     signal   address       : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig     : natural := 0;
@@ -24,13 +25,14 @@ architecture tb of tb_uart is
 
     component uart is
         port (
-            clk           : in    std_logic;
-            reset         : in    std_logic;
-            data_in       : in    std_logic;
-            start_program : in    std_logic;
-            write_trig    : out   std_logic;
-            data_to_imem  : out   std_logic_vector(31 downto 0);
-            address       : out   std_logic_vector(31 downto 0)
+            clk          : in    std_logic;
+            reset        : in    std_logic;
+            data_in      : in    std_logic;
+            halt         : out   std_logic;
+            write_trig   : out   std_logic;
+            write_done   : out   std_logic;
+            data_to_imem : out   std_logic_vector(31 downto 0);
+            address      : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -41,8 +43,9 @@ begin
             clk           => clk,
             reset         => reset,
             data_in       => data_in,
-            start_program => start_program,
+            halt          => halt,
             write_trig    => write_trig,
+            write_done    => write_done,
             data_to_imem  => data_to_imem,
             address       => address
         );
@@ -70,6 +73,7 @@ begin
         alias cycle              is <<signal .tb_uart.uart_instance.cycle: integer range 0 to 78>>;
         alias first_bit          is <<signal .tb_uart.uart_instance.first_bit: std_logic>>;
         alias packet             is <<signal .tb_uart.uart_instance.packet: std_logic_vector(7 downto 0)>>;
+        alias halt_counter       is <<signal .tb_uart.uart_instance.halt_counter: integer range 0 to 100>>;
 
     begin
 
@@ -85,10 +89,30 @@ begin
                 reset     <= '1';
                 data_in   <= '1';
                 wait for CLK_PERIOD * 2;
+                check_equal(halt, '0', "Comparing halt against reference.");
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
+                check_equal(write_done, '0', "Comparing write_done against reference.");
                 check_equal(data_to_imem, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing data_to_imem against reference.");
                 check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_idle_state_when_halt_counter_is_maximum") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_idle_state_when_halt_counter_is_maximum");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                data_in   <= '1';
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                is_idle   <= force '1';
+                imem_idx  <= force 0;
+                halt_counter <= force 100;
+                wait for CLK_PERIOD * 2;
+                check_equal(halt, '0', "Comparing halt against reference.");
+                check_equal(write_trig, '0', "Comparing write_trig against reference.");
+                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
+                check_equal(write_done, '0', "Comparing write_done against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_idle_state_when_zero_packets_are_read") then
