@@ -110,6 +110,21 @@ begin
                 check_equal(output, input_3, "Comparing output against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_output_is_zero_when_control_is_three") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_output_is_zero_when_control_is_three");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                control   <= "11";
+                input_1   <= std_logic_vector(to_unsigned(123, 32));
+                input_2   <= std_logic_vector(to_unsigned(456, 32));
+                input_3   <= std_logic_vector(to_unsigned(789, 32));
+                wait for CLK_PERIOD * 2;
+                check_equal(output, std_logic_vector(to_unsigned(0, 32)), "Comparing output against reference.");
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
             end if;
 
         end loop;

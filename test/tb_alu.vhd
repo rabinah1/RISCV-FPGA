@@ -3,6 +3,7 @@ library vunit_lib;
     context vunit_lib.vunit_context;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.opcode_pkg.all;
 
 entity tb_alu is
     generic (
@@ -69,9 +70,9 @@ begin
 
         test_cases_loop : while test_suite loop
 
-            if run("test_output_is_zero_if_reset_is_enabled") then
+            if run("test_result_is_zero_if_reset_is_enabled") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_output_is_zero_if_reset_is_enabled");
+                info("TEST CASE: test_result_is_zero_if_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 enable    <= '1';
@@ -91,7 +92,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
-                operator  <= "01100110000";
+                operator  <= ADD;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -107,7 +108,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
-                operator  <= "00100110000";
+                operator  <= ADDI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -123,7 +124,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(100, 32));
                 input_2   <= std_logic_vector(to_unsigned(46, 32));
-                operator  <= "01100111000";
+                operator  <= MY_SUB;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -139,7 +140,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(470, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
-                operator  <= "01100110001";
+                operator  <= MY_SLL;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -155,7 +156,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(470, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
-                operator  <= "00100110001";
+                operator  <= SLLI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -171,7 +172,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
-                operator  <= "01100110010";
+                operator  <= SLT;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -193,7 +194,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
-                operator  <= "00100110010";
+                operator  <= SLTI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -215,7 +216,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
-                operator  <= "01100110011";
+                operator  <= SLTU;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -237,7 +238,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(49, 32));
                 input_2   <= std_logic_vector(to_unsigned(123, 32));
-                operator  <= "00100110011";
+                operator  <= SLTIU;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -259,7 +260,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
-                operator  <= "01100110100";
+                operator  <= MY_XOR;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -275,7 +276,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
-                operator  <= "00100110100";
+                operator  <= XORI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -291,7 +292,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(2670, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
-                operator  <= "01100110101";
+                operator  <= MY_SRL;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -307,7 +308,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(2670, 32));
                 input_2   <= std_logic_vector(to_unsigned(3, 32));
-                operator  <= "00100110101";
+                operator  <= SRLI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -323,7 +324,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
-                operator  <= "01100110110";
+                operator  <= MY_OR;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -339,7 +340,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
-                operator  <= "00100110110";
+                operator  <= ORI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -355,7 +356,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
-                operator  <= "01100110111";
+                operator  <= MY_AND;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -371,7 +372,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(141, 32));
                 input_2   <= std_logic_vector(to_unsigned(197, 32));
-                operator  <= "00100110111";
+                operator  <= ANDI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -387,7 +388,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
-                operator  <= "00000110010";
+                operator  <= LW;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -403,7 +404,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
-                operator  <= "01000110010";
+                operator  <= SW;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -419,7 +420,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(105, 32));
                 input_2   <= std_logic_vector(to_unsigned(105, 32));
-                operator  <= "11000110000";
+                operator  <= BEQ;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -440,7 +441,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(103, 32));
                 input_2   <= std_logic_vector(to_unsigned(105, 32));
-                operator  <= "11000110001";
+                operator  <= BNE;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -461,7 +462,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(57, 32));
-                operator  <= "11000110100";
+                operator  <= BLT;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -482,7 +483,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(50, 32));
-                operator  <= "11000110101";
+                operator  <= BGE;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -503,7 +504,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(57, 32));
-                operator  <= "11000110110";
+                operator  <= BLTU;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -524,7 +525,7 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(50, 32));
                 input_2   <= std_logic_vector(to_unsigned(50, 32));
-                operator  <= "11000110111";
+                operator  <= BGEU;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -545,7 +546,23 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
-                operator  <= "11011110000";
+                operator  <= JAL;
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(result, std_logic_vector(to_unsigned(158, 32)),
+                            "Comparing result against reference.");
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_jalr_instruction") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_jalr_instruction");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                enable    <= '1';
+                input_1   <= std_logic_vector(to_unsigned(24, 32));
+                input_2   <= std_logic_vector(to_unsigned(157, 32));
+                operator  <= JAL;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
@@ -561,11 +578,27 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
-                operator  <= "01101110000";
+                operator  <= LUI;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(result, std_logic_vector(to_unsigned(157, 32)),
+                            "Comparing result against reference.");
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_unrecognized_instruction") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_unrecognized_instruction");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                enable    <= '1';
+                input_1   <= std_logic_vector(to_unsigned(24, 32));
+                input_2   <= std_logic_vector(to_unsigned(157, 32));
+                operator  <= "11111111111";
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing result against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");

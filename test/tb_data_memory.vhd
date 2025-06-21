@@ -21,6 +21,8 @@ architecture tb of tb_data_memory is
     signal   check_sig    : natural := 0;
     constant CLK_PERIOD   : time := 2 us;
 
+    type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
+
     component data_memory is
         port (
             clk          : in    std_logic;
@@ -59,6 +61,9 @@ begin
     end process clk_process;
 
     test_runner : process is
+
+        alias data_mem is <<signal .tb_data_memory.data_memory_instance.data_mem : memory>>;
+
     begin
 
         test_runner_setup(runner, runner_cfg);
@@ -78,9 +83,24 @@ begin
                 check_equal(output, std_logic_vector(to_unsigned(0, 32)), "Comparing output against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
-            elsif run("test_read_and_write") then
+            elsif run("test_read_data") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_read_and_write");
+                info("TEST CASE: test_read_data");
+                info("--------------------------------------------------------------------------------");
+                reset        <= '1';
+                write_enable <= '0';
+                write_data   <= (others => '0');
+                data_mem(12) <= force std_logic_vector(to_unsigned(100, 32));
+                address      <= std_logic_vector(to_unsigned(12, 32));
+                wait for CLK_PERIOD * 2;
+                reset        <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(output, std_logic_vector(to_unsigned(100, 32)), "Comparing output against reference.");
+                check_sig    <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_write_data") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_write_data");
                 info("--------------------------------------------------------------------------------");
                 reset        <= '1';
                 wait for CLK_PERIOD * 2;
@@ -91,7 +111,8 @@ begin
                 wait for CLK_PERIOD * 2;
                 write_enable <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(output, std_logic_vector(to_unsigned(155, 32)), "Comparing output against reference.");
+                check_equal(data_mem(25), std_logic_vector(to_unsigned(155, 32)),
+                            "Comparing contents of data_mem against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

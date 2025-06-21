@@ -344,6 +344,32 @@ begin
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_decode_unknown_instruction_type") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_decode_unknown_instruction_type");
+                info("--------------------------------------------------------------------------------");
+                reset       <= '1';
+                enable      <= '1';
+                wait for CLK_PERIOD * 2;
+                reset       <= '0';
+                instruction <= "10101010101010101011111111111111";
+                wait for CLK_PERIOD * 2;
+                check_equal(rs1, std_logic_vector(to_unsigned(0, 5)), "Comparing rs1 against reference.");
+                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)), "Comparing rs2 against reference.");
+                check_equal(rd, std_logic_vector(to_unsigned(0, 5)), "Comparing rd against reference.");
+                check_equal(write, '0', "Comparing write against reference.");
+                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 11)),
+                            "Comparing alu_operation against reference.");
+                check_equal(alu_source, std_logic_vector(unsigned'("00")), "Comparing alu_source against reference.");
+                check_equal(immediate, std_logic_vector(to_unsigned(0, 32)), "Comparing immediate against reference.");
+                check_equal(load, '0', "Comparing load against reference.");
+                check_equal(store, '0', "Comparing store against reference.");
+                check_equal(branch, '0', "Comparing branch against reference.");
+                check_equal(jump, '0', "Comparing jump against reference.");
+                check_equal(jalr_flag, '0', "Comparing jalr_flag against reference.");
+                check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)), "Comparing pc_out against reference.");
+                check_sig   <= 1;
+                info("===== TEST CASE FINISHED =====");
             end if;
 
         end loop;

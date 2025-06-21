@@ -111,8 +111,41 @@ begin
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '0', "Comparing halt against reference.");
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
                 check_equal(write_done, '0', "Comparing write_done against reference.");
+                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
+                check_equal(data_to_imem, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing data_to_imem against reference.");
+                check_sig    <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_idle_state_when_halt_counter_is_between_0_and_50") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_idle_state_when_halt_counter_is_between_0_and_50");
+                info("--------------------------------------------------------------------------------");
+                reset        <= '1';
+                data_in      <= '1';
+                wait for CLK_PERIOD * 2;
+                reset        <= '0';
+                is_idle      <= force '1';
+                imem_idx     <= force 0;
+                halt_counter <= force 25;
+                wait for CLK_PERIOD * 2;
+                check_equal(halt, '1', "Comparing halt against reference.");
+                check_sig    <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_idle_state_when_halt_counter_is_between_50_and_100") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_idle_state_when_halt_counter_is_between_50_and_100");
+                info("--------------------------------------------------------------------------------");
+                reset        <= '1';
+                data_in      <= '1';
+                wait for CLK_PERIOD * 2;
+                reset        <= '0';
+                is_idle      <= force '1';
+                imem_idx     <= force 0;
+                halt_counter <= force 80;
+                wait for CLK_PERIOD * 2;
+                check_equal(halt, '1', "Comparing halt against reference.");
+                check_equal(write_done, '1', "Comparing write_done against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_idle_state_when_one_packet_is_read") then
@@ -125,12 +158,9 @@ begin
                 reset        <= '0';
                 is_idle      <= force '1';
                 imem_idx     <= force 1;
-                halt_counter <= force 1;
+                halt_counter <= force 0;
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(write_done, '0', "Comparing write_done against reference.");
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_idle_state_when_two_packets_are_read") then
@@ -143,12 +173,9 @@ begin
                 reset        <= '0';
                 is_idle      <= force '1';
                 imem_idx     <= force 2;
-                halt_counter <= force 67;
+                halt_counter <= force 1;
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(write_done, '1', "Comparing write_done against reference.");
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_idle_state_when_three_packets_are_read") then
@@ -161,12 +188,9 @@ begin
                 reset        <= '0';
                 is_idle      <= force '1';
                 imem_idx     <= force 3;
-                halt_counter <= force 67;
+                halt_counter <= force 1;
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(write_done, '1', "Comparing write_done against reference.");
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_idle_state_when_four_packets_are_read") then
@@ -179,12 +203,10 @@ begin
                 reset        <= '0';
                 is_idle      <= force '1';
                 imem_idx     <= force 4;
-                halt_counter <= force 40;
+                halt_counter <= force 1;
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
                 check_equal(write_trig, '1', "Comparing write_trig against reference.");
-                check_equal(write_done, '0', "Comparing write_done against reference.");
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_start_bit_detected_no_address_change") then
@@ -234,6 +256,23 @@ begin
                 check_equal(packet(0), '1', "Comparing LSB of packet against reference.");
                 check_sig          <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_data_reception_first_bit_cycle_below_threshold") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_data_reception_first_bit_cycle_below_threshold");
+                info("--------------------------------------------------------------------------------");
+                reset              <= '1';
+                data_in            <= '1';
+                wait for CLK_PERIOD * 2;
+                reset              <= '0';
+                is_idle            <= force '0';
+                start_bit_detected <= force '1';
+                cycle              <= force 45;
+                first_bit          <= force '1';
+                wait for CLK_PERIOD;
+                check_equal(write_trig, '0', "Comparing write_trig against reference.");
+                check_equal(packet(0), '0', "Comparing LSB of packet against reference.");
+                check_sig          <= 1;
+                info("===== TEST CASE FINISHED =====");
             elsif run("test_data_reception_after_first_bit") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_data_reception_after_first_bit");
@@ -249,6 +288,42 @@ begin
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
                 check_equal(packet(0), '1', "Comparing LSB of packet against reference.");
+                check_sig          <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_data_reception_after_first_bit_cycle_below_threshold") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_data_reception_after_first_bit_cycle_below_threshold");
+                info("--------------------------------------------------------------------------------");
+                reset              <= '1';
+                data_in            <= '1';
+                wait for CLK_PERIOD * 2;
+                reset              <= '0';
+                is_idle            <= force '0';
+                start_bit_detected <= force '1';
+                cycle              <= force 20;
+                first_bit          <= force '0';
+                wait for CLK_PERIOD;
+                check_equal(write_trig, '0', "Comparing write_trig against reference.");
+                check_equal(packet(0), '0', "Comparing LSB of packet against reference.");
+                check_sig          <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_stop_bit_cycle_below_threshold") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_stop_bit_cycle_below_threshold");
+                info("--------------------------------------------------------------------------------");
+                reset              <= '1';
+                data_in            <= '0';
+                wait for CLK_PERIOD * 2;
+                reset              <= '0';
+                is_idle            <= force '0';
+                start_bit_detected <= force '0';
+                cycle              <= force 33;
+                packet             <= force "00110101";
+                imem_idx           <= force 0;
+                wait for CLK_PERIOD;
+                check_equal(write_trig, '0', "Comparing write_trig against reference.");
+                check_equal(data_to_imem, std_logic_vector(unsigned'("00000000000000000000000000000000")),
+                            "Comparing data_to_imem against reference.");
                 check_sig          <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_stop_bit_first_packet") then

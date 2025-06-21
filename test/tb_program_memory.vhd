@@ -90,61 +90,119 @@ begin
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_outputs_are_correct_when_reset_is_enabled");
                 info("--------------------------------------------------------------------------------");
-                reset      <= '1';
-                address_in <= std_logic_vector(to_unsigned(111, 32));
+                reset           <= '1';
+                fetch_enable    <= '0';
+                write_trig      <= '0';
+                halt            <= '0';
+                write_done      <= '0';
+                byte_from_uart  <= (others => '0');
+                uart_address_in <= (others => '0');
+                address_in      <= std_logic_vector(to_unsigned(111, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing address_out against reference.");
-                check_sig  <= 1;
+                check_sig       <= 1;
                 info("===== TEST CASE FINISHED =====");
-            elsif run("test_outputs_are_correct_when_halt_is_enabled") then
+            elsif run("test_outputs_are_correct_when_halt_is_enabled_and_write_is_done") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_outputs_are_correct_when_halt_is_enabled");
+                info("TEST CASE: test_outputs_are_correct_when_halt_is_enabled_and_write_is_done");
                 info("--------------------------------------------------------------------------------");
-                reset      <= '0';
-                halt       <= '1';
-                address_in <= std_logic_vector(to_unsigned(111, 32));
+                reset           <= '1';
+                fetch_enable    <= '0';
+                write_trig      <= '1';
+                halt            <= '1';
+                write_done      <= '0';
+                byte_from_uart  <= std_logic_vector(to_unsigned(45, 32));
+                uart_address_in <= std_logic_vector(to_unsigned(200, 32));
+                address_in      <= std_logic_vector(to_unsigned(111, 32));
+                wait for CLK_PERIOD * 2;
+                reset           <= '0';
+                wait for CLK_PERIOD * 2;
+                byte_from_uart  <= std_logic_vector(to_unsigned(22, 32));
+                uart_address_in <= std_logic_vector(to_unsigned(100, 32));
+                wait for CLK_PERIOD * 2;
+                write_trig      <= '0';
+                write_done      <= '1';
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing address_out against reference.");
-                check_sig  <= 1;
+                check_equal(prog_mem(100), std_logic_vector(to_unsigned(22, 32)),
+                            "Comparing memory address 100 against reference.");
+                check_equal(prog_mem(200), std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing memory address 200 against reference.");
+                check_sig       <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_outputs_are_correct_when_halt_is_enabled_and_write_is_not_done") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_outputs_are_correct_when_halt_is_enabled_and_write_is_not_done");
+                info("--------------------------------------------------------------------------------");
+                reset           <= '1';
+                fetch_enable    <= '0';
+                write_trig      <= '1';
+                halt            <= '1';
+                write_done      <= '0';
+                byte_from_uart  <= std_logic_vector(to_unsigned(45, 32));
+                uart_address_in <= std_logic_vector(to_unsigned(200, 32));
+                address_in      <= std_logic_vector(to_unsigned(111, 32));
+                wait for CLK_PERIOD * 2;
+                reset           <= '0';
+                wait for CLK_PERIOD * 2;
+                byte_from_uart  <= std_logic_vector(to_unsigned(22, 32));
+                uart_address_in <= std_logic_vector(to_unsigned(100, 32));
+                wait for CLK_PERIOD * 2;
+                write_done      <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(instruction, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing instruction against reference.");
+                check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing address_out against reference.");
+                check_equal(prog_mem(100), std_logic_vector(to_unsigned(22, 32)),
+                            "Comparing memory address 100 against reference.");
+                check_equal(prog_mem(200), std_logic_vector(to_unsigned(45, 32)),
+                            "Comparing memory address 200 against reference.");
+                check_sig       <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_output_instruction_is_read_correctly_with_specific_address") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_output_instruction_is_read_correctly_with_specific_address");
                 info("--------------------------------------------------------------------------------");
-                reset        <= '1';
-                fetch_enable <= '1';
-                prog_mem(0)  <= force std_logic_vector(to_unsigned(15, 32));
-                prog_mem(45) <= force std_logic_vector(to_unsigned(389, 32));
+                reset           <= '1';
+                fetch_enable    <= '1';
+                write_trig      <= '0';
+                halt            <= '0';
+                write_done      <= '0';
+                byte_from_uart  <= (others => '0');
+                uart_address_in <= (others => '0');
+                prog_mem(0)     <= force std_logic_vector(to_unsigned(15, 32));
+                prog_mem(45)    <= force std_logic_vector(to_unsigned(389, 32));
                 wait for CLK_PERIOD * 2;
-                reset        <= '0';
-                fetch_enable <= '1';
-                address_in   <= std_logic_vector(to_unsigned(0, 32));
+                reset           <= '0';
+                fetch_enable    <= '1';
+                address_in      <= std_logic_vector(to_unsigned(0, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(15, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing address_out against reference.");
                 wait for CLK_PERIOD;
-                address_in   <= std_logic_vector(to_unsigned(20, 32));
+                address_in      <= std_logic_vector(to_unsigned(20, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(0, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(20, 32)),
                             "Comparing address_out against reference.");
                 wait for CLK_PERIOD;
-                address_in   <= std_logic_vector(to_unsigned(45, 32));
+                address_in      <= std_logic_vector(to_unsigned(45, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(instruction, std_logic_vector(to_unsigned(389, 32)),
                             "Comparing instruction against reference.");
                 check_equal(address_out, std_logic_vector(to_unsigned(45, 32)),
                             "Comparing address_out against reference.");
-                check_sig    <= 1;
+                check_sig       <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
 

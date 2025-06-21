@@ -77,6 +77,7 @@ set_global_assignment -name VHDL_FILE states_package.vhd
 set_global_assignment -name VHDL_FILE state_machine.vhd
 set_global_assignment -name VHDL_FILE clk_div.vhd
 set_global_assignment -name VHDL_FILE uart.vhd
+set_global_assignment -name VHDL_FILE instruction_types_package.vhd
 set_location_assignment PIN_W15 -to cpu_reg[0]
 set_location_assignment PIN_AA24 -to cpu_reg[1]
 set_location_assignment PIN_V16 -to cpu_reg[2]

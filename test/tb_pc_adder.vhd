@@ -72,9 +72,9 @@ begin
                             "Comparing sum against reference.");
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
-            elsif run("test_adder_when_reset_and_halt_are_disabled") then
+            elsif run("test_inputs_are_summed_when_reset_and_halt_are_disabled") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_adder_when_reset_and_halt_are_disabled");
+                info("TEST CASE: test_inputs_are_summed_when_reset_and_halt_are_disabled");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '0';
                 halt      <= '0';

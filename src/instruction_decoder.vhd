@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use work.instruction_types_package.all;
 
 entity instruction_decoder is
     port (
@@ -53,7 +54,7 @@ begin
             if (enable = '1') then
                 -- Sign extended immediates should be interpreted as 2's complement
                 opcode := instruction(6 downto 0);
-                if (opcode = "0110011") then -- R-type
+                if (opcode = TYPE_R) then
                     rd            <= instruction(11 downto 7);
                     alu_operation <= opcode & instruction(30) & instruction(14 downto 12);
                     rs1           <= instruction(19 downto 15);
@@ -67,7 +68,7 @@ begin
                     jump          <= '0';
                     jalr_flag     <= '0';
                     pc_out        <= (others => '0');
-                elsif (opcode = "0010011") then -- I-type
+                elsif (opcode = TYPE_I) then
                     rd                      <= instruction(11 downto 7);
                     alu_operation           <= opcode & '0' & instruction(14 downto 12);
                     rs1                     <= instruction(19 downto 15);
@@ -82,7 +83,7 @@ begin
                     jump                    <= '0';
                     jalr_flag               <= '0';
                     pc_out                  <= (others => '0');
-                elsif (opcode = "0000011") then -- Load
+                elsif (opcode = TYPE_LOAD) then
                     rd                      <= instruction(11 downto 7);
                     alu_operation           <= opcode & '0' & instruction(14 downto 12);
                     rs1                     <= instruction(19 downto 15);
@@ -97,7 +98,7 @@ begin
                     jump                    <= '0';
                     jalr_flag               <= '0';
                     pc_out                  <= (others => '0');
-                elsif (opcode = "0100011") then -- Store
+                elsif (opcode = TYPE_STORE) then
                     immediate(11 downto 0)  <= instruction(31 downto 25) & instruction(11 downto 7);
                     immediate(31 downto 12) <= (others => instruction(31));
                     rs2                     <= instruction(24 downto 20);
@@ -112,7 +113,7 @@ begin
                     jump                    <= '0';
                     jalr_flag               <= '0';
                     pc_out                  <= (others => '0');
-                elsif (opcode = "1100011") then -- Conditional
+                elsif (opcode = TYPE_CONDITIONAL) then
                     immediate(12 downto 0)  <= instruction(31) & instruction(7) &
                                                instruction(30 downto 25) & instruction(11 downto 8) & '0';
                     immediate(31 downto 13) <= (others => instruction(31));
@@ -128,7 +129,7 @@ begin
                     jump                    <= '0';
                     jalr_flag               <= '0';
                     pc_out                  <= (others => '0');
-                elsif (opcode = "1101111") then -- JAL
+                elsif (opcode = TYPE_JAL) then
                     immediate(20 downto 0)  <= instruction(31) & instruction(19 downto 12) &
                                                instruction(20) & instruction(30 downto 21) & '0';
                     immediate(31 downto 21) <= (others => instruction(31));
@@ -144,7 +145,7 @@ begin
                     jump                    <= '1';
                     jalr_flag               <= '0';
                     pc_out                  <= pc_in;
-                elsif (opcode = "1100111") then -- JALR
+                elsif (opcode = TYPE_JALR) then
                     immediate(11 downto 0)  <= instruction(31 downto 20);
                     immediate(31 downto 12) <= (others => instruction(31));
                     rs1                     <= instruction(19 downto 15);
@@ -159,7 +160,7 @@ begin
                     jump                    <= '1';
                     jalr_flag               <= '1';
                     pc_out                  <= (others => '0');
-                elsif (opcode = "0110111") then -- U-type
+                elsif (opcode = TYPE_U) then
                     rd            <= instruction(11 downto 7);
                     alu_operation <= opcode & "0000";
                     rs1           <= (others => '0');

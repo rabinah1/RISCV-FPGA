@@ -22,7 +22,8 @@ STYLE_CHECK_FILES = \
 	pc_adder.vhd \
 	state_machine.vhd \
 	states_package.vhd \
-	uart.vhd
+	uart.vhd \
+	instruction_types_package.vhd
 
 FILES_TO_REMOVE = \
 	db \

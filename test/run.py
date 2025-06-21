@@ -24,6 +24,7 @@ design_lib.add_source_files([os.path.join(src_dir, "*.vhd")])
 tb_lib = VU.add_library("tb_lib")
 tb_lib.add_source_files([os.path.join(test_dir, "*.vhd")])
 tb_lib.add_source_files([os.path.join(src_dir, "*states_package.vhd")])
+tb_lib.add_source_files([os.path.join(src_dir, "*opcode_pkg.vhd")])
 
 VU.set_sim_option("modelsim.vsim_flags", [f"-ginput_file={SCRIPT_DIR}/riscv_stimulus.txt"])
 
