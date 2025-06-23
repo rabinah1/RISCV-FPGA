@@ -1,7 +1,7 @@
 SHELL = /bin/bash
-CC = /opt/riscv/bin/riscv32-unknown-linux-gnu-gcc
-LD = /opt/riscv/bin/riscv32-unknown-linux-gnu-ld
-OC = /opt/riscv/bin/riscv32-unknown-linux-gnu-objcopy
+CC = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-gcc
+LD = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-ld
+OC = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-objcopy
 BITFILE = ./output_files/riscv.sof
 
 .DELETE_ON_ERROR:
@@ -37,8 +37,13 @@ FILES_TO_REMOVE = \
 sw:
 	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -S test.c
 	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -c test.c -o test.o
-	@$(LD) -T ./custom.ld -o test test.o
-	@$(OC) -O binary test test
+	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -c start.S -o start.o
+	@$(LD) -T ./linker.ld -o test.elf start.o test.o
+	@$(OC) -O binary test.elf test.bin
+	#@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -nostartfiles -o bare.elf test.c
+	#@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -nostartfiles -Ttext=0x0 -c test.c -o test.o
+	#@$(LD) -T ./custom.ld -o test test.o
+	#@$(OC) -O binary test test
 
 bitstream: synthesis fitting timing_analysis
 	@quartus_asm --write_settings_files=off ./riscv -c riscv
