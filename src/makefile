@@ -1,7 +1,7 @@
 SHELL = /bin/bash
-CC = /opt/riscv/bin/riscv32-unknown-linux-gnu-gcc
-LD = /opt/riscv/bin/riscv32-unknown-linux-gnu-ld
-OC = /opt/riscv/bin/riscv32-unknown-linux-gnu-objcopy
+CC = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-gcc
+LD = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-ld
+OC = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-objcopy
 BITFILE = ./output_files/riscv.sof
 
 .DELETE_ON_ERROR:
