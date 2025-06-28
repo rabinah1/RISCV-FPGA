@@ -160,12 +160,13 @@ architecture struct of riscv is
 
     component data_memory is
         port (
-            clk          : in    std_logic;
-            reset        : in    std_logic;
-            address      : in    std_logic_vector(31 downto 0);
-            write_data   : in    std_logic_vector(31 downto 0);
-            write_enable : in    std_logic;
-            output       : out   std_logic_vector(31 downto 0)
+            clk               : in    std_logic;
+            reset             : in    std_logic;
+            address           : in    std_logic_vector(31 downto 0);
+            write_data        : in    std_logic_vector(31 downto 0);
+            write_enable      : in    std_logic;
+            write_back_enable : in    std_logic;
+            output            : out   std_logic_vector(31 downto 0)
         );
     end component data_memory;
 
@@ -306,12 +307,13 @@ begin
 
     data_memory_unit : component data_memory
         port map (
-            clk          => clk_500khz,
-            reset        => reset,
-            address      => alu_result,
-            write_data   => register_file_reg_out_2,
-            write_enable => instruction_decoder_store,
-            output       => data_memory_output
+            clk               => clk_500khz,
+            reset             => reset,
+            address           => alu_result,
+            write_data        => register_file_reg_out_2,
+            write_enable      => instruction_decoder_store,
+            write_back_enable => state_machine_write_back_enable,
+            output            => data_memory_output
         );
 
     pc_offset_mux : component mux_2_inputs
@@ -320,7 +322,7 @@ begin
             reset   => reset,
             control => (alu_result(0) and instruction_decoder_branch) or instruction_decoder_jump,
             input_1 => std_logic_vector(to_unsigned(1, 32)),
-            input_2 => instruction_decoder_immediate,
+            input_2 => "00" & instruction_decoder_immediate(31 downto 2),
             output  => pc_offset_mux_output
         );
 

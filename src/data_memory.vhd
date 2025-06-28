@@ -4,12 +4,13 @@ use ieee.numeric_std.all;
 
 entity data_memory is
     port (
-        clk          : in    std_logic;
-        reset        : in    std_logic;
-        address      : in    std_logic_vector(31 downto 0);
-        write_data   : in    std_logic_vector(31 downto 0);
-        write_enable : in    std_logic;
-        output       : out   std_logic_vector(31 downto 0)
+        clk               : in    std_logic;
+        reset             : in    std_logic;
+        address           : in    std_logic_vector(31 downto 0);
+        write_data        : in    std_logic_vector(31 downto 0);
+        write_enable      : in    std_logic;
+        write_back_enable : in    std_logic;
+        output            : out   std_logic_vector(31 downto 0)
     );
 end entity data_memory;
 
@@ -29,7 +30,7 @@ begin
         if (reset = '1') then
             output <= (others => '0');
         elsif (rising_edge(clk)) then
-            if (write_enable = '1') then
+            if (write_enable = '1' and write_back_enable = '1') then
                 data_mem(to_integer(unsigned(address(9 downto 0)))) <= write_data;
             end if;
         end if;
