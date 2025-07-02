@@ -1,6 +1,8 @@
 import argparse
 import serial
 
+BAUD_RATE = 9600
+
 
 def _parse_args():
     descr = """
@@ -26,8 +28,9 @@ def main():
     with open(args.binary, "rb") as f:
         data = f.read()
 
-    ser = serial.Serial(args.serial_port, 9600)
-    ser.write(data)
+    ser = serial.Serial(args.serial_port, BAUD_RATE)
+    ser.write(bytes([0]) + data)
+    ser.flush()
     ser.close()
 
 

@@ -12,35 +12,45 @@ end entity tb_register_file;
 
 architecture tb of tb_register_file is
 
-    signal   clk        : std_logic := '0';
-    signal   reset      : std_logic := '0';
-    signal   enable     : std_logic := '0';
-    signal   rs1        : std_logic_vector(4 downto 0) := (others => '0');
-    signal   rs2        : std_logic_vector(4 downto 0) := (others => '0');
-    signal   rd         : std_logic_vector(4 downto 0) := (others => '0');
-    signal   write      : std_logic := '0';
-    signal   write_data : std_logic_vector(31 downto 0) := (others => '0');
-    signal   reg_out_1  : std_logic_vector(31 downto 0) := (others => '0');
-    signal   reg_out_2  : std_logic_vector(31 downto 0) := (others => '0');
-    signal   cpu_reg    : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 2 us;
+    signal   clk              : std_logic := '0';
+    signal   reset            : std_logic := '0';
+    signal   enable           : std_logic := '0';
+    signal   rs1              : std_logic_vector(4 downto 0) := (others => '0');
+    signal   rs2              : std_logic_vector(4 downto 0) := (others => '0');
+    signal   rd               : std_logic_vector(4 downto 0) := (others => '0');
+    signal   write            : std_logic := '0';
+    signal   write_data       : std_logic_vector(31 downto 0) := (others => '0');
+    signal   trig_reg_dump    : std_logic := '0';
+    signal   pc               : std_logic_vector(31 downto 0) := (others => '0');
+    signal   reg_out_1        : std_logic_vector(31 downto 0) := (others => '0');
+    signal   reg_out_2        : std_logic_vector(31 downto 0) := (others => '0');
+    signal   reg_out_uart     : std_logic_vector(31 downto 0) := (others => '0');
+    signal   address_out_uart : std_logic_vector(5 downto 0) := (others => '0');
+    signal   reg_dump_start   : std_logic := '0';
+    signal   reg_dump_halt    : std_logic := '0';
+    signal   check_sig        : natural := 0;
+    constant CLK_PERIOD       : time := 2 us;
 
     type memory is array(31 downto 0) of std_logic_vector(31 downto 0);
 
     component register_file is
         port (
-            clk        : in    std_logic;
-            reset      : in    std_logic;
-            enable     : in    std_logic;
-            rs1        : in    std_logic_vector(4 downto 0);
-            rs2        : in    std_logic_vector(4 downto 0);
-            rd         : in    std_logic_vector(4 downto 0);
-            write      : in    std_logic;
-            write_data : in    std_logic_vector(31 downto 0);
-            reg_out_1  : out   std_logic_vector(31 downto 0);
-            reg_out_2  : out   std_logic_vector(31 downto 0);
-            cpu_reg    : out   std_logic_vector(31 downto 0)
+            clk              : in    std_logic;
+            reset            : in    std_logic;
+            enable           : in    std_logic;
+            rs1              : in    std_logic_vector(4 downto 0);
+            rs2              : in    std_logic_vector(4 downto 0);
+            rd               : in    std_logic_vector(4 downto 0);
+            write            : in    std_logic;
+            write_data       : in    std_logic_vector(31 downto 0);
+            trig_reg_dump    : in    std_logic;
+            pc               : in    std_logic_vector(31 downto 0);
+            reg_out_1        : out   std_logic_vector(31 downto 0);
+            reg_out_2        : out   std_logic_vector(31 downto 0);
+            reg_out_uart     : out   std_logic_vector(31 downto 0);
+            address_out_uart : out   std_logic_vector(5 downto 0);
+            reg_dump_start   : out   std_logic;
+            reg_dump_halt    : out   std_logic
         );
     end component;
 
@@ -48,17 +58,22 @@ begin
 
     register_file_instance : component register_file
         port map (
-            clk        => clk,
-            reset      => reset,
-            enable     => enable,
-            rs1        => rs1,
-            rs2        => rs2,
-            rd         => rd,
-            write      => write,
-            write_data => write_data,
-            reg_out_1  => reg_out_1,
-            reg_out_2  => reg_out_2,
-            cpu_reg    => cpu_reg
+            clk              => clk,
+            reset            => reset,
+            enable           => enable,
+            rs1              => rs1,
+            rs2              => rs2,
+            rd               => rd,
+            write            => write,
+            write_data       => write_data,
+            trig_reg_dump    => trig_reg_dump,
+            pc               => pc,
+            reg_out_1        => reg_out_1,
+            reg_out_2        => reg_out_2,
+            reg_out_uart     => reg_out_uart,
+            address_out_uart => address_out_uart,
+            reg_dump_start   => reg_dump_start,
+            reg_dump_halt    => reg_dump_halt
         );
 
     clk_process : process is
@@ -100,28 +115,13 @@ begin
                 wait for CLK_PERIOD * 2;
                 check_equal(reg_out_1, std_logic_vector(to_unsigned(0, 32)), "Comparing reg_out_1 against reference.");
                 check_equal(reg_out_2, std_logic_vector(to_unsigned(0, 32)), "Comparing reg_out_2 against reference.");
-                check_equal(cpu_reg, std_logic_vector(to_unsigned(0, 32)), "Comparing cpu_reg against reference.");
+                check_equal(reg_out_uart, std_logic_vector(to_unsigned(0, 32)),
+                            "Comparing reg_out_uart against reference.");
+                check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)),
+                            "Comparing address_out_uart against reference.");
+                check_equal(reg_dump_start, '0', "Comparing reg_dump_start against reference.");
                 check_equal(regs(2), std_logic_vector(to_unsigned(512, 32)),
                             "Comparing stack pointer against reference.");
-                check_sig  <= 1;
-                info("===== TEST CASE FINISHED =====");
-            elsif run("test_cpu_reg") then
-                info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_cpu_reg");
-                info("--------------------------------------------------------------------------------");
-                reset      <= '1';
-                enable     <= '0';
-                rs1        <= (others => '0');
-                rs2        <= (others => '0');
-                rd         <= (others => '0');
-                write      <= '0';
-                write_data <= (others => '0');
-                wait for CLK_PERIOD * 2;
-                reset      <= '0';
-                regs(10)   <= force std_logic_vector(to_unsigned(85, 32));
-                wait for CLK_PERIOD * 2;
-                check_equal(cpu_reg, std_logic_vector(to_unsigned(85, 32)),
-                            "Comparing cpu_reg against reference.");
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_data_is_read_to_output_registers") then
@@ -183,8 +183,26 @@ begin
                 write      <= '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(regs(0), std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing register address 6 against reference.");
+                            "Comparing register address 0 against reference.");
                 check_sig  <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_register_file_dumping_towards_uart") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_register_file_dumping_towards_uart");
+                info("--------------------------------------------------------------------------------");
+                reset         <= '1';
+                trig_reg_dump <= '1';
+                wait for CLK_PERIOD * 2;
+                reset         <= '0';
+                regs(0)       <= force std_logic_vector(to_unsigned(123, 32));
+                pc            <= force std_logic_vector(to_unsigned(0, 32));
+                wait for CLK_PERIOD * 2;
+                check_equal(reg_dump_start, '1', "Comparing reg_dump_start against reference.");
+                check_equal(reg_out_uart, std_logic_vector(to_unsigned(123, 32)),
+                            "Comparing reg_out_uart against reference.");
+                check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)),
+                            "Comparing address_out_uart against reference.");
+                check_sig     <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
 

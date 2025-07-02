@@ -4,10 +4,10 @@ use ieee.numeric_std.all;
 
 entity riscv is
     port (
-        clk     : in    std_logic;
-        reset   : in    std_logic;
-        data_in : in    std_logic;
-        cpu_reg : out   std_logic_vector(31 downto 0)
+        clk      : in    std_logic;
+        reset    : in    std_logic;
+        data_in  : in    std_logic;
+        data_out : out   std_logic
     );
 end entity riscv;
 
@@ -45,9 +45,14 @@ architecture struct of riscv is
     signal clk_500khz                        : std_logic;
     signal uart_write_trig                   : std_logic;
     signal uart_data_to_imem                 : std_logic_vector(31 downto 0);
+    signal uart_data_from_imem               : std_logic_vector(31 downto 0);
+    signal uart_address_from_imem            : std_logic_vector(5 downto 0);
     signal uart_address                      : std_logic_vector(31 downto 0);
     signal uart_halt                         : std_logic;
     signal uart_write_done                   : std_logic;
+    signal register_file_reg_dump_start      : std_logic;
+    signal register_file_halt                : std_logic;
+    signal trig_reg_dump                     : std_logic;
 
     component alu is
         port (
@@ -89,17 +94,22 @@ architecture struct of riscv is
 
     component register_file is
         port (
-            clk        : in    std_logic;
-            reset      : in    std_logic;
-            enable     : in    std_logic;
-            rs1        : in    std_logic_vector(4 downto 0);
-            rs2        : in    std_logic_vector(4 downto 0);
-            rd         : in    std_logic_vector(4 downto 0);
-            write      : in    std_logic;
-            write_data : in    std_logic_vector(31 downto 0);
-            reg_out_1  : out   std_logic_vector(31 downto 0);
-            reg_out_2  : out   std_logic_vector(31 downto 0);
-            cpu_reg    : out   std_logic_vector(31 downto 0)
+            clk              : in    std_logic;
+            reset            : in    std_logic;
+            enable           : in    std_logic;
+            rs1              : in    std_logic_vector(4 downto 0);
+            rs2              : in    std_logic_vector(4 downto 0);
+            rd               : in    std_logic_vector(4 downto 0);
+            write            : in    std_logic;
+            write_data       : in    std_logic_vector(31 downto 0);
+            trig_reg_dump    : in    std_logic;
+            pc               : in    std_logic_vector(31 downto 0);
+            reg_out_1        : out   std_logic_vector(31 downto 0);
+            reg_out_2        : out   std_logic_vector(31 downto 0);
+            reg_out_uart     : out   std_logic_vector(31 downto 0);
+            address_out_uart : out   std_logic_vector(5 downto 0);
+            reg_dump_start   : out   std_logic;
+            reg_dump_halt    : out   std_logic
         );
     end component register_file;
 
@@ -184,6 +194,7 @@ architecture struct of riscv is
         port (
             clk               : in    std_logic;
             reset             : in    std_logic;
+            halt              : in    std_logic;
             fetch_enable      : out   std_logic;
             decode_enable     : out   std_logic;
             execute_enable    : out   std_logic;
@@ -201,14 +212,19 @@ architecture struct of riscv is
 
     component uart is
         port (
-            clk          : in    std_logic;
-            reset        : in    std_logic;
-            data_in      : in    std_logic;
-            halt         : out   std_logic;
-            write_trig   : out   std_logic;
-            write_done   : out   std_logic;
-            data_to_imem : out   std_logic_vector(31 downto 0);
-            address      : out   std_logic_vector(31 downto 0)
+            clk               : in    std_logic;
+            reset             : in    std_logic;
+            data_in           : in    std_logic;
+            data_from_imem    : in    std_logic_vector(31 downto 0);
+            address_from_imem : in    std_logic_vector(5 downto 0);
+            reg_dump_start    : in    std_logic;
+            data_out          : out   std_logic;
+            halt              : out   std_logic;
+            write_trig        : out   std_logic;
+            write_done        : out   std_logic;
+            trig_reg_dump     : out   std_logic;
+            data_to_imem      : out   std_logic_vector(31 downto 0);
+            address           : out   std_logic_vector(31 downto 0)
         );
     end component uart;
 
@@ -251,17 +267,22 @@ begin
 
     register_file_unit : component register_file
         port map (
-            clk        => clk_500khz,
-            reset      => reset,
-            enable     => state_machine_write_back_enable,
-            rs1        => instruction_decoder_rs1,
-            rs2        => instruction_decoder_rs2,
-            rd         => instruction_decoder_rd,
-            write      => instruction_decoder_write,
-            write_data => writeback_mux_output,
-            reg_out_1  => register_file_reg_out_1,
-            reg_out_2  => register_file_reg_out_2,
-            cpu_reg    => cpu_reg
+            clk              => clk_500khz,
+            reset            => reset,
+            enable           => state_machine_write_back_enable,
+            rs1              => instruction_decoder_rs1,
+            rs2              => instruction_decoder_rs2,
+            rd               => instruction_decoder_rd,
+            write            => instruction_decoder_write,
+            write_data       => writeback_mux_output,
+            trig_reg_dump    => trig_reg_dump,
+            pc               => program_counter_address_out,
+            reg_out_1        => register_file_reg_out_1,
+            reg_out_2        => register_file_reg_out_2,
+            reg_out_uart     => uart_data_from_imem,
+            address_out_uart => uart_address_from_imem,
+            reg_dump_start   => register_file_reg_dump_start,
+            reg_dump_halt    => register_file_halt
         );
 
     instruction_decoder_unit : component instruction_decoder
@@ -349,6 +370,7 @@ begin
         port map (
             clk               => clk_500khz,
             reset             => reset,
+            halt              => register_file_halt,
             fetch_enable      => state_machine_fetch_enable,
             decode_enable     => state_machine_decode_enable,
             execute_enable    => state_machine_execute_enable,
@@ -364,14 +386,19 @@ begin
 
     uart_unit : component uart
         port map (
-            clk          => clk_500khz,
-            reset        => reset,
-            data_in      => data_in,
-            halt         => uart_halt,
-            write_trig   => uart_write_trig,
-            write_done   => uart_write_done,
-            data_to_imem => uart_data_to_imem,
-            address      => uart_address
+            clk               => clk_500khz,
+            reset             => reset,
+            data_in           => data_in,
+            data_from_imem    => uart_data_from_imem,
+            address_from_imem => uart_address_from_imem,
+            reg_dump_start    => register_file_reg_dump_start,
+            data_out          => data_out,
+            halt              => uart_halt,
+            write_trig        => uart_write_trig,
+            write_done        => uart_write_done,
+            trig_reg_dump     => trig_reg_dump,
+            data_to_imem      => uart_data_to_imem,
+            address           => uart_address
         );
 
 end architecture struct;

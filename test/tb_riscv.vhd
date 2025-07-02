@@ -17,16 +17,16 @@ architecture tb of tb_riscv is
     signal   clk        : std_logic := '0';
     signal   reset      : std_logic := '0';
     signal   data_in    : std_logic := '0';
-    signal   cpu_reg    : std_logic_vector(31 downto 0);
+    signal   data_out   : std_logic := '0';
     signal   check_sig  : natural := 0;
     constant CLK_PERIOD : time := 20 ns;
 
     component riscv is
         port (
-            clk     : in    std_logic;
-            reset   : in    std_logic;
-            data_in : in    std_logic;
-            cpu_reg : out   std_logic_vector(31 downto 0)
+            clk      : in    std_logic;
+            reset    : in    std_logic;
+            data_in  : in    std_logic;
+            data_out : out   std_logic
         );
     end component;
 
@@ -34,10 +34,10 @@ begin
 
     riscv_instance : component riscv
         port map (
-            clk     => clk,
-            reset   => reset,
-            data_in => data_in,
-            cpu_reg => cpu_reg
+            clk      => clk,
+            reset    => reset,
+            data_in  => data_in,
+            data_out => data_out
         );
 
     clk_process : process is

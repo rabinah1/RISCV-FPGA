@@ -12,27 +12,35 @@ end entity tb_uart;
 
 architecture tb of tb_uart is
 
-    signal   clk          : std_logic := '0';
-    signal   reset        : std_logic := '0';
-    signal   data_in      : std_logic := '0';
-    signal   halt         : std_logic := '0';
-    signal   write_trig   : std_logic := '0';
-    signal   write_done   : std_logic := '0';
-    signal   data_to_imem : std_logic_vector(31 downto 0) := (others => '0');
-    signal   address      : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig    : natural := 0;
-    constant CLK_PERIOD   : time := 2 us;
+    signal   clk               : std_logic := '0';
+    signal   reset             : std_logic := '0';
+    signal   data_in           : std_logic := '0';
+    signal   data_from_imem    : std_logic_vector(31 downto 0) := (others => '0');
+    signal   address_from_imem : std_logic_vector(5 downto 0) := (others => '0');
+    signal   reg_dump_start    : std_logic := '0';
+    signal   data_out          : std_logic := '0';
+    signal   halt              : std_logic := '0';
+    signal   write_trig        : std_logic := '0';
+    signal   write_done        : std_logic := '0';
+    signal   data_to_imem      : std_logic_vector(31 downto 0) := (others => '0');
+    signal   address           : std_logic_vector(31 downto 0) := (others => '0');
+    signal   check_sig         : natural := 0;
+    constant CLK_PERIOD        : time := 2 us;
 
     component uart is
         port (
-            clk          : in    std_logic;
-            reset        : in    std_logic;
-            data_in      : in    std_logic;
-            halt         : out   std_logic;
-            write_trig   : out   std_logic;
-            write_done   : out   std_logic;
-            data_to_imem : out   std_logic_vector(31 downto 0);
-            address      : out   std_logic_vector(31 downto 0)
+            clk               : in    std_logic;
+            reset             : in    std_logic;
+            data_in           : in    std_logic;
+            data_from_imem    : in    std_logic_vector(31 downto 0);
+            address_from_imem : in    std_logic_vector(5 downto 0);
+            reg_dump_start    : in    std_logic;
+            data_out          : out   std_logic;
+            halt              : out   std_logic;
+            write_trig        : out   std_logic;
+            write_done        : out   std_logic;
+            data_to_imem      : out   std_logic_vector(31 downto 0);
+            address           : out   std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -40,14 +48,18 @@ begin
 
     uart_instance : component uart
         port map (
-            clk          => clk,
-            reset        => reset,
-            data_in      => data_in,
-            halt         => halt,
-            write_trig   => write_trig,
-            write_done   => write_done,
-            data_to_imem => data_to_imem,
-            address      => address
+            clk               => clk,
+            reset             => reset,
+            data_in           => data_in,
+            data_from_imem    => data_from_imem,
+            address_from_imem => address_from_imem,
+            reg_dump_start    => reg_dump_start,
+            data_out          => data_out,
+            halt              => halt,
+            write_trig        => write_trig,
+            write_done        => write_done,
+            data_to_imem      => data_to_imem,
+            address           => address
         );
 
     clk_process : process is
@@ -70,10 +82,11 @@ begin
         alias imem_idx           is <<signal .tb_uart.uart_instance.imem_idx: integer range 0 to 4>>;
         alias increment_address  is <<signal .tb_uart.uart_instance.increment_address: std_logic>>;
         alias start_bit_detected is <<signal .tb_uart.uart_instance.start_bit_detected: std_logic>>;
-        alias cycle              is <<signal .tb_uart.uart_instance.cycle: integer range 0 to 78>>;
+        alias rx_cycle           is <<signal .tb_uart.uart_instance.rx_cycle: integer range 0 to 78>>;
         alias first_bit          is <<signal .tb_uart.uart_instance.first_bit: std_logic>>;
         alias packet             is <<signal .tb_uart.uart_instance.packet: std_logic_vector(7 downto 0)>>;
         alias halt_counter       is <<signal .tb_uart.uart_instance.halt_counter: integer>>;
+        alias first_byte         is <<signal .tb_uart.uart_instance.first_byte: std_logic>>;
 
     begin
 
@@ -128,6 +141,7 @@ begin
                 is_idle      <= force '1';
                 imem_idx     <= force 0;
                 halt_counter <= force 25;
+                first_byte   <= force '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
                 check_sig    <= 1;
@@ -143,6 +157,7 @@ begin
                 is_idle      <= force '1';
                 imem_idx     <= force 0;
                 halt_counter <= force 80;
+                first_byte   <= force '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
                 check_equal(write_done, '1', "Comparing write_done against reference.");
@@ -159,6 +174,7 @@ begin
                 is_idle      <= force '1';
                 imem_idx     <= force 1;
                 halt_counter <= force 0;
+                first_byte   <= force '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
                 check_sig    <= 1;
@@ -174,6 +190,7 @@ begin
                 is_idle      <= force '1';
                 imem_idx     <= force 2;
                 halt_counter <= force 1;
+                first_byte   <= force '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
                 check_sig    <= 1;
@@ -189,6 +206,7 @@ begin
                 is_idle      <= force '1';
                 imem_idx     <= force 3;
                 halt_counter <= force 1;
+                first_byte   <= force '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
                 check_sig    <= 1;
@@ -204,6 +222,7 @@ begin
                 is_idle      <= force '1';
                 imem_idx     <= force 4;
                 halt_counter <= force 1;
+                first_byte   <= force '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1', "Comparing halt against reference.");
                 check_equal(write_trig, '1', "Comparing write_trig against reference.");
@@ -249,7 +268,7 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '1';
-                cycle              <= force 78;
+                rx_cycle           <= force 78;
                 first_bit          <= force '1';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
@@ -266,7 +285,7 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '1';
-                cycle              <= force 45;
+                rx_cycle           <= force 45;
                 first_bit          <= force '1';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
@@ -283,7 +302,7 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '1';
-                cycle              <= force 52;
+                rx_cycle           <= force 52;
                 first_bit          <= force '0';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
@@ -300,7 +319,7 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '1';
-                cycle              <= force 20;
+                rx_cycle           <= force 20;
                 first_bit          <= force '0';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
@@ -317,7 +336,7 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '0';
-                cycle              <= force 33;
+                rx_cycle           <= force 33;
                 packet             <= force "00110101";
                 imem_idx           <= force 0;
                 wait for CLK_PERIOD;
@@ -336,9 +355,10 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '0';
-                cycle              <= force 52;
+                rx_cycle           <= force 52;
                 packet             <= force "00110101";
                 imem_idx           <= force 0;
+                first_byte         <= force '0';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
                 check_equal(data_to_imem, std_logic_vector(unsigned'("00000000000000000000000000110101")),
@@ -355,9 +375,10 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '0';
-                cycle              <= force 52;
+                rx_cycle           <= force 52;
                 packet             <= force "00110101";
                 imem_idx           <= force 1;
+                first_byte         <= force '0';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
                 check_equal(data_to_imem, std_logic_vector(unsigned'("00000000000000000011010100000000")),
@@ -374,9 +395,10 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '0';
-                cycle              <= force 52;
+                rx_cycle           <= force 52;
                 packet             <= force "00110101";
                 imem_idx           <= force 2;
+                first_byte         <= force '0';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
                 check_equal(data_to_imem, std_logic_vector(unsigned'("00000000001101010000000000000000")),
@@ -393,9 +415,10 @@ begin
                 reset              <= '0';
                 is_idle            <= force '0';
                 start_bit_detected <= force '0';
-                cycle              <= force 52;
+                rx_cycle           <= force 52;
                 packet             <= force "00110101";
                 imem_idx           <= force 3;
+                first_byte         <= force '0';
                 wait for CLK_PERIOD;
                 check_equal(write_trig, '0', "Comparing write_trig against reference.");
                 check_equal(data_to_imem, std_logic_vector(unsigned'("00110101000000000000000000000000")),

@@ -6,6 +6,7 @@ entity state_machine is
     port (
         clk               : in    std_logic;
         reset             : in    std_logic;
+        halt              : in    std_logic;
         fetch_enable      : out   std_logic;
         decode_enable     : out   std_logic;
         execute_enable    : out   std_logic;
@@ -26,7 +27,11 @@ begin
         if (reset = '1') then
             state <= fetch;
         elsif (falling_edge(clk)) then
-            state <= next_state;
+            if (halt = '1') then
+                state <= idle;
+            else
+                state <= next_state;
+            end if;
         end if;
 
     end process state_change;
@@ -43,6 +48,14 @@ begin
         elsif (rising_edge(clk)) then
 
             case state is
+
+                when idle =>
+
+                    fetch_enable      <= '0';
+                    decode_enable     <= '0';
+                    execute_enable    <= '0';
+                    write_back_enable <= '0';
+                    next_state        <= fetch;
 
                 when fetch =>
 
