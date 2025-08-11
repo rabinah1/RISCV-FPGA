@@ -2,7 +2,7 @@ library ieee;
 
 package uart_package is
 
-    type tx_state is (
+    type state is (
         idle, start, data, stop
     );
 

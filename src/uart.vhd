@@ -29,26 +29,40 @@ architecture rtl of uart is
     constant PACKETS_PER_INSTRUCTION : integer := 4;
     constant CYCLES_PER_SAMPLE       : integer := 52;
     constant CYCLES_PER_SAMPLE_FIRST : integer := 78;
-    signal   start_bit_detected      : std_logic;
-    signal   is_idle                 : std_logic;
+    constant RX_HALT_CYCLES          : integer := 100;
+    constant ACTIVATE_REG_DUMP       : std_logic_vector(7 downto 0) := "00000001";
+    constant RX_REG_DUMP_WAIT_CYCLES : integer := 500000;
     signal   packet                  : std_logic_vector(7 downto 0);
     signal   rx_cycle                : integer range 0 to CYCLES_PER_SAMPLE_FIRST := 0;
     signal   tx_cycle                : integer range 0 to CYCLES_PER_SAMPLE := 0;
-    signal   imem_idx                : integer range 0 to 4 := 0;
+    signal   imem_idx                : integer range 0 to PACKETS_PER_INSTRUCTION := 0;
     signal   increment_address       : std_logic;
     signal   first_bit               : std_logic;
-    signal   halt_counter            : integer := 0;
+    signal   halt_counter            : integer range 0 to RX_HALT_CYCLES := 0;
     signal   trig_uart_tx            : std_logic;
-    signal   first_byte              : std_logic;
+    signal   control_byte            : std_logic;
     signal   regs                    : memory := (others => (others => '0'));
-    signal   state                   : tx_state;
-    signal   next_state              : tx_state;
+    signal   tx_state                : state;
+    signal   tx_next_state           : state;
+    signal   rx_state                : state;
+    signal   rx_next_state           : state;
     signal   delay_counter           : integer := 0;
-    signal   reg_dump_hold_counter   : integer := 0;
+    signal   reg_dump_hold_counter   : integer range 0 to RX_REG_DUMP_WAIT_CYCLES := 0;
 
 begin
 
-    rx : process (all) is
+    rx_state_change : process (clk, reset) is
+    begin
+
+        if (reset = '1') then
+            rx_state <= idle;
+        elsif (falling_edge(clk)) then
+            rx_state <= rx_next_state;
+        end if;
+
+    end process rx_state_change;
+
+    rx_state_machine : process (all) is
 
         variable bit_idx : integer range 0 to 8 := 0;
 
@@ -59,148 +73,165 @@ begin
             address               <= (others => '0');
             write_trig            <= '0';
             halt                  <= '0';
-            start_bit_detected    <= '0';
-            is_idle               <= '1';
             packet                <= (others => '0');
             rx_cycle              <= 0;
             bit_idx               := 0;
             imem_idx              <= 0;
             increment_address     <= '0';
             first_bit             <= '1';
-            halt_counter          <= 100;
+            halt_counter          <= RX_HALT_CYCLES;
             write_done            <= '0';
-            first_byte            <= '1';
+            control_byte          <= '1';
             trig_reg_dump         <= '0';
-            delay_counter         <= 0;
             reg_dump_hold_counter <= 0;
+            delay_counter         <= 0;
+            rx_next_state         <= idle;
         elsif (rising_edge(clk)) then
-            if (is_idle = '1' and data_in = '1') then  -- idling
-                start_bit_detected <= '0';
-                is_idle            <= '1';
-                rx_cycle           <= 0;
-                bit_idx            := 0;
-                first_bit          <= '1';
-                if (imem_idx = PACKETS_PER_INSTRUCTION) then
-                    imem_idx          <= 0;
-                    write_trig        <= '1';
-                    increment_address <= '1';
-                end if;
-                if (halt_counter < 100) then
-                    if (first_byte = '0') then
-                        halt <= '1';
-                    end if;
-                    halt_counter <= halt_counter + 1;
-                    if (halt_counter > 50 and first_byte = '0') then
-                        write_done <= '1';
-                    end if;
-                else
-                    halt       <= '0';
-                    write_trig <= '0';
-                    write_done <= '0';
-                    first_byte <= '1';
-                    packet     <= (others => '0');
-                    if (reg_dump_hold_counter < 500000) then
-                        reg_dump_hold_counter <= reg_dump_hold_counter + 1;
-                    else
-                        trig_reg_dump <= '0';
-                    end if;
-                    delay_counter <= 0;
-                    address       <= (others => '0');
-                end if;
-            elsif (is_idle = '1' and data_in = '0') then  -- start bit
-                start_bit_detected <= '1';
-                is_idle            <= '0';
-                rx_cycle           <= 0;
-                bit_idx            := 0;
-                write_trig         <= '0';
-                first_bit          <= '1';
-                halt_counter       <= 0;
-                if (increment_address = '1') then
-                    address           <= std_logic_vector(unsigned(address) + to_unsigned(1, 32));
-                    increment_address <= '0';
-                end if;
-            elsif (start_bit_detected = '1' and bit_idx < PACKET_SIZE) then
-                -- data frame after start bit
-                write_trig         <= '0';
-                start_bit_detected <= '1';
-                is_idle            <= '0';
-                increment_address  <= '0';
-                halt_counter       <= 0;
-                if (first_bit = '1') then
-                    if (rx_cycle < CYCLES_PER_SAMPLE_FIRST) then
-                        rx_cycle <= rx_cycle + 1;
-                    else
-                        rx_cycle        <= 0;
-                        packet(bit_idx) <= data_in;
-                        bit_idx         := bit_idx + 1;
-                        first_bit       <= '0';
-                    end if;
-                else
-                    if (rx_cycle < CYCLES_PER_SAMPLE) then
-                        rx_cycle <= rx_cycle + 1;
-                    else
-                        rx_cycle        <= 0;
-                        packet(bit_idx) <= data_in;
-                        bit_idx         := bit_idx + 1;
-                    end if;
-                end if;
-            else -- after data frame has been processed (stop bit)
-                write_trig         <= '0';
-                bit_idx            := 0;
-                start_bit_detected <= '0';
-                increment_address  <= '0';
-                halt_counter       <= 0;
-                if (rx_cycle < CYCLES_PER_SAMPLE) then
-                    rx_cycle <= rx_cycle + 1;
-                    is_idle  <= '0';
-                else
-                    if (first_byte = '1') then
-                        if (packet = "00000001") then
-                            if (delay_counter < 500000) then
-                                delay_counter <= delay_counter + 1;
-                            else
-                                rx_cycle              <= 0;
-                                is_idle               <= '1';
-                                trig_reg_dump         <= '1';
-                                reg_dump_hold_counter <= 0;
-                                first_byte            <= '1';
+
+            case rx_state is
+
+                when idle =>
+
+                    if (data_in = '1') then
+                        rx_next_state <= idle;
+                        rx_cycle      <= 0;
+                        bit_idx       := 0;
+                        first_bit     <= '1';
+                        if (imem_idx = PACKETS_PER_INSTRUCTION) then
+                            imem_idx          <= 0;
+                            write_trig        <= '1';
+                            increment_address <= '1';
+                            -- TODO: Could address be incremented here, and
+                            -- increment_address be removed?
+                        end if;
+                        if (halt_counter < 100) then
+                            halt_counter <= halt_counter + 1;
+                            if (control_byte = '0') then
+                                halt <= '1';
+                                if (halt_counter > 50) then
+                                    write_done <= '1';
+                                end if;
                             end if;
                         else
-                            trig_reg_dump <= '0';
-                            first_byte    <= '0';
-                            rx_cycle      <= 0;
-                            is_idle       <= '1';
+                            halt         <= '0';
+                            write_trig   <= '0';
+                            write_done   <= '0';
+                            control_byte <= '1';
+                            packet       <= (others => '0');
+                            address      <= (others => '0');
+                            delay_counter <= 0;
+                            if (reg_dump_hold_counter < RX_REG_DUMP_WAIT_CYCLES) then
+                                reg_dump_hold_counter <= reg_dump_hold_counter + 1;
+                            else
+                                trig_reg_dump <= '0';
+                            end if;
                         end if;
                     else
-                        rx_cycle <= 0;
-                        is_idle  <= '1';
-                        if (imem_idx = 0) then
-                            data_to_imem(7 downto 0) <= packet;
-                            imem_idx                 <= 1;
-                        elsif (imem_idx = 1) then
-                            data_to_imem(15 downto 8) <= packet;
-                            imem_idx                  <= 2;
-                        elsif (imem_idx = 2) then
-                            data_to_imem(23 downto 16) <= packet;
-                            imem_idx                   <= 3;
-                        elsif (imem_idx = 3) then
-                            data_to_imem(31 downto 24) <= packet;
-                            imem_idx                   <= 4;
+                        rx_next_state <= start;
+                    end if;
+
+                when start =>
+
+                    rx_next_state <= data;
+                    rx_cycle      <= 0;
+                    bit_idx       := 0;
+                    write_trig    <= '0';
+                    first_bit     <= '1';
+                    halt_counter  <= 0;
+                    if (increment_address = '1') then
+                        address           <= std_logic_vector(unsigned(address) + to_unsigned(1, 32));
+                        increment_address <= '0';
+                    end if;
+
+                when data =>
+
+                    write_trig <= '0';
+                    halt_counter <= 0;
+                    if (bit_idx < PACKET_SIZE) then
+                        if (first_bit = '1') then
+                            if (rx_cycle < CYCLES_PER_SAMPLE_FIRST) then
+                                rx_cycle <= rx_cycle + 1;
+                            else
+                                rx_cycle        <= 0;
+                                packet(bit_idx) <= data_in;
+                                bit_idx         := bit_idx + 1;
+                                first_bit       <= '0';
+                            end if;
+                        else
+                            if (rx_cycle <= CYCLES_PER_SAMPLE) then
+                                rx_cycle <= rx_cycle + 1;
+                            else
+                                rx_cycle        <= 0;
+                                packet(bit_idx) <= data_in;
+                                bit_idx         := bit_idx + 1;
+                                first_bit       <= '0';
+                            end if;
+                        end if;
+                        rx_next_state <= data;
+                    else
+                        rx_next_state <= stop;
+                    end if;
+
+                when stop =>
+
+                    write_trig        <= '0';
+                    bit_idx           := 0;
+                    increment_address <= '0';
+                    halt_counter      <= 0;
+                    if (rx_cycle < CYCLES_PER_SAMPLE) then
+                        rx_cycle      <= rx_cycle + 1;
+                        rx_next_state <= stop;
+                    else
+                        if (control_byte = '1') then
+                            if (packet = ACTIVATE_REG_DUMP) then
+                                if (delay_counter < 500000) then
+                                    delay_counter <= delay_counter + 1;
+                                    rx_next_state <= stop;
+                                else
+                                    trig_reg_dump         <= '1';
+                                    reg_dump_hold_counter <= 0;
+                                    control_byte          <= '1';
+                                    rx_next_state         <= idle;
+                                    rx_cycle              <= 0;
+                                end if;
+                            else
+                                trig_reg_dump         <= '0';
+                                control_byte          <= '0';
+                                rx_next_state         <= idle;
+                                rx_cycle              <= 0;
+                            end if;
+                        else
+                            rx_cycle <= 0;
+                            rx_next_state <= idle;
+                            if (imem_idx = 0) then
+                                data_to_imem(7 downto 0) <= packet;
+                                imem_idx                 <= 1;
+                            elsif (imem_idx = 1) then
+                                data_to_imem(15 downto 8) <= packet;
+                                imem_idx                  <= 2;
+                            elsif (imem_idx = 2) then
+                                data_to_imem(23 downto 16) <= packet;
+                                imem_idx                   <= 3;
+                            elsif (imem_idx = 3) then
+                                data_to_imem(31 downto 24) <= packet;
+                                imem_idx                   <= 4;
+                            end if;
                         end if;
                     end if;
-                end if;
-            end if;
+
+            end case;
+
         end if;
 
-    end process rx;
+    end process rx_state_machine;
 
     tx_state_change : process (clk, reset) is
     begin
 
         if (reset = '1') then
-            state <= idle;
+            tx_state <= idle;
         elsif (falling_edge(clk)) then
-            state <= next_state;
+            tx_state <= tx_next_state;
         end if;
 
     end process tx_state_change;
@@ -214,60 +245,60 @@ begin
     begin
 
         if (reset = '1') then
-            data_out   <= '1';
-            tx_cycle   <= 0;
-            bit_idx    := 0;
-            reg_idx    := 0;
-            byte_idx   := 0;
-            next_state <= idle;
+            data_out      <= '1';
+            tx_cycle      <= 0;
+            bit_idx       := 0;
+            reg_idx       := 0;
+            byte_idx      := 0;
+            tx_next_state <= idle;
         elsif (rising_edge(clk)) then
 
-            case state is
+            case tx_state is
 
                 when idle =>
 
                     data_out <= '1';
                     if (trig_uart_tx = '1') then
-                        next_state <= start;
+                        tx_next_state <= start;
                     else
-                        next_state <= idle;
+                        tx_next_state <= idle;
                     end if;
 
                 when start =>
 
                     data_out <= '0';
                     if (tx_cycle < CYCLES_PER_SAMPLE) then
-                        tx_cycle   <= tx_cycle + 1;
-                        next_state <= start;
+                        tx_cycle      <= tx_cycle + 1;
+                        tx_next_state <= start;
                     else
-                        tx_cycle   <= 0;
-                        next_state <= data;
+                        tx_cycle      <= 0;
+                        tx_next_state <= data;
                     end if;
 
                 when data =>
 
                     if (bit_idx < PACKET_SIZE * (byte_idx + 1)) then
                         if (tx_cycle < CYCLES_PER_SAMPLE) then
-                            data_out   <= regs(reg_idx)(bit_idx);
-                            tx_cycle   <= tx_cycle + 1;
-                            next_state <= data;
+                            data_out      <= regs(reg_idx)(bit_idx);
+                            tx_cycle      <= tx_cycle + 1;
+                            tx_next_state <= data;
                         else
-                            tx_cycle   <= 0;
-                            bit_idx    := bit_idx + 1;
-                            next_state <= data;
+                            tx_cycle      <= 0;
+                            bit_idx       := bit_idx + 1;
+                            tx_next_state <= data;
                         end if;
                     else
-                        byte_idx   := byte_idx + 1;
-                        tx_cycle   <= 0;
-                        next_state <= stop;
+                        byte_idx      := byte_idx + 1;
+                        tx_cycle      <= 0;
+                        tx_next_state <= stop;
                     end if;
 
                 when stop =>
 
                     data_out <= '1';
                     if (tx_cycle < CYCLES_PER_SAMPLE) then
-                        tx_cycle   <= tx_cycle + 1;
-                        next_state <= stop;
+                        tx_cycle      <= tx_cycle + 1;
+                        tx_next_state <= stop;
                     else
                         if (byte_idx = 4) then
                             byte_idx := 0;
@@ -276,10 +307,10 @@ begin
                         end if;
                         tx_cycle <= 0;
                         if (reg_idx > 31) then
-                            next_state <= idle;
-                            reg_idx    := 0;
+                            tx_next_state <= idle;
+                            reg_idx       := 0;
                         else
-                            next_state <= start;
+                            tx_next_state <= start;
                         end if;
                     end if;
 
