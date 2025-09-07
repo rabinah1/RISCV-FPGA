@@ -5,19 +5,19 @@ use work.uart_package.all;
 
 entity uart is
     port (
-        clk               : in    std_logic;
-        reset             : in    std_logic;
-        data_in           : in    std_logic;
-        data_from_imem    : in    std_logic_vector(31 downto 0);
-        address_from_imem : in    std_logic_vector(5 downto 0);
-        reg_dump_start    : in    std_logic;
-        data_out          : out   std_logic;
-        halt              : out   std_logic;
-        write_trig        : out   std_logic;
-        write_done        : out   std_logic;
-        trig_reg_dump     : out   std_logic;
-        data_to_imem      : out   std_logic_vector(31 downto 0);
-        address           : out   std_logic_vector(31 downto 0)
+        clk                   : in    std_logic;
+        reset                 : in    std_logic;
+        data_in               : in    std_logic;
+        data_from_reg_file    : in    std_logic_vector(31 downto 0);
+        address_from_reg_file : in    std_logic_vector(5 downto 0);
+        reg_dump_start        : in    std_logic;
+        data_out              : out   std_logic;
+        halt                  : out   std_logic;
+        write_trig            : out   std_logic;
+        write_done            : out   std_logic;
+        trig_reg_dump         : out   std_logic;
+        data_to_imem          : out   std_logic_vector(31 downto 0);
+        address               : out   std_logic_vector(31 downto 0)
     );
 end entity uart;
 
@@ -36,11 +36,10 @@ architecture rtl of uart is
     signal   rx_cycle                : integer range 0 to CYCLES_PER_SAMPLE_FIRST := 0;
     signal   tx_cycle                : integer range 0 to CYCLES_PER_SAMPLE := 0;
     signal   imem_idx                : integer range 0 to PACKETS_PER_INSTRUCTION := 0;
-    signal   increment_address       : std_logic;
-    signal   first_bit               : std_logic;
     signal   halt_counter            : integer range 0 to RX_HALT_CYCLES := 0;
     signal   trig_uart_tx            : std_logic;
     signal   control_byte            : std_logic;
+    signal   increment_address       : std_logic;
     signal   regs                    : memory := (others => (others => '0'));
     signal   tx_state                : state;
     signal   tx_next_state           : state;
@@ -77,11 +76,10 @@ begin
             rx_cycle              <= 0;
             bit_idx               := 0;
             imem_idx              <= 0;
-            increment_address     <= '0';
-            first_bit             <= '1';
-            halt_counter          <= RX_HALT_CYCLES;
+            halt_counter          <= 0;
             write_done            <= '0';
             control_byte          <= '1';
+            increment_address     <= '0';
             trig_reg_dump         <= '0';
             reg_dump_hold_counter <= 0;
             delay_counter         <= 0;
@@ -96,32 +94,35 @@ begin
                         rx_next_state <= idle;
                         rx_cycle      <= 0;
                         bit_idx       := 0;
-                        first_bit     <= '1';
                         if (imem_idx = PACKETS_PER_INSTRUCTION) then
                             imem_idx          <= 0;
                             write_trig        <= '1';
                             increment_address <= '1';
-                            -- TODO: Could address be incremented here, and
-                            -- increment_address be removed?
                         end if;
-                        if (halt_counter < 100) then
-                            halt_counter <= halt_counter + 1;
+                        if (halt_counter > 0) then
+                            halt_counter <= halt_counter - 1;
                             if (control_byte = '0') then
                                 halt <= '1';
-                                if (halt_counter > 50) then
+                                if (halt_counter < 95) then
+                                    write_trig <= '0';
+                                end if;
+                                if (halt_counter < 25) then
                                     write_done <= '1';
                                 end if;
                             end if;
                         else
-                            halt         <= '0';
-                            write_trig   <= '0';
-                            write_done   <= '0';
-                            control_byte <= '1';
-                            packet       <= (others => '0');
-                            address      <= (others => '0');
-                            delay_counter <= 0;
-                            if (reg_dump_hold_counter < RX_REG_DUMP_WAIT_CYCLES) then
-                                reg_dump_hold_counter <= reg_dump_hold_counter + 1;
+                            data_to_imem      <= (others => '0');
+                            imem_idx          <= 0;
+                            increment_address <= '0';
+                            halt              <= '0';
+                            write_trig        <= '0';
+                            write_done        <= '0';
+                            control_byte      <= '1';
+                            packet            <= (others => '0');
+                            address           <= (others => '0');
+                            delay_counter     <= 0;
+                            if (reg_dump_hold_counter > 0) then
+                                reg_dump_hold_counter <= reg_dump_hold_counter - 1;
                             else
                                 trig_reg_dump <= '0';
                             end if;
@@ -136,8 +137,7 @@ begin
                     rx_cycle      <= 0;
                     bit_idx       := 0;
                     write_trig    <= '0';
-                    first_bit     <= '1';
-                    halt_counter  <= 0;
+                    halt_counter  <= RX_HALT_CYCLES;
                     if (increment_address = '1') then
                         address           <= std_logic_vector(unsigned(address) + to_unsigned(1, 32));
                         increment_address <= '0';
@@ -145,17 +145,16 @@ begin
 
                 when data =>
 
-                    write_trig <= '0';
-                    halt_counter <= 0;
+                    write_trig   <= '0';
+                    halt_counter <= RX_HALT_CYCLES;
                     if (bit_idx < PACKET_SIZE) then
-                        if (first_bit = '1') then
+                        if (bit_idx = 0) then
                             if (rx_cycle < CYCLES_PER_SAMPLE_FIRST) then
                                 rx_cycle <= rx_cycle + 1;
                             else
                                 rx_cycle        <= 0;
                                 packet(bit_idx) <= data_in;
                                 bit_idx         := bit_idx + 1;
-                                first_bit       <= '0';
                             end if;
                         else
                             if (rx_cycle <= CYCLES_PER_SAMPLE) then
@@ -164,7 +163,6 @@ begin
                                 rx_cycle        <= 0;
                                 packet(bit_idx) <= data_in;
                                 bit_idx         := bit_idx + 1;
-                                first_bit       <= '0';
                             end if;
                         end if;
                         rx_next_state <= data;
@@ -177,7 +175,7 @@ begin
                     write_trig        <= '0';
                     bit_idx           := 0;
                     increment_address <= '0';
-                    halt_counter      <= 0;
+                    halt_counter      <= RX_HALT_CYCLES;
                     if (rx_cycle < CYCLES_PER_SAMPLE) then
                         rx_cycle      <= rx_cycle + 1;
                         rx_next_state <= stop;
@@ -185,23 +183,25 @@ begin
                         if (control_byte = '1') then
                             if (packet = ACTIVATE_REG_DUMP) then
                                 if (delay_counter < 500000) then
+                                    -- Sleep for 1 second to ensure that Python
+                                    -- host is ready to start reading.
                                     delay_counter <= delay_counter + 1;
                                     rx_next_state <= stop;
                                 else
                                     trig_reg_dump         <= '1';
-                                    reg_dump_hold_counter <= 0;
+                                    reg_dump_hold_counter <= RX_REG_DUMP_WAIT_CYCLES;
                                     control_byte          <= '1';
                                     rx_next_state         <= idle;
                                     rx_cycle              <= 0;
                                 end if;
                             else
-                                trig_reg_dump         <= '0';
-                                control_byte          <= '0';
-                                rx_next_state         <= idle;
-                                rx_cycle              <= 0;
+                                trig_reg_dump <= '0';
+                                control_byte  <= '0';
+                                rx_next_state <= idle;
+                                rx_cycle      <= 0;
                             end if;
                         else
-                            rx_cycle <= 0;
+                            rx_cycle      <= 0;
                             rx_next_state <= idle;
                             if (imem_idx = 0) then
                                 data_to_imem(7 downto 0) <= packet;
@@ -328,8 +328,8 @@ begin
             trig_uart_tx <= '0';
         elsif (falling_edge(clk)) then
             if (reg_dump_start = '1') then
-                regs(to_integer(unsigned(address_from_imem))) <= data_from_imem;
-                if (to_integer(unsigned(address_from_imem)) > 29) then
+                regs(to_integer(unsigned(address_from_reg_file))) <= data_from_reg_file;
+                if (to_integer(unsigned(address_from_reg_file)) > 20) then
                     trig_uart_tx <= '1';
                 end if;
             else

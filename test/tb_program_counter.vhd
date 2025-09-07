@@ -16,6 +16,7 @@ architecture tb of tb_program_counter is
     signal   reset       : std_logic := '0';
     signal   enable      : std_logic := '0';
     signal   address_in  : std_logic_vector(31 downto 0) := (others => '0');
+    signal   halt        : std_logic := '0';
     signal   address_out : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig   : natural := 0;
     constant CLK_PERIOD  : time := 2 us;
@@ -26,6 +27,7 @@ architecture tb of tb_program_counter is
             reset       : in    std_logic;
             enable      : in    std_logic;
             address_in  : in    std_logic_vector(31 downto 0);
+            halt        : in    std_logic;
             address_out : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -38,6 +40,7 @@ begin
             reset       => reset,
             enable      => enable,
             address_in  => address_in,
+            halt        => halt,
             address_out => address_out
         );
 

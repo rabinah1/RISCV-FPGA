@@ -29,6 +29,7 @@ def main():
         data = f.read()
 
     ser = serial.Serial(args.serial_port, BAUD_RATE)
+    ser.reset_output_buffer()
     ser.write(bytes([0]) + data)
     ser.flush()
     ser.close()

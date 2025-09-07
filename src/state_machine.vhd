@@ -7,6 +7,7 @@ entity state_machine is
         clk               : in    std_logic;
         reset             : in    std_logic;
         halt              : in    std_logic;
+        uart_halt         : in    std_logic;
         fetch_enable      : out   std_logic;
         decode_enable     : out   std_logic;
         execute_enable    : out   std_logic;
@@ -27,7 +28,7 @@ begin
         if (reset = '1') then
             state <= fetch;
         elsif (falling_edge(clk)) then
-            if (halt = '1') then
+            if (halt = '1' or uart_halt = '1') then
                 state <= idle;
             else
                 state <= next_state;

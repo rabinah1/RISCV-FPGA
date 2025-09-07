@@ -17,6 +17,7 @@ architecture tb of tb_mux_3_inputs is
     signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_3    : std_logic_vector(31 downto 0) := (others => '0');
+    signal   halt       : std_logic := '0';
     signal   output     : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
     constant CLK_PERIOD : time := 2 us;
@@ -28,6 +29,7 @@ architecture tb of tb_mux_3_inputs is
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
             input_3 : in    std_logic_vector(31 downto 0);
+            halt    : in    std_logic;
             output  : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -41,6 +43,7 @@ begin
             input_1 => input_1,
             input_2 => input_2,
             input_3 => input_3,
+            halt    => halt,
             output  => output
         );
 

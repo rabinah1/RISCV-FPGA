@@ -14,6 +14,7 @@ entity register_file is
         write_data       : in    std_logic_vector(31 downto 0);
         trig_reg_dump    : in    std_logic;
         pc               : in    std_logic_vector(31 downto 0);
+        halt             : in    std_logic;
         reg_out_1        : out   std_logic_vector(31 downto 0);
         reg_out_2        : out   std_logic_vector(31 downto 0);
         reg_out_uart     : out   std_logic_vector(31 downto 0);
@@ -39,7 +40,7 @@ begin
         reg_out_1 <= regs(to_integer(unsigned(rs1)));
         reg_out_2 <= regs(to_integer(unsigned(rs2)));
 
-        if (reset = '1') then
+        if (reset = '1' or halt = '1') then
             reg_out_1 <= (others => '0');
             reg_out_2 <= (others => '0');
             regs      <= (2 => std_logic_vector(to_unsigned(512, 32)),

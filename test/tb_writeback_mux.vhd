@@ -16,6 +16,7 @@ architecture tb of tb_writeback_mux is
     signal   control    : std_logic := '0';
     signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
+    signal   halt       : std_logic := '0';
     signal   output     : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
     constant CLK_PERIOD : time := 2 us;
@@ -26,6 +27,7 @@ architecture tb of tb_writeback_mux is
             control : in    std_logic;
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
+            halt    : in    std_logic;
             output  : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -38,6 +40,7 @@ begin
             control => control,
             input_1 => input_1,
             input_2 => input_2,
+            halt    => halt,
             output  => output
         );
 
@@ -55,6 +58,7 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 control   <= '0';
+                halt      <= '0';
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
@@ -69,6 +73,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 control   <= '0';
+                halt      <= '0';
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
@@ -83,6 +88,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 control   <= '1';
+                halt      <= '0';
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;

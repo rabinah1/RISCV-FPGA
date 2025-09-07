@@ -19,6 +19,7 @@ architecture tb of tb_alu is
     signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   operator   : std_logic_vector(10 downto 0) := (others => '0');
+    signal   halt       : std_logic := '0';
     signal   result     : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig  : natural := 0;
     constant CLK_PERIOD : time := 2 us;
@@ -31,6 +32,7 @@ architecture tb of tb_alu is
             input_1  : in    std_logic_vector(31 downto 0);
             input_2  : in    std_logic_vector(31 downto 0);
             operator : in    std_logic_vector(10 downto 0);
+            halt     : in    std_logic;
             result   : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -45,6 +47,7 @@ begin
             input_1  => input_1,
             input_2  => input_2,
             operator => operator,
+            halt     => halt,
             result   => result
         );
 

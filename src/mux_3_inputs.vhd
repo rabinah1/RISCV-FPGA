@@ -8,6 +8,7 @@ entity mux_3_inputs is
         input_1 : in    std_logic_vector(31 downto 0);
         input_2 : in    std_logic_vector(31 downto 0);
         input_3 : in    std_logic_vector(31 downto 0);
+        halt    : in    std_logic;
         output  : out   std_logic_vector(31 downto 0)
     );
 end entity mux_3_inputs;
@@ -19,7 +20,7 @@ begin
     mux_3_inputs : process (all) is
     begin
 
-        if (reset = '1') then
+        if (reset = '1' or halt = '1') then
             output <= (others => '0');
         else -- Use a latch so that it's executed at the same time with "decode" step.
             if (control = "00") then

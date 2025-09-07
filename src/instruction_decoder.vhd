@@ -9,6 +9,7 @@ entity instruction_decoder is
         enable        : in    std_logic;
         instruction   : in    std_logic_vector(31 downto 0);
         pc_in         : in    std_logic_vector(31 downto 0);
+        halt          : in    std_logic;
         rs1           : out   std_logic_vector(4 downto 0);
         rs2           : out   std_logic_vector(4 downto 0);
         rd            : out   std_logic_vector(4 downto 0);
@@ -35,7 +36,7 @@ begin
 
     begin
 
-        if (reset = '1') then
+        if (reset = '1' or halt = '1') then
             rs1           <= (others => '0');
             rs2           <= (others => '0');
             rd            <= (others => '0');

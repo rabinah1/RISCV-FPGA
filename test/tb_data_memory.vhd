@@ -18,6 +18,7 @@ architecture tb of tb_data_memory is
     signal   write_data        : std_logic_vector(31 downto 0) := (others => '0');
     signal   write_enable      : std_logic := '0';
     signal   write_back_enable : std_logic := '0';
+    signal   halt              : std_logic := '0';
     signal   output            : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig         : natural := 0;
     constant CLK_PERIOD        : time := 2 us;
@@ -32,6 +33,7 @@ architecture tb of tb_data_memory is
             write_data        : in    std_logic_vector(31 downto 0);
             write_enable      : in    std_logic;
             write_back_enable : in    std_logic;
+            halt              : in    std_logic;
             output            : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -46,6 +48,7 @@ begin
             write_data        => write_data,
             write_enable      => write_enable,
             write_back_enable => write_back_enable,
+            halt              => halt,
             output            => output
         );
 

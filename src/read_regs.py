@@ -28,7 +28,6 @@ def main():
     ser = serial.Serial(args.serial_port, BAUD_RATE, timeout=10)
     ser.write(bytes([1]))
     regs = ser.read(NUM_OF_BYTES)
-    ser.flush()
     regs = [i for i in regs]
     reg_values = {}
     temp = 0
@@ -39,7 +38,8 @@ def main():
         )
         temp = temp + 4
         idx = idx + 1
-    print(reg_values)
+    for key, value in reg_values.items():
+        print(f"{key} : {value}")
 
 
 if __name__ == "__main__":

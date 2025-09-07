@@ -22,6 +22,7 @@ architecture tb of tb_register_file is
     signal   write_data       : std_logic_vector(31 downto 0) := (others => '0');
     signal   trig_reg_dump    : std_logic := '0';
     signal   pc               : std_logic_vector(31 downto 0) := (others => '0');
+    signal   halt             : std_logic := '0';
     signal   reg_out_1        : std_logic_vector(31 downto 0) := (others => '0');
     signal   reg_out_2        : std_logic_vector(31 downto 0) := (others => '0');
     signal   reg_out_uart     : std_logic_vector(31 downto 0) := (others => '0');
@@ -45,6 +46,7 @@ architecture tb of tb_register_file is
             write_data       : in    std_logic_vector(31 downto 0);
             trig_reg_dump    : in    std_logic;
             pc               : in    std_logic_vector(31 downto 0);
+            halt             : in    std_logic;
             reg_out_1        : out   std_logic_vector(31 downto 0);
             reg_out_2        : out   std_logic_vector(31 downto 0);
             reg_out_uart     : out   std_logic_vector(31 downto 0);
@@ -68,6 +70,7 @@ begin
             write_data       => write_data,
             trig_reg_dump    => trig_reg_dump,
             pc               => pc,
+            halt             => halt,
             reg_out_1        => reg_out_1,
             reg_out_2        => reg_out_2,
             reg_out_uart     => reg_out_uart,

@@ -17,6 +17,7 @@ architecture tb of tb_instruction_decoder is
     signal   enable        : std_logic := '0';
     signal   instruction   : std_logic_vector(31 downto 0);
     signal   pc_in         : std_logic_vector(31 downto 0);
+    signal   halt          : std_logic := '0';
     signal   rs1           : std_logic_vector(4 downto 0);
     signal   rs2           : std_logic_vector(4 downto 0);
     signal   rd            : std_logic_vector(4 downto 0);
@@ -40,6 +41,7 @@ architecture tb of tb_instruction_decoder is
             enable        : in    std_logic;
             instruction   : in    std_logic_vector(31 downto 0);
             pc_in         : in    std_logic_vector(31 downto 0);
+            halt          : in    std_logic;
             rs1           : out   std_logic_vector(4 downto 0);
             rs2           : out   std_logic_vector(4 downto 0);
             rd            : out   std_logic_vector(4 downto 0);
@@ -65,6 +67,7 @@ begin
             enable        => enable,
             instruction   => instruction,
             pc_in         => pc_in,
+            halt          => halt,
             rs1           => rs1,
             rs2           => rs2,
             rd            => rd,

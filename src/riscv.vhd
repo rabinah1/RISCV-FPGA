@@ -45,8 +45,8 @@ architecture struct of riscv is
     signal clk_500khz                        : std_logic;
     signal uart_write_trig                   : std_logic;
     signal uart_data_to_imem                 : std_logic_vector(31 downto 0);
-    signal uart_data_from_imem               : std_logic_vector(31 downto 0);
-    signal uart_address_from_imem            : std_logic_vector(5 downto 0);
+    signal uart_data_from_reg_file           : std_logic_vector(31 downto 0);
+    signal uart_address_from_reg_file        : std_logic_vector(5 downto 0);
     signal uart_address                      : std_logic_vector(31 downto 0);
     signal uart_halt                         : std_logic;
     signal uart_write_done                   : std_logic;
@@ -62,6 +62,7 @@ architecture struct of riscv is
             input_1  : in    std_logic_vector(31 downto 0);
             input_2  : in    std_logic_vector(31 downto 0);
             operator : in    std_logic_vector(10 downto 0);
+            halt     : in    std_logic;
             result   : out   std_logic_vector(31 downto 0)
         );
     end component alu;
@@ -72,6 +73,7 @@ architecture struct of riscv is
             reset       : in    std_logic;
             enable      : in    std_logic;
             address_in  : in    std_logic_vector(31 downto 0);
+            halt        : in    std_logic;
             address_out : out   std_logic_vector(31 downto 0)
         );
     end component program_counter;
@@ -104,6 +106,7 @@ architecture struct of riscv is
             write_data       : in    std_logic_vector(31 downto 0);
             trig_reg_dump    : in    std_logic;
             pc               : in    std_logic_vector(31 downto 0);
+            halt             : in    std_logic;
             reg_out_1        : out   std_logic_vector(31 downto 0);
             reg_out_2        : out   std_logic_vector(31 downto 0);
             reg_out_uart     : out   std_logic_vector(31 downto 0);
@@ -120,6 +123,7 @@ architecture struct of riscv is
             enable        : in    std_logic;
             instruction   : in    std_logic_vector(31 downto 0);
             pc_in         : in    std_logic_vector(31 downto 0);
+            halt          : in    std_logic;
             rs1           : out   std_logic_vector(4 downto 0);
             rs2           : out   std_logic_vector(4 downto 0);
             rd            : out   std_logic_vector(4 downto 0);
@@ -143,6 +147,7 @@ architecture struct of riscv is
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
             input_3 : in    std_logic_vector(31 downto 0);
+            halt    : in    std_logic;
             output  : out   std_logic_vector(31 downto 0)
         );
     end component mux_3_inputs;
@@ -154,6 +159,7 @@ architecture struct of riscv is
             control : in    std_logic;
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
+            halt    : in    std_logic;
             output  : out   std_logic_vector(31 downto 0)
         );
     end component mux_2_inputs;
@@ -164,6 +170,7 @@ architecture struct of riscv is
             control : in    std_logic;
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
+            halt    : in    std_logic;
             output  : out   std_logic_vector(31 downto 0)
         );
     end component writeback_mux;
@@ -176,6 +183,7 @@ architecture struct of riscv is
             write_data        : in    std_logic_vector(31 downto 0);
             write_enable      : in    std_logic;
             write_back_enable : in    std_logic;
+            halt              : in    std_logic;
             output            : out   std_logic_vector(31 downto 0)
         );
     end component data_memory;
@@ -195,6 +203,7 @@ architecture struct of riscv is
             clk               : in    std_logic;
             reset             : in    std_logic;
             halt              : in    std_logic;
+            uart_halt         : in    std_logic;
             fetch_enable      : out   std_logic;
             decode_enable     : out   std_logic;
             execute_enable    : out   std_logic;
@@ -212,19 +221,19 @@ architecture struct of riscv is
 
     component uart is
         port (
-            clk               : in    std_logic;
-            reset             : in    std_logic;
-            data_in           : in    std_logic;
-            data_from_imem    : in    std_logic_vector(31 downto 0);
-            address_from_imem : in    std_logic_vector(5 downto 0);
-            reg_dump_start    : in    std_logic;
-            data_out          : out   std_logic;
-            halt              : out   std_logic;
-            write_trig        : out   std_logic;
-            write_done        : out   std_logic;
-            trig_reg_dump     : out   std_logic;
-            data_to_imem      : out   std_logic_vector(31 downto 0);
-            address           : out   std_logic_vector(31 downto 0)
+            clk                   : in    std_logic;
+            reset                 : in    std_logic;
+            data_in               : in    std_logic;
+            data_from_reg_file    : in    std_logic_vector(31 downto 0);
+            address_from_reg_file : in    std_logic_vector(5 downto 0);
+            reg_dump_start        : in    std_logic;
+            data_out              : out   std_logic;
+            halt                  : out   std_logic;
+            write_trig            : out   std_logic;
+            write_done            : out   std_logic;
+            trig_reg_dump         : out   std_logic;
+            data_to_imem          : out   std_logic_vector(31 downto 0);
+            address               : out   std_logic_vector(31 downto 0)
         );
     end component uart;
 
@@ -238,6 +247,7 @@ begin
             input_1  => register_file_reg_out_1,
             input_2  => alu_src_mux_output,
             operator => instruction_decoder_alu_operation,
+            halt     => uart_halt,
             result   => alu_result
         );
 
@@ -247,6 +257,7 @@ begin
             reset       => reset,
             enable      => state_machine_write_back_enable,
             address_in  => pc_adder_sum,
+            halt        => uart_halt,
             address_out => program_counter_address_out
         );
 
@@ -276,11 +287,12 @@ begin
             write            => instruction_decoder_write,
             write_data       => writeback_mux_output,
             trig_reg_dump    => trig_reg_dump,
-            pc               => program_counter_address_out,
+            pc               => pc_adder_sum,
+            halt             => uart_halt,
             reg_out_1        => register_file_reg_out_1,
             reg_out_2        => register_file_reg_out_2,
-            reg_out_uart     => uart_data_from_imem,
-            address_out_uart => uart_address_from_imem,
+            reg_out_uart     => uart_data_from_reg_file,
+            address_out_uart => uart_address_from_reg_file,
             reg_dump_start   => register_file_reg_dump_start,
             reg_dump_halt    => register_file_halt
         );
@@ -292,6 +304,7 @@ begin
             enable        => state_machine_decode_enable,
             instruction   => program_memory_instruction,
             pc_in         => program_memory_address_out,
+            halt          => uart_halt,
             rs1           => instruction_decoder_rs1,
             rs2           => instruction_decoder_rs2,
             rd            => instruction_decoder_rd,
@@ -314,6 +327,7 @@ begin
             input_1 => instruction_decoder_immediate,
             input_2 => register_file_reg_out_2,
             input_3 => instruction_decoder_pc_out,
+            halt    => uart_halt,
             output  => alu_src_mux_output
         );
 
@@ -323,6 +337,7 @@ begin
             control => instruction_decoder_load,
             input_1 => alu_result,
             input_2 => data_memory_output,
+            halt    => uart_halt,
             output  => writeback_mux_output
         );
 
@@ -334,6 +349,7 @@ begin
             write_data        => register_file_reg_out_2,
             write_enable      => instruction_decoder_store,
             write_back_enable => state_machine_write_back_enable,
+            halt              => uart_halt,
             output            => data_memory_output
         );
 
@@ -344,6 +360,7 @@ begin
             control => (alu_result(0) and instruction_decoder_branch) or instruction_decoder_jump,
             input_1 => std_logic_vector(to_unsigned(1, 32)),
             input_2 => "00" & instruction_decoder_immediate(31 downto 2),
+            halt    => uart_halt,
             output  => pc_offset_mux_output
         );
 
@@ -354,6 +371,7 @@ begin
             control => instruction_decoder_jalr_flag,
             input_1 => program_counter_address_out,
             input_2 => register_file_reg_out_1,
+            halt    => uart_halt,
             output  => pc_input_mux_output
         );
 
@@ -371,6 +389,7 @@ begin
             clk               => clk_500khz,
             reset             => reset,
             halt              => register_file_halt,
+            uart_halt         => uart_halt,
             fetch_enable      => state_machine_fetch_enable,
             decode_enable     => state_machine_decode_enable,
             execute_enable    => state_machine_execute_enable,
@@ -386,19 +405,19 @@ begin
 
     uart_unit : component uart
         port map (
-            clk               => clk_500khz,
-            reset             => reset,
-            data_in           => data_in,
-            data_from_imem    => uart_data_from_imem,
-            address_from_imem => uart_address_from_imem,
-            reg_dump_start    => register_file_reg_dump_start,
-            data_out          => data_out,
-            halt              => uart_halt,
-            write_trig        => uart_write_trig,
-            write_done        => uart_write_done,
-            trig_reg_dump     => trig_reg_dump,
-            data_to_imem      => uart_data_to_imem,
-            address           => uart_address
+            clk                   => clk_500khz,
+            reset                 => reset,
+            data_in               => data_in,
+            data_from_reg_file    => uart_data_from_reg_file,
+            address_from_reg_file => uart_address_from_reg_file,
+            reg_dump_start        => register_file_reg_dump_start,
+            data_out              => data_out,
+            halt                  => uart_halt,
+            write_trig            => uart_write_trig,
+            write_done            => uart_write_done,
+            trig_reg_dump         => trig_reg_dump,
+            data_to_imem          => uart_data_to_imem,
+            address               => uart_address
         );
 
 end architecture struct;

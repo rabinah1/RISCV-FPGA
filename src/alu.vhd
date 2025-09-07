@@ -11,18 +11,28 @@ entity alu is
         input_1  : in    std_logic_vector(31 downto 0);
         input_2  : in    std_logic_vector(31 downto 0);
         operator : in    std_logic_vector(10 downto 0);
+        halt     : in    std_logic;
         result   : out   std_logic_vector(31 downto 0)
     );
 end entity alu;
 
 architecture rtl of alu is
 
+    function addition (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)) return std_logic_vector is
+    begin
+
+        return std_logic_vector(signed(in_1) + signed(in_2));
+
+    end function addition;
+
 begin
 
     alu : process (all) is
     begin
 
-        if (reset = '1') then
+        if (reset = '1' or halt = '1') then
             result <= (others => '0');
         elsif (rising_edge(clk)) then
             if (enable = '1') then
@@ -31,11 +41,11 @@ begin
 
                     when ADD =>
 
-                        result <= std_logic_vector(signed(input_1) + signed(input_2));
+                        result <= addition(input_1, input_2);
 
                     when ADDI =>
 
-                        result <= std_logic_vector(signed(input_1) + signed(input_2));
+                        result <= addition(input_1, input_2);
 
                     when MY_SUB =>
 
@@ -116,12 +126,12 @@ begin
                     when LW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= std_logic_vector(signed(input_1) + signed(input_2));
+                        result <= addition(input_1, input_2);
 
                     when SW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= std_logic_vector(signed(input_1) + signed(input_2));
+                        result <= addition(input_1, input_2);
 
                     when BEQ =>
 

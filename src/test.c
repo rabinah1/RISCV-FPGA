@@ -9,14 +9,14 @@ int main(void)
     uint32_t res = 0;
 
     if (a >= b)
-	res = a - b;
+        res = a - b;
     else
-	res = a + b;
+        res = a + b;
 
     if (c <= d)
-	res = res + c;
+        res = res + c;
     else
-	res = res + d;
+        res = res + d;
 
     return res;
 }

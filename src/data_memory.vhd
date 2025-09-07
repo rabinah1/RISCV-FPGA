@@ -10,6 +10,7 @@ entity data_memory is
         write_data        : in    std_logic_vector(31 downto 0);
         write_enable      : in    std_logic;
         write_back_enable : in    std_logic;
+        halt              : in    std_logic;
         output            : out   std_logic_vector(31 downto 0)
     );
 end entity data_memory;
@@ -27,8 +28,9 @@ begin
 
         output <= data_mem(to_integer(unsigned(address(9 downto 0))));
 
-        if (reset = '1') then
-            output <= (others => '0');
+        if (reset = '1' or halt = '1') then
+            output   <= (others => '0');
+            data_mem <= (others => (others => '0'));
         elsif (rising_edge(clk)) then
             if (write_enable = '1' and write_back_enable = '1') then
                 data_mem(to_integer(unsigned(address(9 downto 0)))) <= write_data;
