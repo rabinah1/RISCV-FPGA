@@ -2,3 +2,4 @@ vsg==3.12.0
 vunit_hdl==4.7.0
 pyserial==3.5
 ruff==0.11.6
+tinyrv==0.0.9
