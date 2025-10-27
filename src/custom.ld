@@ -4,7 +4,7 @@ SECTIONS
 {
     . = 0x00000000;
     .text : {
-        KEEP(*(.text.startup))
+        KEEP(*(.text.main))
         *(.text*)
     }
 
