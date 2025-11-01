@@ -25,6 +25,7 @@ uint32_t main(void)
 
     if (a >= b) {
         res = a - b;
+
         for (uint32_t i  = 0; i < 10; i++)
             res = res + i;
     } else {
@@ -35,6 +36,7 @@ uint32_t main(void)
         res = res + c;
     } else {
         res = res + d + test_function(c, res);
+
         while (idx < 10) {
             res = res - idx;
             idx = idx + 3;

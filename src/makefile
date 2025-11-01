@@ -57,6 +57,11 @@ netlist: synthesis
 	@qnui ./riscv
 
 sta:
+	@echo "Running astyle..."
+	@astyle --style=linux --max-code-length=100 --recursive --align-pointer=name --break-blocks \
+	--pad-oper --pad-header --delete-empty-lines --indent-col1-comments --squeeze-lines=1 \
+	-i "./\*.c"
+	@echo "Done"
 	@echo "Running ruff check..."
 	@ruff check
 	@echo "Done"
