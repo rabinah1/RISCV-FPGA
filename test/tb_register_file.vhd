@@ -123,7 +123,7 @@ begin
                 check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)),
                             "Comparing address_out_uart against reference.");
                 check_equal(reg_dump_start, '0', "Comparing reg_dump_start against reference.");
-                check_equal(regs(2), std_logic_vector(to_unsigned(512, 32)),
+                check_equal(regs(2), std_logic_vector(to_unsigned(4096, 32)),
                             "Comparing stack pointer against reference.");
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
