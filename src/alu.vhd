@@ -18,14 +18,14 @@ end entity alu;
 
 architecture rtl of alu is
 
-    function addition (
+    function signed_add (
         in_1 : std_logic_vector(31 downto 0);
         in_2 : std_logic_vector(31 downto 0)) return std_logic_vector is
     begin
 
         return std_logic_vector(signed(in_1) + signed(in_2));
 
-    end function addition;
+    end function signed_add;
 
 begin
 
@@ -41,11 +41,11 @@ begin
 
                     when ADD =>
 
-                        result <= addition(input_1, input_2);
+                        result <= signed_add(input_1, input_2);
 
                     when ADDI =>
 
-                        result <= addition(input_1, input_2);
+                        result <= signed_add(input_1, input_2);
 
                     when MY_SUB =>
 
@@ -126,12 +126,12 @@ begin
                     when LW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= addition(input_1, input_2);
+                        result <= signed_add(input_1, input_2);
 
                     when SW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= addition(input_1, input_2);
+                        result <= signed_add(input_1, input_2);
 
                     when BEQ =>
 

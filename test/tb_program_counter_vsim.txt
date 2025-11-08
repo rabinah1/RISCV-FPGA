@@ -3,5 +3,6 @@ sim:/tb_program_counter/clk \
 sim:/tb_program_counter/reset \
 sim:/tb_program_counter/enable \
 sim:/tb_program_counter/address_in \
+sim:/tb_program_counter/halt \
 sim:/tb_program_counter/address_out
 run 100ms

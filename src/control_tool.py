@@ -79,6 +79,12 @@ def _read_regs(args, print_result=True):
     reg_values = {}
     temp = 0
     idx = 0
+    if len(regs) != NUM_OF_BYTES:
+        print(
+            f"Something went wrong with fetching the registers: received {len(regs)} bytes, "
+            f"expected {NUM_OF_BYTES}."
+        )
+        return reg_values
     while idx < NUM_OF_REGS:
         reg_values[f"x{idx}"] = (
             (regs[temp + 3] << 24) | (regs[temp + 2] << 16) | (regs[temp + 1] << 8) | regs[temp]

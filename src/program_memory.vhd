@@ -20,7 +20,9 @@ end entity program_memory;
 
 architecture rtl of program_memory is
 
-    type memory is array(511 downto 0) of std_logic_vector(31 downto 0);
+    constant PROGRAM_MEMORY_SIZE : integer := 512;
+
+    type memory is array(PROGRAM_MEMORY_SIZE - 1 downto 0) of std_logic_vector(31 downto 0);
 
     signal prog_mem : memory := (others => (others => '0'));
 

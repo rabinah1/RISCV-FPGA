@@ -17,7 +17,9 @@ end entity data_memory;
 
 architecture rtl of data_memory is
 
-    type memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
+    constant DATA_MEMORY_SIZE : integer := 1024;
+
+    type memory is array(DATA_MEMORY_SIZE - 1 downto 0) of std_logic_vector(31 downto 0);
 
     signal data_mem : memory := (others => (others => '0'));
 

@@ -106,14 +106,13 @@ begin
                 reset     <= '1';
                 data_in   <= '1';
                 wait for CLK_PERIOD * 2;
-                check_equal(data_out, '1', "Comparing data_out against reference.");
-                check_equal(halt, '0', "Comparing halt against reference.");
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(write_done, '0', "Comparing write_done against reference.");
-                check_equal(trig_reg_dump, '0', "Comparing trig_reg_dump against reference.");
-                check_equal(data_to_imem, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing data_to_imem against reference.");
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
+                check_equal(data_out, '1');
+                check_equal(halt, '0');
+                check_equal(write_trig, '0');
+                check_equal(write_done, '0');
+                check_equal(trig_reg_dump, '0');
+                check_equal(data_to_imem, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(address, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_halt_counter_is_zero") then
@@ -129,11 +128,11 @@ begin
                 reg_dump_hold_counter <= force RX_REG_DUMP_WAIT_CYCLES;
                 rx_state              <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(halt, '0', "Comparing halt against reference.");
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(write_done, '0', "Comparing write_done against reference.");
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)), "Comparing address against reference.");
-                check_equal(trig_reg_dump, '0', "Comparing trig_reg_dump against reference.");
+                check_equal(halt, '0');
+                check_equal(write_trig, '0');
+                check_equal(write_done, '0');
+                check_equal(address, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(trig_reg_dump, '0');
                 check_sig             <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_halt_counter_is_above_zero_and_control_byte_is_one") then
@@ -149,8 +148,8 @@ begin
                 control_byte <= force '1';
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(halt, '0', "Comparing halt against reference.");
-                check_equal(write_done, '0', "Comparing write_done against reference.");
+                check_equal(halt, '0');
+                check_equal(write_done, '0');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_halt_counter_is_between_50_and_100") then
@@ -166,8 +165,8 @@ begin
                 control_byte <= force '0';
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(halt, '1', "Comparing halt against reference.");
-                check_equal(write_done, '0', "Comparing write_done against reference.");
+                check_equal(halt, '1');
+                check_equal(write_done, '0');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_halt_counter_is_between_0_and_50") then
@@ -183,8 +182,8 @@ begin
                 control_byte <= force '0';
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(halt, '1', "Comparing halt against reference.");
-                check_equal(write_done, '1', "Comparing write_done against reference.");
+                check_equal(halt, '1');
+                check_equal(write_done, '1');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_one_packet_is_read") then
@@ -200,8 +199,8 @@ begin
                 control_byte <= force '0';
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(halt, '1', "Comparing halt against reference.");
+                check_equal(write_trig, '0');
+                check_equal(halt, '1');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_two_packets_are_read") then
@@ -217,8 +216,8 @@ begin
                 control_byte <= force '0';
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(halt, '1', "Comparing halt against reference.");
+                check_equal(write_trig, '0');
+                check_equal(halt, '1');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_three_packets_are_read") then
@@ -234,8 +233,8 @@ begin
                 control_byte <= force '0';
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(halt, '1', "Comparing halt against reference.");
+                check_equal(write_trig, '0');
+                check_equal(halt, '1');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_four_packets_are_read") then
@@ -251,8 +250,8 @@ begin
                 control_byte <= force '0';
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
-                check_equal(write_trig, '1', "Comparing write_trig against reference.");
-                check_equal(halt, '1', "Comparing halt against reference.");
+                check_equal(write_trig, '1');
+                check_equal(halt, '1');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_start_state_when_four_packets_are_read") then
@@ -264,7 +263,7 @@ begin
                 reset     <= '0';
                 rx_state  <= force start;
                 wait for CLK_PERIOD * 2;
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
+                check_equal(write_trig, '0');
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_data_reception") then
@@ -278,8 +277,8 @@ begin
                 rx_cycle  <= force 78;
                 rx_state  <= force data;
                 wait for CLK_PERIOD;
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(packet(0), '1', "Comparing LSB of packet against reference.");
+                check_equal(write_trig, '0');
+                check_equal(packet(0), '1');
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_data_reception_cycle_below_threshold") then
@@ -293,8 +292,8 @@ begin
                 rx_cycle  <= force 45;
                 rx_state  <= force data;
                 wait for CLK_PERIOD;
-                check_equal(write_trig, '0', "Comparing write_trig against reference.");
-                check_equal(packet(0), '0', "Comparing LSB of packet against reference.");
+                check_equal(write_trig, '0');
+                check_equal(packet(0), '0');
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

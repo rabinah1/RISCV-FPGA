@@ -38,6 +38,7 @@ check:
 clean:
 	@$(MAKE) -C $(SRC_DIR) clean
 	@$(MAKE) -C $(TEST_DIR) clean
+	rm -rf .ruff_cache
 
 full_clean: clean
 	rm -rf venv

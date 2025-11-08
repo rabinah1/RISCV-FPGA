@@ -4,6 +4,7 @@ sim:/tb_instruction_decoder/reset \
 sim:/tb_instruction_decoder/enable \
 sim:/tb_instruction_decoder/instruction \
 sim:/tb_instruction_decoder/pc_in \
+sim:/tb_instruction_decoder/halt \
 sim:/tb_instruction_decoder/rs1 \
 sim:/tb_instruction_decoder/rs2 \
 sim:/tb_instruction_decoder/rd \

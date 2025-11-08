@@ -83,8 +83,7 @@ begin
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_add_instruction") then
@@ -99,8 +98,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(181, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(181, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_addi_instruction") then
@@ -115,8 +113,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(181, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(181, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_sub_instruction") then
@@ -131,8 +128,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(54, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(54, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_sll_instruction") then
@@ -147,8 +143,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(3760, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(3760, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_slli_instruction") then
@@ -163,8 +158,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(3760, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(3760, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_slt_instruction") then
@@ -179,14 +173,12 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD * 2;
                 input_1   <= std_logic_vector(to_unsigned(100, 32));
                 input_2   <= std_logic_vector(to_unsigned(98, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_slti_instruction") then
@@ -201,14 +193,12 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD * 2;
                 input_1   <= std_logic_vector(to_unsigned(100, 32));
                 input_2   <= std_logic_vector(to_unsigned(98, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_sltu_instruction") then
@@ -223,14 +213,12 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD * 2;
                 input_1   <= std_logic_vector(to_unsigned(100, 32));
                 input_2   <= std_logic_vector(to_unsigned(98, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_sltiu_instruction") then
@@ -245,14 +233,12 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD * 2;
                 input_1   <= std_logic_vector(to_unsigned(100, 32));
                 input_2   <= std_logic_vector(to_unsigned(98, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_xor_instruction") then
@@ -267,8 +253,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(72, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(72, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_xori_instruction") then
@@ -283,8 +268,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(72, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(72, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_srl_instruction") then
@@ -299,8 +283,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(333, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(333, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_srli_instruction") then
@@ -315,8 +298,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(333, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(333, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_or_instruction") then
@@ -331,8 +313,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(205, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(205, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_ori_instruction") then
@@ -347,8 +328,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(205, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(205, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_and_instruction") then
@@ -363,8 +343,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(133, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(133, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_andi_instruction") then
@@ -379,8 +358,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(133, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(133, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_lw_instruction") then
@@ -395,8 +373,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(181, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(181, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_sw_instruction") then
@@ -411,8 +388,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(181, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(181, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_beq_instruction") then
@@ -427,13 +403,11 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD;
                 input_2   <= std_logic_vector(to_unsigned(85, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_bne_instruction") then
@@ -448,13 +422,11 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD;
                 input_2   <= std_logic_vector(to_unsigned(103, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_blt_instruction") then
@@ -469,13 +441,11 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD;
                 input_2   <= std_logic_vector(to_unsigned(49, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_bge_instruction") then
@@ -490,13 +460,11 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD;
                 input_2   <= std_logic_vector(to_unsigned(51, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_bltu_instruction") then
@@ -511,13 +479,11 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD;
                 input_2   <= std_logic_vector(to_unsigned(49, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_bgeu_instruction") then
@@ -532,13 +498,11 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(1, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(1, 32)));
                 wait for CLK_PERIOD;
                 input_2   <= std_logic_vector(to_unsigned(51, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_jal_instruction") then
@@ -553,8 +517,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(158, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(158, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_jalr_instruction") then
@@ -569,8 +532,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(158, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(158, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_lui_instruction") then
@@ -585,8 +547,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(157, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(157, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_unrecognized_instruction") then
@@ -601,8 +562,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing result against reference.");
+                check_equal(result, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

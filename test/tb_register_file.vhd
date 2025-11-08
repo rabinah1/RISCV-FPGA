@@ -116,15 +116,12 @@ begin
                 write      <= '1';
                 write_data <= (others => '0');
                 wait for CLK_PERIOD * 2;
-                check_equal(reg_out_1, std_logic_vector(to_unsigned(0, 32)), "Comparing reg_out_1 against reference.");
-                check_equal(reg_out_2, std_logic_vector(to_unsigned(0, 32)), "Comparing reg_out_2 against reference.");
-                check_equal(reg_out_uart, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing reg_out_uart against reference.");
-                check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)),
-                            "Comparing address_out_uart against reference.");
-                check_equal(reg_dump_start, '0', "Comparing reg_dump_start against reference.");
-                check_equal(regs(2), std_logic_vector(to_unsigned(4096, 32)),
-                            "Comparing stack pointer against reference.");
+                check_equal(reg_out_1, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(reg_out_2, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(reg_out_uart, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)));
+                check_equal(reg_dump_start, '0');
+                check_equal(regs(2), std_logic_vector(to_unsigned(4096, 32)));
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_data_is_read_to_output_registers") then
@@ -143,10 +140,8 @@ begin
                 regs(15)   <= force std_logic_vector(to_unsigned(100, 32));
                 regs(20)   <= force std_logic_vector(to_unsigned(200, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(reg_out_1, std_logic_vector(to_unsigned(100, 32)),
-                            "Comparing reg_out_1 against reference.");
-                check_equal(reg_out_2, std_logic_vector(to_unsigned(200, 32)),
-                            "Comparing reg_out_2 against reference.");
+                check_equal(reg_out_1, std_logic_vector(to_unsigned(100, 32)));
+                check_equal(reg_out_2, std_logic_vector(to_unsigned(200, 32)));
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_write_data") then
@@ -165,8 +160,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 write      <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(regs(6), std_logic_vector(to_unsigned(123, 32)),
-                            "Comparing register address 6 against reference.");
+                check_equal(regs(6), std_logic_vector(to_unsigned(123, 32)));
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_write_to_address_0_is_blocked") then
@@ -185,8 +179,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 write      <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(regs(0), std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing register address 0 against reference.");
+                check_equal(regs(0), std_logic_vector(to_unsigned(0, 32)));
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_register_file_dumping_towards_uart") then
@@ -200,11 +193,9 @@ begin
                 regs(0)       <= force std_logic_vector(to_unsigned(123, 32));
                 pc            <= force std_logic_vector(to_unsigned(0, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(reg_dump_start, '1', "Comparing reg_dump_start against reference.");
-                check_equal(reg_out_uart, std_logic_vector(to_unsigned(123, 32)),
-                            "Comparing reg_out_uart against reference.");
-                check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)),
-                            "Comparing address_out_uart against reference.");
+                check_equal(reg_dump_start, '1');
+                check_equal(reg_out_uart, std_logic_vector(to_unsigned(123, 32)));
+                check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)));
                 check_sig     <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
