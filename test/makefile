@@ -31,7 +31,7 @@ sta:
 	done
 
 check:
-	python3 run.py
+	./run.py
 
 clean:
 	@rm -rf vunit_out

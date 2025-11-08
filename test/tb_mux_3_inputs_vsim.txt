@@ -3,6 +3,7 @@ sim:/tb_mux_3_inputs/reset \
 sim:/tb_mux_3_inputs/control \
 sim:/tb_mux_3_inputs/input_1 \
 sim:/tb_mux_3_inputs/input_2 \
-sim:/tb_mux_3_inputs/input_3
+sim:/tb_mux_3_inputs/input_3 \
+sim:/tb_mux_3_inputs/halt \
 sim:/tb_mux_3_inputs/output
 run 100ms

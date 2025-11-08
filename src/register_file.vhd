@@ -28,9 +28,10 @@ architecture rtl of register_file is
 
     type memory is array(31 downto 0) of std_logic_vector(31 downto 0);
 
-    signal regs : memory := (2 => std_logic_vector(to_unsigned(4096, 32)),
-                              others => (others => '0'));
-    signal temp : std_logic;
+    constant STACK_POINTER_INIT : integer := 4096;
+    signal   regs               : memory := (2 => std_logic_vector(to_unsigned(STACK_POINTER_INIT, 32)),
+                                              others => (others => '0'));
+    signal   temp               : std_logic;
 
 begin
 
@@ -43,7 +44,7 @@ begin
         if (reset = '1' or halt = '1') then
             reg_out_1 <= (others => '0');
             reg_out_2 <= (others => '0');
-            regs      <= (2 => std_logic_vector(to_unsigned(4096, 32)),
+            regs      <= (2 => std_logic_vector(to_unsigned(STACK_POINTER_INIT, 32)),
                           others => (others => '0'));
         elsif (falling_edge(clk)) then
             if (write = '1' and rd /= "00000" and enable = '1') then

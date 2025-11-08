@@ -62,7 +62,7 @@ begin
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(output, std_logic_vector(to_unsigned(0, 32)), "Comparing output against reference.");
+                check_equal(output, std_logic_vector(to_unsigned(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_output_is_input_1_when_control_is_zero") then
@@ -77,7 +77,7 @@ begin
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(output, input_1, "Comparing output against reference.");
+                check_equal(output, input_1);
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_output_is_input_2_when_control_is_one") then
@@ -92,7 +92,7 @@ begin
                 input_1   <= std_logic_vector(to_unsigned(123, 32));
                 input_2   <= std_logic_vector(to_unsigned(456, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(output, input_2, "Comparing output against reference.");
+                check_equal(output, input_2);
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

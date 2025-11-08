@@ -74,8 +74,7 @@ begin
                 enable     <= '1';
                 address_in <= std_logic_vector(to_unsigned(60, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing address_out against reference.");
+                check_equal(address_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_output_address_is_zero_if_enable_is_zero") then
@@ -88,8 +87,7 @@ begin
                 reset      <= '0';
                 address_in <= std_logic_vector(to_unsigned(60, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(address_out, std_logic_vector(to_unsigned(0, 32)),
-                            "Comparing address_out against reference.");
+                check_equal(address_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_output_address_follows_input_address_if_enable_is_one") then
@@ -102,7 +100,7 @@ begin
                 enable     <= '1';
                 address_in <= std_logic_vector(to_unsigned(123, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(address_out, address_in, "Comparing address_out against reference.");
+                check_equal(address_out, address_in);
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

@@ -66,8 +66,8 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 wait for CLK_PERIOD * 2;
-                check_equal(clk_500khz, '0', "Comparing clk_500khz against reference.");
-                check_equal(counter, 0, "Comparing counter against reference.");
+                check_equal(clk_500khz, '0');
+                check_equal(counter, 0);
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_counter_is_increased") then
@@ -78,8 +78,8 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 12;
-                check_equal(clk_500khz, '0', "Comparing clk_500khz against reference.");
-                check_equal(counter, 12, "Comparing counter against reference.");
+                check_equal(clk_500khz, '0');
+                check_equal(counter, 12);
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_500khz_clock_is_toggled") then
@@ -90,8 +90,8 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 50;
-                check_equal(clk_500khz, '1', "Comparing clk_500khz against reference.");
-                check_equal(counter, 0, "Comparing counter against reference.");
+                check_equal(clk_500khz, '1');
+                check_equal(counter, 0);
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

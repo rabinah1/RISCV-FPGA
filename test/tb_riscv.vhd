@@ -108,8 +108,7 @@ begin
                 prog_mem_halt <= force '0';
                 pc_adder_halt <= force '0';
                 wait until prog_mem_address_in = std_logic_vector(to_unsigned(0, 32));
-                check_equal(regs(10), std_logic_vector(to_unsigned(37, 32)),
-                            "Comparing reg_10 against reference.");
+                check_equal(regs(10), std_logic_vector(to_unsigned(37, 32)));
                 check_sig     <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

@@ -87,7 +87,7 @@ begin
                 address           <= std_logic_vector(to_unsigned(100, 32));
                 write_data        <= std_logic_vector(to_unsigned(123, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(output, std_logic_vector(to_unsigned(0, 32)), "Comparing output against reference.");
+                check_equal(output, std_logic_vector(to_unsigned(0, 32)));
                 check_sig         <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_read_data") then
@@ -103,7 +103,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset             <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(output, std_logic_vector(to_unsigned(100, 32)), "Comparing output against reference.");
+                check_equal(output, std_logic_vector(to_unsigned(100, 32)));
                 check_sig         <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_write_data") then
@@ -120,8 +120,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 write_enable      <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(data_mem(25), std_logic_vector(to_unsigned(155, 32)),
-                            "Comparing contents of data_mem against reference.");
+                check_equal(data_mem(25), std_logic_vector(to_unsigned(155, 32)));
                 check_sig         <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

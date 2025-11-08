@@ -7,6 +7,13 @@ sim:/tb_register_file/rs2 \
 sim:/tb_register_file/rd \
 sim:/tb_register_file/write \
 sim:/tb_register_file/write_data \
+sim:/tb_register_file/trig_reg_dump \
+sim:/tb_register_file/pc \
+sim:/tb_register_file/halt \
 sim:/tb_register_file/reg_out_1 \
-sim:/tb_register_file/reg_out_2
+sim:/tb_register_file/reg_out_2 \
+sim:/tb_register_file/reg_out_uart \
+sim:/tb_register_file/address_out_uart \
+sim:/tb_register_file/reg_dump_start \
+sim:/tb_register_file/reg_dump_halt
 run 100ms
