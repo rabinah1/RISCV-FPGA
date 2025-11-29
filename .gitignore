@@ -8,3 +8,4 @@ venv/
 src/test
 src/test.s
 src/test.o
+src/riscv_assignment_defaults.qdf

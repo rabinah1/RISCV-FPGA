@@ -32,7 +32,8 @@ FILES_TO_REMOVE = \
 	c5_pin_model_dump.txt \
 	test \
 	test.s \
-	test.o
+	test.o \
+	riscv_assignment_defaults.qdf
 
 sw:
 	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -ffunction-sections -S test.c
