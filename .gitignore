@@ -8,4 +8,7 @@ venv/
 src/test
 src/test.s
 src/test.o
+src/game_of_life
+src/game_of_life.s
+src/game_of_life.o
 src/riscv_assignment_defaults.qdf

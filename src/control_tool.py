@@ -9,8 +9,8 @@ BAUD_RATE = 9600
 NUM_OF_REGS = 32
 NUM_OF_BYTES = 128  # There are 32 registers, each of size 4 bytes (1 byte = 8 bits)
 WORD_LENGTH = 32
+# STACK_POINTER_INIT = 0x6A4
 STACK_POINTER_INIT = 0x1000
-
 
 def _parse_args():
     descr = """

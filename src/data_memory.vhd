@@ -28,14 +28,14 @@ begin
     data_memory : process (all) is
     begin
 
-        output <= data_mem(to_integer(unsigned(address(9 downto 0))));
+        output <= data_mem(to_integer(unsigned(address)));
 
         if (reset = '1' or halt = '1') then
             output   <= (others => '0');
             data_mem <= (others => (others => '0'));
         elsif (rising_edge(clk)) then
             if (write_enable = '1' and write_back_enable = '1') then
-                data_mem(to_integer(unsigned(address(9 downto 0)))) <= write_data;
+                data_mem(to_integer(unsigned(address))) <= write_data;
             end if;
         end if;
 

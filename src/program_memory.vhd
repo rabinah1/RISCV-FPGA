@@ -20,7 +20,7 @@ end entity program_memory;
 
 architecture rtl of program_memory is
 
-    constant PROGRAM_MEMORY_SIZE : integer := 512;
+    constant PROGRAM_MEMORY_SIZE : integer := 530;
 
     type memory is array(PROGRAM_MEMORY_SIZE - 1 downto 0) of std_logic_vector(31 downto 0);
 
@@ -40,7 +40,7 @@ begin
                 instruction <= (others => '0');
                 address_out <= (others => '0');
                 if (write_done = '1') then
-                    prog_mem(511 downto to_integer(unsigned(uart_address_in)) + 1) <= (others => (others => '0'));
+                    prog_mem(529 downto to_integer(unsigned(uart_address_in)) + 1) <= (others => (others => '0'));
                 end if;
             elsif (fetch_enable = '1') then
                 instruction <= prog_mem(to_integer(unsigned(address_in(9 downto 0))));
