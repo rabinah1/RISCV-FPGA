@@ -11,5 +11,6 @@ package instruction_types_package is
     constant TYPE_JAL         : std_logic_vector(6 downto 0) := "1101111";
     constant TYPE_JALR        : std_logic_vector(6 downto 0) := "1100111";
     constant TYPE_U           : std_logic_vector(6 downto 0) := "0110111";
+    constant TYPE_AUIPC       : std_logic_vector(6 downto 0) := "0010111";
 
 end package instruction_types_package;

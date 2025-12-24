@@ -4,6 +4,7 @@ sim:/tb_alu/reset \
 sim:/tb_alu/enable \
 sim:/tb_alu/input_1 \
 sim:/tb_alu/input_2 \
+sim:/tb_alu/pc_in \
 sim:/tb_alu/operator \
 sim:/tb_alu/halt \
 sim:/tb_alu/result

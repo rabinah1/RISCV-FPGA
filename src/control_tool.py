@@ -9,7 +9,6 @@ BAUD_RATE = 9600
 NUM_OF_REGS = 32
 NUM_OF_BYTES = 128  # There are 32 registers, each of size 4 bytes (1 byte = 8 bits)
 WORD_LENGTH = 32
-STACK_POINTER_INIT = 0x1000
 
 
 def _parse_args():
@@ -102,17 +101,21 @@ def _simulate(args, print_result=True):
     with open(args.binary, "rb") as f:
         data = f.read()
 
-    start_flag = False
     rv = tinyrv.sim(xlen=WORD_LENGTH)
-    rv.x[2] = STACK_POINTER_INIT
     rv.pc = 0x0
     rv.copy_in(rv.pc, data)
 
+    previous_pc = rv.pc
+    no_pc_change_count = 0
     while True:
-        if rv.pc == 0x0 and start_flag:
+        if no_pc_change_count > 10:
             break
         rv.step()
-        start_flag = True
+        if rv.pc == previous_pc:
+            no_pc_change_count += 1
+        else:
+            no_pc_change_count = 0
+        previous_pc = rv.pc
 
     regs = {}
     idx = 0

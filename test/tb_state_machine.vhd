@@ -15,7 +15,6 @@ architecture tb of tb_state_machine is
     signal   clk               : std_logic := '0';
     signal   reset             : std_logic := '0';
     signal   halt              : std_logic := '0';
-    signal   uart_halt         : std_logic := '0';
     signal   fetch_enable      : std_logic := '0';
     signal   decode_enable     : std_logic := '0';
     signal   execute_enable    : std_logic := '0';
@@ -28,7 +27,6 @@ architecture tb of tb_state_machine is
             clk               : in    std_logic;
             reset             : in    std_logic;
             halt              : in    std_logic;
-            uart_halt         : in    std_logic;
             fetch_enable      : out   std_logic;
             decode_enable     : out   std_logic;
             execute_enable    : out   std_logic;
@@ -43,7 +41,6 @@ begin
             clk               => clk,
             reset             => reset,
             halt              => halt,
-            uart_halt         => uart_halt,
             fetch_enable      => fetch_enable,
             decode_enable     => decode_enable,
             execute_enable    => execute_enable,

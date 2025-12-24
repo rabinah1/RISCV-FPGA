@@ -14,19 +14,23 @@ end entity tb_riscv;
 
 architecture tb of tb_riscv is
 
-    signal   clk        : std_logic := '0';
-    signal   reset      : std_logic := '0';
-    signal   data_in    : std_logic := '0';
-    signal   data_out   : std_logic := '0';
-    signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 20 ns;
+    signal   clk            : std_logic := '0';
+    signal   reset          : std_logic := '0';
+    signal   data_in        : std_logic := '0';
+    signal   data_out       : std_logic := '0';
+    signal   mem_access_err : std_logic := '0';
+    signal   unknown_instr  : std_logic := '0';
+    signal   check_sig      : natural := 0;
+    constant CLK_PERIOD     : time := 20 ns;
 
     component riscv is
         port (
-            clk      : in    std_logic;
-            reset    : in    std_logic;
-            data_in  : in    std_logic;
-            data_out : out   std_logic
+            clk            : in    std_logic;
+            reset          : in    std_logic;
+            data_in        : in    std_logic;
+            data_out       : out   std_logic;
+            mem_access_err : out   std_logic;
+            unknown_instr  : out   std_logic
         );
     end component;
 
@@ -34,10 +38,12 @@ begin
 
     riscv_instance : component riscv
         port map (
-            clk      => clk,
-            reset    => reset,
-            data_in  => data_in,
-            data_out => data_out
+            clk            => clk,
+            reset          => reset,
+            data_in        => data_in,
+            data_out       => data_out,
+            mem_access_err => mem_access_err,
+            unknown_instr  => unknown_instr
         );
 
     clk_process : process is
@@ -58,16 +64,16 @@ begin
 
         type reg_mem is array(31 downto 0) of std_logic_vector(31 downto 0);
 
-        type data_memory is array(1023 downto 0) of std_logic_vector(31 downto 0);
+        type data_memory is array(1599 downto 0) of std_logic_vector(31 downto 0);
 
-        type prog_memory is array(511 downto 0) of std_logic_vector(31 downto 0);
+        type prog_memory is array(534 downto 0) of std_logic_vector(31 downto 0);
 
         alias    regs                is <<signal .tb_riscv.riscv_instance.register_file_unit.regs : reg_mem>>;
         alias    prog_mem            is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : prog_memory>>;
         alias    data_mem            is <<signal .tb_riscv.riscv_instance.data_memory_unit.data_mem : data_memory>>;
         alias    prog_mem_address_in is <<signal .tb_riscv.riscv_instance.program_memory_unit.
             address_in : std_logic_vector(31 downto 0)>>;
-        alias    uart_halt           is <<signal .tb_riscv.riscv_instance.uart_unit.halt : std_logic>>;
+        alias    halt                is <<signal .tb_riscv.riscv_instance.uart_unit.halt : std_logic>>;
         alias    prog_mem_halt       is <<signal .tb_riscv.riscv_instance.program_memory_unit.halt : std_logic>>;
         alias    pc_adder_halt       is <<signal .tb_riscv.riscv_instance.pc_adder_unit.halt : std_logic>>;
         file     stimulus_file       : text open read_mode is input_file;
@@ -104,7 +110,7 @@ begin
 
                 file_close(stimulus_file);
                 reset         <= '0';
-                uart_halt     <= force '0';
+                halt          <= force '0';
                 prog_mem_halt <= force '0';
                 pc_adder_halt <= force '0';
                 wait until prog_mem_address_in = std_logic_vector(to_unsigned(0, 32));

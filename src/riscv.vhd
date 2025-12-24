@@ -4,10 +4,12 @@ use ieee.numeric_std.all;
 
 entity riscv is
     port (
-        clk      : in    std_logic;
-        reset    : in    std_logic;
-        data_in  : in    std_logic;
-        data_out : out   std_logic
+        clk            : in    std_logic;
+        reset          : in    std_logic;
+        data_in        : in    std_logic;
+        data_out       : out   std_logic;
+        mem_access_err : out   std_logic;
+        unknown_instr  : out   std_logic
     );
 end entity riscv;
 
@@ -27,14 +29,13 @@ architecture struct of riscv is
     signal instruction_decoder_write         : std_logic;
     signal writeback_mux_output              : std_logic_vector(31 downto 0);
     signal register_file_reg_out_2           : std_logic_vector(31 downto 0);
-    signal instruction_decoder_alu_source    : std_logic_vector(1 downto 0);
+    signal instruction_decoder_alu_source    : std_logic;
     signal instruction_decoder_immediate     : std_logic_vector(31 downto 0);
     signal instruction_decoder_load          : std_logic;
     signal instruction_decoder_store         : std_logic;
     signal instruction_decoder_branch        : std_logic;
     signal instruction_decoder_jump          : std_logic;
     signal instruction_decoder_jalr_flag     : std_logic;
-    signal instruction_decoder_pc_out        : std_logic_vector(31 downto 0);
     signal data_memory_output                : std_logic_vector(31 downto 0);
     signal pc_offset_mux_output              : std_logic_vector(31 downto 0);
     signal pc_input_mux_output               : std_logic_vector(31 downto 0);
@@ -48,10 +49,9 @@ architecture struct of riscv is
     signal uart_data_from_reg_file           : std_logic_vector(31 downto 0);
     signal uart_address_from_reg_file        : std_logic_vector(5 downto 0);
     signal uart_address                      : std_logic_vector(31 downto 0);
-    signal uart_halt                         : std_logic;
+    signal halt                              : std_logic;
     signal uart_write_done                   : std_logic;
     signal register_file_reg_dump_start      : std_logic;
-    signal register_file_halt                : std_logic;
     signal trig_reg_dump                     : std_logic;
 
     component alu is
@@ -61,6 +61,7 @@ architecture struct of riscv is
             enable   : in    std_logic;
             input_1  : in    std_logic_vector(31 downto 0);
             input_2  : in    std_logic_vector(31 downto 0);
+            pc_in    : in    std_logic_vector(31 downto 0);
             operator : in    std_logic_vector(10 downto 0);
             halt     : in    std_logic;
             result   : out   std_logic_vector(31 downto 0)
@@ -80,17 +81,17 @@ architecture struct of riscv is
 
     component program_memory is
         port (
-            clk             : in    std_logic;
-            reset           : in    std_logic;
-            fetch_enable    : in    std_logic;
-            write_trig      : in    std_logic;
-            halt            : in    std_logic;
-            write_done      : in    std_logic;
-            byte_from_uart  : in    std_logic_vector(31 downto 0);
-            uart_address_in : in    std_logic_vector(31 downto 0);
-            address_in      : in    std_logic_vector(31 downto 0);
-            address_out     : out   std_logic_vector(31 downto 0);
-            instruction     : out   std_logic_vector(31 downto 0)
+            clk                    : in    std_logic;
+            reset                  : in    std_logic;
+            fetch_enable           : in    std_logic;
+            write_trig             : in    std_logic;
+            halt                   : in    std_logic;
+            write_done             : in    std_logic;
+            data_word_from_uart    : in    std_logic_vector(31 downto 0);
+            address_word_from_uart : in    std_logic_vector(31 downto 0);
+            address_in             : in    std_logic_vector(31 downto 0);
+            address_out            : out   std_logic_vector(31 downto 0);
+            instruction            : out   std_logic_vector(31 downto 0)
         );
     end component program_memory;
 
@@ -105,14 +106,12 @@ architecture struct of riscv is
             write            : in    std_logic;
             write_data       : in    std_logic_vector(31 downto 0);
             trig_reg_dump    : in    std_logic;
-            pc               : in    std_logic_vector(31 downto 0);
             halt             : in    std_logic;
             reg_out_1        : out   std_logic_vector(31 downto 0);
             reg_out_2        : out   std_logic_vector(31 downto 0);
             reg_out_uart     : out   std_logic_vector(31 downto 0);
             address_out_uart : out   std_logic_vector(5 downto 0);
-            reg_dump_start   : out   std_logic;
-            reg_dump_halt    : out   std_logic
+            reg_dump_start   : out   std_logic
         );
     end component register_file;
 
@@ -122,35 +121,33 @@ architecture struct of riscv is
             reset         : in    std_logic;
             enable        : in    std_logic;
             instruction   : in    std_logic_vector(31 downto 0);
-            pc_in         : in    std_logic_vector(31 downto 0);
             halt          : in    std_logic;
             rs1           : out   std_logic_vector(4 downto 0);
             rs2           : out   std_logic_vector(4 downto 0);
             rd            : out   std_logic_vector(4 downto 0);
             write         : out   std_logic;
             alu_operation : out   std_logic_vector(10 downto 0);
-            alu_source    : out   std_logic_vector(1 downto 0);
+            alu_source    : out   std_logic;
             immediate     : out   std_logic_vector(31 downto 0);
             load          : out   std_logic;
             store         : out   std_logic;
             branch        : out   std_logic;
             jump          : out   std_logic;
             jalr_flag     : out   std_logic;
-            pc_out        : out   std_logic_vector(31 downto 0)
+            unknown_instr : out   std_logic
         );
     end component instruction_decoder;
 
-    component mux_3_inputs is
+    component mux_2_inputs_latch is
         port (
             reset   : in    std_logic;
-            control : in    std_logic_vector(1 downto 0);
+            control : in    std_logic;
             input_1 : in    std_logic_vector(31 downto 0);
             input_2 : in    std_logic_vector(31 downto 0);
-            input_3 : in    std_logic_vector(31 downto 0);
             halt    : in    std_logic;
             output  : out   std_logic_vector(31 downto 0)
         );
-    end component mux_3_inputs;
+    end component mux_2_inputs_latch;
 
     component mux_2_inputs is
         port (
@@ -179,22 +176,24 @@ architecture struct of riscv is
         port (
             clk               : in    std_logic;
             reset             : in    std_logic;
-            address           : in    std_logic_vector(31 downto 0);
+            address_bytes     : in    std_logic_vector(31 downto 0);
             write_data        : in    std_logic_vector(31 downto 0);
             write_enable      : in    std_logic;
+            load_enable       : in    std_logic;
             write_back_enable : in    std_logic;
             halt              : in    std_logic;
+            mem_access_err    : out   std_logic;
             output            : out   std_logic_vector(31 downto 0)
         );
     end component data_memory;
 
     component pc_adder is
         port (
-            reset   : in    std_logic;
-            halt    : in    std_logic;
-            input_1 : in    std_logic_vector(31 downto 0);
-            input_2 : in    std_logic_vector(31 downto 0);
-            sum     : out   std_logic_vector(31 downto 0)
+            reset         : in    std_logic;
+            halt          : in    std_logic;
+            input_1_bytes : in    std_logic_vector(31 downto 0);
+            input_2_bytes : in    std_logic_vector(31 downto 0);
+            sum_words     : out   std_logic_vector(31 downto 0)
         );
     end component pc_adder;
 
@@ -203,7 +202,6 @@ architecture struct of riscv is
             clk               : in    std_logic;
             reset             : in    std_logic;
             halt              : in    std_logic;
-            uart_halt         : in    std_logic;
             fetch_enable      : out   std_logic;
             decode_enable     : out   std_logic;
             execute_enable    : out   std_logic;
@@ -246,8 +244,9 @@ begin
             enable   => state_machine_execute_enable,
             input_1  => register_file_reg_out_1,
             input_2  => alu_src_mux_output,
+            pc_in    => program_memory_address_out,
             operator => instruction_decoder_alu_operation,
-            halt     => uart_halt,
+            halt     => halt,
             result   => alu_result
         );
 
@@ -257,23 +256,23 @@ begin
             reset       => reset,
             enable      => state_machine_write_back_enable,
             address_in  => pc_adder_sum,
-            halt        => uart_halt,
+            halt        => halt,
             address_out => program_counter_address_out
         );
 
     program_memory_unit : component program_memory
         port map (
-            clk             => clk_500khz,
-            reset           => reset,
-            fetch_enable    => state_machine_fetch_enable,
-            write_trig      => uart_write_trig,
-            halt            => uart_halt,
-            write_done      => uart_write_done,
-            byte_from_uart  => uart_data_to_imem,
-            uart_address_in => uart_address,
-            address_in      => program_counter_address_out,
-            address_out     => program_memory_address_out,
-            instruction     => program_memory_instruction
+            clk                    => clk_500khz,
+            reset                  => reset,
+            fetch_enable           => state_machine_fetch_enable,
+            write_trig             => uart_write_trig,
+            halt                   => halt,
+            write_done             => uart_write_done,
+            data_word_from_uart    => uart_data_to_imem,
+            address_word_from_uart => uart_address,
+            address_in             => program_counter_address_out,
+            address_out            => program_memory_address_out,
+            instruction            => program_memory_instruction
         );
 
     register_file_unit : component register_file
@@ -287,14 +286,12 @@ begin
             write            => instruction_decoder_write,
             write_data       => writeback_mux_output,
             trig_reg_dump    => trig_reg_dump,
-            pc               => pc_adder_sum,
-            halt             => uart_halt,
+            halt             => halt,
             reg_out_1        => register_file_reg_out_1,
             reg_out_2        => register_file_reg_out_2,
             reg_out_uart     => uart_data_from_reg_file,
             address_out_uart => uart_address_from_reg_file,
-            reg_dump_start   => register_file_reg_dump_start,
-            reg_dump_halt    => register_file_halt
+            reg_dump_start   => register_file_reg_dump_start
         );
 
     instruction_decoder_unit : component instruction_decoder
@@ -303,8 +300,7 @@ begin
             reset         => reset,
             enable        => state_machine_decode_enable,
             instruction   => program_memory_instruction,
-            pc_in         => program_memory_address_out,
-            halt          => uart_halt,
+            halt          => halt,
             rs1           => instruction_decoder_rs1,
             rs2           => instruction_decoder_rs2,
             rd            => instruction_decoder_rd,
@@ -317,17 +313,16 @@ begin
             branch        => instruction_decoder_branch,
             jump          => instruction_decoder_jump,
             jalr_flag     => instruction_decoder_jalr_flag,
-            pc_out        => instruction_decoder_pc_out
+            unknown_instr => unknown_instr
         );
 
-    alu_src_mux : component mux_3_inputs
+    alu_src_mux : component mux_2_inputs_latch
         port map (
             reset   => reset,
             control => instruction_decoder_alu_source,
             input_1 => instruction_decoder_immediate,
             input_2 => register_file_reg_out_2,
-            input_3 => instruction_decoder_pc_out,
-            halt    => uart_halt,
+            halt    => halt,
             output  => alu_src_mux_output
         );
 
@@ -337,7 +332,7 @@ begin
             control => instruction_decoder_load,
             input_1 => alu_result,
             input_2 => data_memory_output,
-            halt    => uart_halt,
+            halt    => halt,
             output  => writeback_mux_output
         );
 
@@ -345,11 +340,13 @@ begin
         port map (
             clk               => clk_500khz,
             reset             => reset,
-            address           => alu_result,
+            address_bytes     => alu_result,
             write_data        => register_file_reg_out_2,
             write_enable      => instruction_decoder_store,
+            load_enable       => instruction_decoder_load,
             write_back_enable => state_machine_write_back_enable,
-            halt              => uart_halt,
+            halt              => halt,
+            mem_access_err    => mem_access_err,
             output            => data_memory_output
         );
 
@@ -358,9 +355,9 @@ begin
             clk     => clk_500khz,
             reset   => reset,
             control => (alu_result(0) and instruction_decoder_branch) or instruction_decoder_jump,
-            input_1 => std_logic_vector(to_unsigned(1, 32)),
-            input_2 => "00" & instruction_decoder_immediate(31 downto 2),
-            halt    => uart_halt,
+            input_1 => std_logic_vector(to_signed(4, 32)),
+            input_2 => instruction_decoder_immediate,
+            halt    => halt,
             output  => pc_offset_mux_output
         );
 
@@ -369,27 +366,26 @@ begin
             clk     => clk_500khz,
             reset   => reset,
             control => instruction_decoder_jalr_flag,
-            input_1 => program_counter_address_out,
+            input_1 => program_counter_address_out(29 downto 0) & "00",
             input_2 => register_file_reg_out_1,
-            halt    => uart_halt,
+            halt    => halt,
             output  => pc_input_mux_output
         );
 
     pc_adder_unit : component pc_adder
         port map (
-            reset   => reset,
-            halt    => uart_halt,
-            input_1 => pc_offset_mux_output,
-            input_2 => pc_input_mux_output,
-            sum     => pc_adder_sum
+            reset         => reset,
+            halt          => halt,
+            input_1_bytes => pc_offset_mux_output,
+            input_2_bytes => pc_input_mux_output,
+            sum_words     => pc_adder_sum
         );
 
     state_machine_unit : component state_machine
         port map (
             clk               => clk_500khz,
             reset             => reset,
-            halt              => register_file_halt,
-            uart_halt         => uart_halt,
+            halt              => halt,
             fetch_enable      => state_machine_fetch_enable,
             decode_enable     => state_machine_decode_enable,
             execute_enable    => state_machine_execute_enable,
@@ -412,7 +408,7 @@ begin
             address_from_reg_file => uart_address_from_reg_file,
             reg_dump_start        => register_file_reg_dump_start,
             data_out              => data_out,
-            halt                  => uart_halt,
+            halt                  => halt,
             write_trig            => uart_write_trig,
             write_done            => uart_write_done,
             trig_reg_dump         => trig_reg_dump,

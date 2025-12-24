@@ -5,8 +5,8 @@ sim:/tb_program_memory/fetch_enable \
 sim:/tb_program_memory/write_trig \
 sim:/tb_program_memory/halt \
 sim:/tb_program_memory/write_done \
-sim:/tb_program_memory/byte_from_uart \
-sim:/tb_program_memory/uart_address_in \
+sim:/tb_program_memory/data_word_from_uart \
+sim:/tb_program_memory/address_word_from_uart \
 sim:/tb_program_memory/address_in \
 sim:/tb_program_memory/address_out \
 sim:/tb_program_memory/instruction

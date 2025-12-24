@@ -1,10 +1,12 @@
 add wave \
 sim:/tb_data_memory/clk \
 sim:/tb_data_memory/reset \
-sim:/tb_data_memory/address \
+sim:/tb_data_memory/address_bytes \
 sim:/tb_data_memory/write_data \
 sim:/tb_data_memory/write_enable \
+sim:/tb_data_memory/load_enable \
 sim:/tb_data_memory/write_back_enable \
 sim:/tb_data_memory/halt \
+sim:/tb_data_memory/mem_access_err \
 sim:/tb_data_memory/output
 run 100ms

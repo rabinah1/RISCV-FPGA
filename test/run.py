@@ -47,11 +47,6 @@ if tb_name:
             "modelsim.vsim_flags.gui",
             ["-lib design_lib", f"-do {test_dir}/tb_instruction_decoder_vsim.txt"],
         )
-    elif "tb_mux_3_inputs" in tb_name:
-        VU.set_sim_option(
-            "modelsim.vsim_flags.gui",
-            ["-lib design_lib", f"-do {test_dir}/tb_mux_3_inputs_vsim.txt"],
-        )
     elif "tb_writeback_mux" in tb_name:
         VU.set_sim_option(
             "modelsim.vsim_flags.gui",
