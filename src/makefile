@@ -33,13 +33,17 @@ FILES_TO_REMOVE = \
 	test \
 	test.s \
 	test.o \
+	startup \
+	startup.o \
 	riscv_assignment_defaults.qdf
 
 sw:
 	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -ffunction-sections -S test.c
+	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -ffunction-sections -c startup.S -o startup.o
 	@$(CC) -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -ffunction-sections -c test.c -o test.o
-	@$(LD) -T ./custom.ld -o test test.o
+	@$(LD) -T ./custom.ld -o test startup.o test.o
 	@$(OC) -O binary test test
+	@$(OC) -O binary startup.o startup
 
 bitstream: synthesis fitting timing_analysis
 	@quartus_asm --write_settings_files=off ./riscv -c riscv

@@ -26,7 +26,7 @@ architecture tb of tb_program_memory is
     signal   check_sig       : natural := 0;
     constant CLK_PERIOD      : time := 2 us;
 
-    type memory is array(511 downto 0) of std_logic_vector(31 downto 0);
+    type memory is array(534 downto 0) of std_logic_vector(31 downto 0);
 
     component program_memory is
         port (

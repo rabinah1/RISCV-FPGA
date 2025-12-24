@@ -11,13 +11,14 @@ entity data_memory is
         write_enable      : in    std_logic;
         write_back_enable : in    std_logic;
         halt              : in    std_logic;
+        mem_access_err    : out   std_logic;
         output            : out   std_logic_vector(31 downto 0)
     );
 end entity data_memory;
 
 architecture rtl of data_memory is
 
-    constant DATA_MEMORY_SIZE : integer := 1024;
+    constant DATA_MEMORY_SIZE : integer := 1750;
 
     type memory is array(DATA_MEMORY_SIZE - 1 downto 0) of std_logic_vector(31 downto 0);
 
@@ -25,20 +26,34 @@ architecture rtl of data_memory is
 
 begin
 
-    data_memory : process (all) is
+    read_process : process (all) is
     begin
 
-        output <= data_mem(to_integer(unsigned(address(9 downto 0))));
-
         if (reset = '1' or halt = '1') then
-            output   <= (others => '0');
-            data_mem <= (others => (others => '0'));
-        elsif (rising_edge(clk)) then
-            if (write_enable = '1' and write_back_enable = '1') then
-                data_mem(to_integer(unsigned(address(9 downto 0)))) <= write_data;
+            mem_access_err <= '0';
+            output         <= (others => '0');
+        else
+            if (to_integer(unsigned(address)) >= DATA_MEMORY_SIZE) then
+                mem_access_err <= '1';
+                output         <= (others => '0');
+            else
+                output <= data_mem(to_integer(unsigned(address)));
             end if;
         end if;
 
-    end process data_memory;
+    end process read_process;
+
+    write_process : process (all) is
+    begin
+
+        if (reset = '1' or halt = '1') then
+            data_mem <= (others => (others => '0'));
+        elsif (rising_edge(clk)) then
+            if (write_enable = '1' and write_back_enable = '1' and mem_access_err = '0') then
+                data_mem(to_integer(unsigned(address))) <= write_data;
+            end if;
+        end if;
+
+    end process write_process;
 
 end architecture rtl;
