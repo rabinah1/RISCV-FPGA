@@ -31,5 +31,6 @@ package opcode_pkg is
     constant JAL    : std_logic_vector(10 downto 0) := "11011110000";
     constant JALR   : std_logic_vector(10 downto 0) := "11001110000";
     constant LUI    : std_logic_vector(10 downto 0) := "01101110000";
+    constant AUIPC  : std_logic_vector(10 downto 0) := "00101110000";
 
 end package opcode_pkg;

@@ -10,6 +10,7 @@ entity alu is
         enable   : in    std_logic;
         input_1  : in    std_logic_vector(31 downto 0);
         input_2  : in    std_logic_vector(31 downto 0);
+        pc_in    : in    std_logic_vector(31 downto 0);
         operator : in    std_logic_vector(10 downto 0);
         halt     : in    std_logic;
         result   : out   std_logic_vector(31 downto 0)
@@ -183,15 +184,19 @@ begin
 
                     when JAL =>
 
-                        result <= std_logic_vector(unsigned(input_2) + to_unsigned(1, 32));
+                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, 32));
 
                     when JALR =>
 
-                        result <= std_logic_vector(unsigned(input_2) + to_unsigned(1, 32));
+                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, 32));
 
                     when LUI =>
 
                         result <= input_2;
+
+                    when AUIPC =>
+
+                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + unsigned(input_2));
 
                     when others =>
 

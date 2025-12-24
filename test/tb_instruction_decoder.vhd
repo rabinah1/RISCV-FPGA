@@ -30,6 +30,7 @@ architecture tb of tb_instruction_decoder is
     signal   branch        : std_logic;
     signal   jump          : std_logic;
     signal   jalr_flag     : std_logic;
+    signal   unknown_instr : std_logic;
     signal   pc_out        : std_logic_vector(31 downto 0);
     signal   check_sig     : natural := 0;
     constant CLK_PERIOD    : time := 2 us;
@@ -54,6 +55,7 @@ architecture tb of tb_instruction_decoder is
             branch        : out   std_logic;
             jump          : out   std_logic;
             jalr_flag     : out   std_logic;
+            unknown_instr : out   std_logic;
             pc_out        : out   std_logic_vector(31 downto 0)
         );
     end component;
@@ -80,6 +82,7 @@ begin
             branch        => branch,
             jump          => jump,
             jalr_flag     => jalr_flag,
+            unknown_instr => unknown_instr,
             pc_out        => pc_out
         );
 
@@ -125,6 +128,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -150,6 +154,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -175,6 +180,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -200,6 +206,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -226,6 +233,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -252,6 +260,7 @@ begin
                 check_equal(branch, '1');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -279,6 +288,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '1');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, pc_in);
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -304,6 +314,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '1');
                 check_equal(jalr_flag, '1');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -329,6 +340,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '0');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
@@ -354,6 +366,7 @@ begin
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
+                check_equal(unknown_instr, '1');
                 check_equal(pc_out, std_logic_vector(to_unsigned(0, 32)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");

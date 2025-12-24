@@ -17,5 +17,6 @@ sim:/tb_instruction_decoder/store \
 sim:/tb_instruction_decoder/branch \
 sim:/tb_instruction_decoder/jump \
 sim:/tb_instruction_decoder/jalr_flag \
+sim:/tb_instruction_decoder/unknown_instr \
 sim:/tb_instruction_decoder/pc_out
 run 100ms
