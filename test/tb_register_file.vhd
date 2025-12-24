@@ -21,14 +21,12 @@ architecture tb of tb_register_file is
     signal   write            : std_logic := '0';
     signal   write_data       : std_logic_vector(31 downto 0) := (others => '0');
     signal   trig_reg_dump    : std_logic := '0';
-    signal   pc               : std_logic_vector(31 downto 0) := (others => '0');
     signal   halt             : std_logic := '0';
     signal   reg_out_1        : std_logic_vector(31 downto 0) := (others => '0');
     signal   reg_out_2        : std_logic_vector(31 downto 0) := (others => '0');
     signal   reg_out_uart     : std_logic_vector(31 downto 0) := (others => '0');
     signal   address_out_uart : std_logic_vector(5 downto 0) := (others => '0');
     signal   reg_dump_start   : std_logic := '0';
-    signal   reg_dump_halt    : std_logic := '0';
     signal   check_sig        : natural := 0;
     constant CLK_PERIOD       : time := 2 us;
 
@@ -45,14 +43,12 @@ architecture tb of tb_register_file is
             write            : in    std_logic;
             write_data       : in    std_logic_vector(31 downto 0);
             trig_reg_dump    : in    std_logic;
-            pc               : in    std_logic_vector(31 downto 0);
             halt             : in    std_logic;
             reg_out_1        : out   std_logic_vector(31 downto 0);
             reg_out_2        : out   std_logic_vector(31 downto 0);
             reg_out_uart     : out   std_logic_vector(31 downto 0);
             address_out_uart : out   std_logic_vector(5 downto 0);
-            reg_dump_start   : out   std_logic;
-            reg_dump_halt    : out   std_logic
+            reg_dump_start   : out   std_logic
         );
     end component;
 
@@ -69,14 +65,12 @@ begin
             write            => write,
             write_data       => write_data,
             trig_reg_dump    => trig_reg_dump,
-            pc               => pc,
             halt             => halt,
             reg_out_1        => reg_out_1,
             reg_out_2        => reg_out_2,
             reg_out_uart     => reg_out_uart,
             address_out_uart => address_out_uart,
-            reg_dump_start   => reg_dump_start,
-            reg_dump_halt    => reg_dump_halt
+            reg_dump_start   => reg_dump_start
         );
 
     clk_process : process is
@@ -121,7 +115,6 @@ begin
                 check_equal(reg_out_uart, std_logic_vector(to_unsigned(0, 32)));
                 check_equal(address_out_uart, std_logic_vector(to_unsigned(0, 6)));
                 check_equal(reg_dump_start, '0');
-                check_equal(regs(2), std_logic_vector(to_unsigned(4096, 32)));
                 check_sig  <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_data_is_read_to_output_registers") then
@@ -191,7 +184,6 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset         <= '0';
                 regs(0)       <= force std_logic_vector(to_unsigned(123, 32));
-                pc            <= force std_logic_vector(to_unsigned(0, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(reg_dump_start, '1');
                 check_equal(reg_out_uart, std_logic_vector(to_unsigned(123, 32)));

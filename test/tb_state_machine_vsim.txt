@@ -2,7 +2,6 @@ add wave \
 sim:/tb_state_machine/clk \
 sim:/tb_state_machine/reset \
 sim:/tb_state_machine/halt \
-sim:/tb_state_machine/uart_halt \
 sim:/tb_state_machine/fetch_enable \
 sim:/tb_state_machine/decode_enable \
 sim:/tb_state_machine/execute_enable \

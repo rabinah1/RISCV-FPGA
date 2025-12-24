@@ -1,3 +1,6 @@
+# addi sp,sp,1000
+# This is an additional instruction to initialize stack pointer.
+00111110100000010000000100010011
 # addi sp,sp,-32
 11111101000000010000000100010011
 # sw ra,44(sp)

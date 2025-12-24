@@ -7,7 +7,6 @@ STYLE_CHECK_FILES = \
 	tb_program_counter.vhd \
 	tb_program_memory.vhd \
 	tb_instruction_decoder.vhd \
-	tb_mux_3_inputs.vhd \
 	tb_mux_2_inputs.vhd \
 	tb_register_file.vhd \
 	tb_data_memory.vhd \

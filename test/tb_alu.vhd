@@ -18,6 +18,7 @@ architecture tb of tb_alu is
     signal   enable     : std_logic := '0';
     signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
+    signal   pc_in      : std_logic_vector(31 downto 0) := (others => '0');
     signal   operator   : std_logic_vector(10 downto 0) := (others => '0');
     signal   halt       : std_logic := '0';
     signal   result     : std_logic_vector(31 downto 0) := (others => '0');
@@ -31,6 +32,7 @@ architecture tb of tb_alu is
             enable   : in    std_logic;
             input_1  : in    std_logic_vector(31 downto 0);
             input_2  : in    std_logic_vector(31 downto 0);
+            pc_in    : in    std_logic_vector(31 downto 0);
             operator : in    std_logic_vector(10 downto 0);
             halt     : in    std_logic;
             result   : out   std_logic_vector(31 downto 0)
@@ -46,6 +48,7 @@ begin
             enable   => enable,
             input_1  => input_1,
             input_2  => input_2,
+            pc_in    => pc_in,
             operator => operator,
             halt     => halt,
             result   => result
@@ -513,11 +516,12 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
+                pc_in     <= std_logic_vector(to_unsigned(100, 32));
                 operator  <= JAL;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(158, 32)));
+                check_equal(result, std_logic_vector(to_unsigned(404, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_jalr_instruction") then
@@ -528,11 +532,12 @@ begin
                 enable    <= '1';
                 input_1   <= std_logic_vector(to_unsigned(24, 32));
                 input_2   <= std_logic_vector(to_unsigned(157, 32));
+                pc_in     <= std_logic_vector(to_unsigned(100, 32));
                 operator  <= JAL;
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(result, std_logic_vector(to_unsigned(158, 32)));
+                check_equal(result, std_logic_vector(to_unsigned(404, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_lui_instruction") then
@@ -548,6 +553,22 @@ begin
                 reset     <= '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(result, std_logic_vector(to_unsigned(157, 32)));
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_auipc_instruction") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_auipc_instruction");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                enable    <= '1';
+                input_1   <= std_logic_vector(to_unsigned(24, 32));
+                input_2   <= std_logic_vector(to_unsigned(157, 32));
+                pc_in     <= std_logic_vector(to_unsigned(100, 32));
+                operator  <= AUIPC;
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(result, std_logic_vector(to_unsigned(557, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_unrecognized_instruction") then
