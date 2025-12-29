@@ -4,6 +4,8 @@
 
 This is a hobby project for learning RISC-V architecture and CPU implementation on VHDL. In more detail, this project consists of a simple implementation of the RV32I ISA on the Terasic DE10-nano development board. This project also uses Python's tinyRV module as a RISC-V reference model for verifying the implementation of the processor.
 
+The processor implementation itself is a heavily simplified version of a real modern processor. For example, the implemented processor doesn't support pipelining, or any other similar features that are very common in modern processors. Also, performance or power consumption have not been considered in the implementation. The intention is to just implement as simple as possible processor that can run C-code compiled with RISC-V cross-compiler.
+
 ## Repository structure
 
 Below is a short description of the repository structure.
@@ -20,7 +22,7 @@ Below is a short description of the repository structure.
 
 ## Hardware setup
 
-To be able to interact with the implemented processor, you need a USB to serial adapter cable. The USB adapter connects to your host PC. The TX-connector of the serial end connects to pin 1 of the DE10-nano, and the RX-connector connects to pin 2 of the DE10-nano.
+To be able to interact with the implemented processor, you need a USB to serial adapter cable. The USB adapter connects to your host PC. The TX-connector of the serial end connects to pin PIN_V12 of the DE10-nano, and the RX-connector connects to pin PIN_E8 of the DE10-nano.
 
 ## Usage
 
