@@ -22,7 +22,7 @@ Below is a short description of the repository structure.
 
 ## Hardware setup
 
-To be able to interact with the implemented processor, you need a USB to serial adapter cable. The USB adapter connects to your host PC. The TX-connector of the serial end connects to pin PIN_V12 of the DE10-nano, and the RX-connector connects to pin PIN_E8 of the DE10-nano.
+To be able to interact with the implemented processor, you need a USB to serial adapter cable. The USB adapter connects to your host PC. The TX-connector of the serial end connects to pin PIN_D8 of the DE10-nano, and the RX-connector connects to pin PIN_AH13 of the DE10-nano.
 
 ## Usage
 
