@@ -12,15 +12,15 @@ end entity tb_mux_2_inputs;
 
 architecture tb of tb_mux_2_inputs is
 
-    signal   clk        : std_logic := '0';
-    signal   reset      : std_logic := '0';
-    signal   control    : std_logic := '0';
+    signal   clk        : std_logic                     := '0';
+    signal   reset      : std_logic                     := '0';
+    signal   control    : std_logic                     := '0';
     signal   input_1    : std_logic_vector(31 downto 0) := (others => '0');
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
-    signal   halt       : std_logic := '0';
+    signal   halt       : std_logic                     := '0';
     signal   output     : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 2 us;
+    signal   check_sig  : natural                       := 0;
+    constant CLK_PERIOD : time                          := 2 us;
 
     component mux_2_inputs is
         port (
@@ -32,7 +32,7 @@ architecture tb of tb_mux_2_inputs is
             halt    : in    std_logic;
             output  : out   std_logic_vector(31 downto 0)
         );
-    end component;
+    end component mux_2_inputs;
 
 begin
 

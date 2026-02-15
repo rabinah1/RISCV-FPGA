@@ -43,6 +43,9 @@ This script can be used to interact with the implemented CPU.
 
     simulation_parser = subparsers.add_parser("simulate", help="Simulate a program binary.")
     simulation_parser.add_argument("binary", type=str, help="Path to the binary file.")
+    simulation_parser.add_argument(
+        "--trace", action="store_true", help="Print all the instructions that are executed."
+    )
 
     hw_test_parser = subparsers.add_parser(
         "test_hw", help="Run a binary on HW and compare the results against a reference model."
@@ -53,6 +56,9 @@ This script can be used to interact with the implemented CPU.
         type=str,
         default="/dev/ttyUSB0",
         help="Serial port. Default is /dev/ttyUSB0.",
+    )
+    hw_test_parser.add_argument(
+        "--print_result", action="store_true", help="Print the register values."
     )
     args = parser.parse_args()
 
@@ -70,8 +76,8 @@ def _load_prog(args):
     ser.close()
 
 
-def _read_regs(args, print_result=True):
-    ser = serial.Serial(args.serial_port, BAUD_RATE, timeout=5)
+def _read_regs(serial_port, print_result):
+    ser = serial.Serial(serial_port, BAUD_RATE, timeout=5)
     ser.write(bytes([1]))
     regs = ser.read(NUM_OF_BYTES)
     regs = [i for i in regs]
@@ -97,8 +103,8 @@ def _read_regs(args, print_result=True):
     return reg_values
 
 
-def _simulate(args, print_result=True):
-    with open(args.binary, "rb") as f:
+def _simulate(binary, trace, print_result):
+    with open(binary, "rb") as f:
         data = f.read()
 
     rv = tinyrv.sim(xlen=WORD_LENGTH)
@@ -110,7 +116,7 @@ def _simulate(args, print_result=True):
     while True:
         if no_pc_change_count > 10:
             break
-        rv.step()
+        rv.step(trace)
         if rv.pc == previous_pc:
             no_pc_change_count += 1
         else:
@@ -134,10 +140,10 @@ def _test_hw(args):
     _load_prog(args)
     sleep(2)
     print("Dumping register file contents from the board...")
-    hw_result = _read_regs(args, False)
+    hw_result = _read_regs(args.serial_port, args.print_result)
     sleep(1)
     print("Running simulation...")
-    simulation_result = _simulate(args, False)
+    simulation_result = _simulate(args.binary, False, args.print_result)
 
     if hw_result == simulation_result:
         print("Tests passed")
@@ -154,9 +160,9 @@ def main():
     if args.command == "load_prog":
         _load_prog(args)
     elif args.command == "read_regs":
-        _read_regs(args)
+        _read_regs(args.serial_port, True)
     elif args.command == "simulate":
-        _simulate(args)
+        _simulate(args.binary, args.trace, True)
     elif args.command == "test_hw":
         _test_hw(args)
 

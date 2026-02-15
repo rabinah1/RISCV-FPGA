@@ -21,7 +21,8 @@ architecture rtl of alu is
 
     function signed_add (
         in_1 : std_logic_vector(31 downto 0);
-        in_2 : std_logic_vector(31 downto 0)) return std_logic_vector is
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
     begin
 
         return std_logic_vector(signed(in_1) + signed(in_2));

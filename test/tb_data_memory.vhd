@@ -12,18 +12,18 @@ end entity tb_data_memory;
 
 architecture tb of tb_data_memory is
 
-    signal   clk               : std_logic := '0';
-    signal   reset             : std_logic := '0';
+    signal   clk               : std_logic                     := '0';
+    signal   reset             : std_logic                     := '0';
     signal   address_bytes     : std_logic_vector(31 downto 0) := (others => '0');
     signal   write_data        : std_logic_vector(31 downto 0) := (others => '0');
-    signal   write_enable      : std_logic := '0';
-    signal   load_enable       : std_logic := '0';
-    signal   write_back_enable : std_logic := '0';
-    signal   halt              : std_logic := '0';
-    signal   mem_access_err    : std_logic := '0';
+    signal   write_enable      : std_logic                     := '0';
+    signal   load_enable       : std_logic                     := '0';
+    signal   write_back_enable : std_logic                     := '0';
+    signal   halt              : std_logic                     := '0';
+    signal   mem_access_err    : std_logic                     := '0';
     signal   output            : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig         : natural := 0;
-    constant CLK_PERIOD        : time := 2 us;
+    signal   check_sig         : natural                       := 0;
+    constant CLK_PERIOD        : time                          := 2 us;
 
     type memory is array(1599 downto 0) of std_logic_vector(31 downto 0);
 
@@ -40,7 +40,7 @@ architecture tb of tb_data_memory is
             mem_access_err    : out   std_logic;
             output            : out   std_logic_vector(31 downto 0)
         );
-    end component;
+    end component data_memory;
 
 begin
 

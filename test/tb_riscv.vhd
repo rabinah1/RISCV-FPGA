@@ -20,8 +20,8 @@ architecture tb of tb_riscv is
     signal   data_out       : std_logic := '0';
     signal   mem_access_err : std_logic := '0';
     signal   unknown_instr  : std_logic := '0';
-    signal   check_sig      : natural := 0;
-    constant CLK_PERIOD     : time := 20 ns;
+    signal   check_sig      : natural   := 0;
+    constant CLK_PERIOD     : time      := 20 ns;
 
     component riscv is
         port (
@@ -32,7 +32,7 @@ architecture tb of tb_riscv is
             mem_access_err : out   std_logic;
             unknown_instr  : out   std_logic
         );
-    end component;
+    end component riscv;
 
 begin
 
@@ -71,8 +71,8 @@ begin
         alias    regs                is <<signal .tb_riscv.riscv_instance.register_file_unit.regs : reg_mem>>;
         alias    prog_mem            is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : prog_memory>>;
         alias    data_mem            is <<signal .tb_riscv.riscv_instance.data_memory_unit.data_mem : data_memory>>;
-        alias    prog_mem_address_in is <<signal .tb_riscv.riscv_instance.program_memory_unit.
-            address_in : std_logic_vector(31 downto 0)>>;
+        alias    prog_mem_address_in is <<signal .tb_riscv.riscv_instance.program_memory_unit.address_in :
+            std_logic_vector(31 downto 0)>>;
         alias    halt                is <<signal .tb_riscv.riscv_instance.uart_unit.halt : std_logic>>;
         alias    prog_mem_halt       is <<signal .tb_riscv.riscv_instance.program_memory_unit.halt : std_logic>>;
         alias    pc_adder_halt       is <<signal .tb_riscv.riscv_instance.pc_adder_unit.halt : std_logic>>;

@@ -30,8 +30,8 @@ architecture tb of tb_instruction_decoder is
     signal   jump          : std_logic;
     signal   jalr_flag     : std_logic;
     signal   unknown_instr : std_logic;
-    signal   check_sig     : natural := 0;
-    constant CLK_PERIOD    : time := 2 us;
+    signal   check_sig     : natural   := 0;
+    constant CLK_PERIOD    : time      := 2 us;
 
     component instruction_decoder is
         port (
@@ -54,7 +54,7 @@ architecture tb of tb_instruction_decoder is
             jalr_flag     : out   std_logic;
             unknown_instr : out   std_logic
         );
-    end component;
+    end component instruction_decoder;
 
 begin
 

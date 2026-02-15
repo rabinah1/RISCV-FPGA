@@ -12,23 +12,23 @@ end entity tb_register_file;
 
 architecture tb of tb_register_file is
 
-    signal   clk              : std_logic := '0';
-    signal   reset            : std_logic := '0';
-    signal   enable           : std_logic := '0';
-    signal   rs1              : std_logic_vector(4 downto 0) := (others => '0');
-    signal   rs2              : std_logic_vector(4 downto 0) := (others => '0');
-    signal   rd               : std_logic_vector(4 downto 0) := (others => '0');
-    signal   write            : std_logic := '0';
+    signal   clk              : std_logic                     := '0';
+    signal   reset            : std_logic                     := '0';
+    signal   enable           : std_logic                     := '0';
+    signal   rs1              : std_logic_vector(4 downto 0)  := (others => '0');
+    signal   rs2              : std_logic_vector(4 downto 0)  := (others => '0');
+    signal   rd               : std_logic_vector(4 downto 0)  := (others => '0');
+    signal   write            : std_logic                     := '0';
     signal   write_data       : std_logic_vector(31 downto 0) := (others => '0');
-    signal   trig_reg_dump    : std_logic := '0';
-    signal   halt             : std_logic := '0';
+    signal   trig_reg_dump    : std_logic                     := '0';
+    signal   halt             : std_logic                     := '0';
     signal   reg_out_1        : std_logic_vector(31 downto 0) := (others => '0');
     signal   reg_out_2        : std_logic_vector(31 downto 0) := (others => '0');
     signal   reg_out_uart     : std_logic_vector(31 downto 0) := (others => '0');
-    signal   address_out_uart : std_logic_vector(5 downto 0) := (others => '0');
-    signal   reg_dump_start   : std_logic := '0';
-    signal   check_sig        : natural := 0;
-    constant CLK_PERIOD       : time := 2 us;
+    signal   address_out_uart : std_logic_vector(5 downto 0)  := (others => '0');
+    signal   reg_dump_start   : std_logic                     := '0';
+    signal   check_sig        : natural                       := 0;
+    constant CLK_PERIOD       : time                          := 2 us;
 
     type memory is array(31 downto 0) of std_logic_vector(31 downto 0);
 
@@ -50,7 +50,7 @@ architecture tb of tb_register_file is
             address_out_uart : out   std_logic_vector(5 downto 0);
             reg_dump_start   : out   std_logic
         );
-    end component;
+    end component register_file;
 
 begin
 

@@ -15,8 +15,8 @@ architecture tb of tb_clk_div is
     signal   clk_in     : std_logic := '0';
     signal   reset      : std_logic := '0';
     signal   clk_500khz : std_logic := '0';
-    signal   check_sig  : natural := 0;
-    constant CLK_PERIOD : time := 20 ns;
+    signal   check_sig  : natural   := 0;
+    constant CLK_PERIOD : time      := 20 ns;
 
     component clk_div is
         port (
@@ -24,7 +24,7 @@ architecture tb of tb_clk_div is
             reset      : in    std_logic;
             clk_500khz : out   std_logic
         );
-    end component;
+    end component clk_div;
 
 begin
 

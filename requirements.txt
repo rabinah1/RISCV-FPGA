@@ -1,5 +1,5 @@
-vsg==3.12.0
-vunit_hdl==4.7.0
+vsg==3.35.0
+vunit_hdl==4.7.1
 pyserial==3.5
-ruff==0.11.6
-tinyrv==0.0.9
+ruff==0.15.1
+tinyrv==0.1.0

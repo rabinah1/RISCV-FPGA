@@ -12,12 +12,12 @@ end entity tb_pc_adder;
 
 architecture tb of tb_pc_adder is
 
-    signal reset         : std_logic := '0';
-    signal halt          : std_logic := '0';
+    signal reset         : std_logic                     := '0';
+    signal halt          : std_logic                     := '0';
     signal input_1_bytes : std_logic_vector(31 downto 0) := (others => '0');
     signal input_2_bytes : std_logic_vector(31 downto 0) := (others => '0');
     signal sum_words     : std_logic_vector(31 downto 0) := (others => '0');
-    signal check_sig     : natural := 0;
+    signal check_sig     : natural                       := 0;
 
     component pc_adder is
         port (
@@ -27,7 +27,7 @@ architecture tb of tb_pc_adder is
             input_2_bytes : in    std_logic_vector(31 downto 0);
             sum_words     : out   std_logic_vector(31 downto 0)
         );
-    end component;
+    end component pc_adder;
 
 begin
 

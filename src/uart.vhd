@@ -25,27 +25,27 @@ architecture rtl of uart is
 
     type memory is array(31 downto 0) of std_logic_vector(31 downto 0);
 
-    constant PACKET_SIZE             : integer := 8;
-    constant PACKETS_PER_INSTRUCTION : integer := 4;
-    constant CYCLES_PER_SAMPLE       : integer := 52;
-    constant CYCLES_PER_SAMPLE_FIRST : integer := 78;
-    constant RX_HALT_CYCLES          : integer := 100;
-    constant ACTIVATE_REG_DUMP       : std_logic_vector(7 downto 0) := "00000001";
-    constant RX_REG_DUMP_WAIT_CYCLES : integer := 500000;
+    constant PACKET_SIZE             : integer                                    := 8;
+    constant PACKETS_PER_INSTRUCTION : integer                                    := 4;
+    constant CYCLES_PER_SAMPLE       : integer                                    := 52;
+    constant CYCLES_PER_SAMPLE_FIRST : integer                                    := 78;
+    constant RX_HALT_CYCLES          : integer                                    := 100;
+    constant ACTIVATE_REG_DUMP       : std_logic_vector(7 downto 0)               := "00000001";
+    constant RX_REG_DUMP_WAIT_CYCLES : integer                                    := 500000;
     signal   packet                  : std_logic_vector(7 downto 0);
     signal   rx_cycle                : integer range 0 to CYCLES_PER_SAMPLE_FIRST := 0;
-    signal   tx_cycle                : integer range 0 to CYCLES_PER_SAMPLE := 0;
+    signal   tx_cycle                : integer range 0 to CYCLES_PER_SAMPLE       := 0;
     signal   imem_idx                : integer range 0 to PACKETS_PER_INSTRUCTION := 0;
-    signal   halt_counter            : integer range 0 to RX_HALT_CYCLES := 0;
+    signal   halt_counter            : integer range 0 to RX_HALT_CYCLES          := 0;
     signal   trig_uart_tx            : std_logic;
     signal   control_byte            : std_logic;
     signal   increment_address       : std_logic;
-    signal   regs                    : memory := (others => (others => '0'));
+    signal   regs                    : memory                                     := (others => (others => '0'));
     signal   tx_state                : state;
     signal   tx_next_state           : state;
     signal   rx_state                : state;
     signal   rx_next_state           : state;
-    signal   delay_counter           : integer := 0;
+    signal   delay_counter           : integer                                    := 0;
     signal   reg_dump_hold_counter   : integer range 0 to RX_REG_DUMP_WAIT_CYCLES := 0;
 
 begin

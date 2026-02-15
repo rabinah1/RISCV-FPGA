@@ -13,22 +13,22 @@ end entity tb_uart;
 
 architecture tb of tb_uart is
 
-    signal   clk                     : std_logic := '0';
-    signal   reset                   : std_logic := '0';
-    signal   data_in                 : std_logic := '0';
+    signal   clk                     : std_logic                     := '0';
+    signal   reset                   : std_logic                     := '0';
+    signal   data_in                 : std_logic                     := '0';
     signal   data_from_reg_file      : std_logic_vector(31 downto 0) := (others => '0');
-    signal   address_from_reg_file   : std_logic_vector(5 downto 0) := (others => '0');
-    signal   reg_dump_start          : std_logic := '0';
-    signal   data_out                : std_logic := '0';
-    signal   halt                    : std_logic := '0';
-    signal   write_trig              : std_logic := '0';
-    signal   write_done              : std_logic := '0';
-    signal   trig_reg_dump           : std_logic := '0';
+    signal   address_from_reg_file   : std_logic_vector(5 downto 0)  := (others => '0');
+    signal   reg_dump_start          : std_logic                     := '0';
+    signal   data_out                : std_logic                     := '0';
+    signal   halt                    : std_logic                     := '0';
+    signal   write_trig              : std_logic                     := '0';
+    signal   write_done              : std_logic                     := '0';
+    signal   trig_reg_dump           : std_logic                     := '0';
     signal   data_to_imem            : std_logic_vector(31 downto 0) := (others => '0');
     signal   address                 : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig               : natural := 0;
-    constant CLK_PERIOD              : time := 2 us;
-    constant RX_REG_DUMP_WAIT_CYCLES : integer := 500000;
+    signal   check_sig               : natural                       := 0;
+    constant CLK_PERIOD              : time                          := 2 us;
+    constant RX_REG_DUMP_WAIT_CYCLES : integer                       := 500000;
 
     component uart is
         port (
@@ -46,7 +46,7 @@ architecture tb of tb_uart is
             data_to_imem          : out   std_logic_vector(31 downto 0);
             address               : out   std_logic_vector(31 downto 0)
         );
-    end component;
+    end component uart;
 
 begin
 
@@ -83,14 +83,14 @@ begin
 
     test_runner : process is
 
-        alias imem_idx              is <<signal .tb_uart.uart_instance.imem_idx: integer range 0 to 4>>;
-        alias rx_cycle              is <<signal .tb_uart.uart_instance.rx_cycle: integer range 0 to 78>>;
-        alias packet                is <<signal .tb_uart.uart_instance.packet: std_logic_vector(7 downto 0)>>;
-        alias halt_counter          is <<signal .tb_uart.uart_instance.halt_counter: integer range 0 to 100>>;
-        alias rx_state              is <<signal .tb_uart.uart_instance.rx_state: state>>;
-        alias reg_dump_hold_counter is <<signal .tb_uart.uart_instance.reg_dump_hold_counter:
+        alias imem_idx              is <<signal .tb_uart.uart_instance.imem_idx : integer range 0 to 4>>;
+        alias rx_cycle              is <<signal .tb_uart.uart_instance.rx_cycle : integer range 0 to 78>>;
+        alias packet                is <<signal .tb_uart.uart_instance.packet : std_logic_vector(7 downto 0)>>;
+        alias halt_counter          is <<signal .tb_uart.uart_instance.halt_counter : integer range 0 to 100>>;
+        alias rx_state              is <<signal .tb_uart.uart_instance.rx_state : state>>;
+        alias reg_dump_hold_counter is <<signal .tb_uart.uart_instance.reg_dump_hold_counter :
             integer range 0 to RX_REG_DUMP_WAIT_CYCLES>>;
-        alias control_byte          is <<signal .tb_uart.uart_instance.control_byte: std_logic>>;
+        alias control_byte          is <<signal .tb_uart.uart_instance.control_byte : std_logic>>;
 
     begin
 

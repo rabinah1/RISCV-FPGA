@@ -12,14 +12,14 @@ end entity tb_program_counter;
 
 architecture tb of tb_program_counter is
 
-    signal   clk         : std_logic := '0';
-    signal   reset       : std_logic := '0';
-    signal   enable      : std_logic := '0';
+    signal   clk         : std_logic                     := '0';
+    signal   reset       : std_logic                     := '0';
+    signal   enable      : std_logic                     := '0';
     signal   address_in  : std_logic_vector(31 downto 0) := (others => '0');
-    signal   halt        : std_logic := '0';
+    signal   halt        : std_logic                     := '0';
     signal   address_out : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig   : natural := 0;
-    constant CLK_PERIOD  : time := 2 us;
+    signal   check_sig   : natural                       := 0;
+    constant CLK_PERIOD  : time                          := 2 us;
 
     component program_counter is
         port (
@@ -30,7 +30,7 @@ architecture tb of tb_program_counter is
             halt        : in    std_logic;
             address_out : out   std_logic_vector(31 downto 0)
         );
-    end component;
+    end component program_counter;
 
 begin
 

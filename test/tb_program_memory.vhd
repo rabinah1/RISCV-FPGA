@@ -24,7 +24,7 @@ architecture tb of tb_program_memory is
     signal   address_out            : std_logic_vector(31 downto 0);
     signal   instruction            : std_logic_vector(31 downto 0);
     signal   check_sig              : natural := 0;
-    constant CLK_PERIOD             : time := 2 us;
+    constant CLK_PERIOD             : time    := 2 us;
 
     type memory is array(534 downto 0) of std_logic_vector(31 downto 0);
 
@@ -42,7 +42,7 @@ architecture tb of tb_program_memory is
             address_out            : out   std_logic_vector(31 downto 0);
             instruction            : out   std_logic_vector(31 downto 0)
         );
-    end component;
+    end component program_memory;
 
 begin
 
