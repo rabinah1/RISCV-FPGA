@@ -8,11 +8,16 @@
 #define NUM_ROWS 16
 #define NUM_COLS 16
 
+uint32_t is_neighbor_in_field(int32_t row_idx, int32_t col_idx)
+{
+    return row_idx >= 0 && row_idx < NUM_ROWS && col_idx >= 0 && col_idx < NUM_COLS;
+}
+
 uint32_t main(void)
 {
     uint32_t matrix[NUM_ROWS][NUM_COLS];
-    uint32_t row_idx = 0;
-    uint32_t col_idx = 0;
+    int32_t row_idx = 0;
+    int32_t col_idx = 0;
     uint32_t idx_sum = 0;
     uint32_t num_live_neighbors = 0;
     uint32_t generation = 0;
@@ -32,45 +37,45 @@ uint32_t main(void)
             for (col_idx = 0; col_idx < NUM_COLS; col_idx++) {
                 num_live_neighbors = 0;
 
-                if (row_idx > 0 && col_idx > 0) {
+                if (is_neighbor_in_field(row_idx - 1, col_idx - 1)) {
                     if (matrix[row_idx - 1][col_idx - 1] == IS_ALIVE
                         || matrix[row_idx - 1][col_idx - 1] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;
                 }
 
-                if (row_idx > 0) {
+                if (is_neighbor_in_field(row_idx - 1, col_idx)) {
                     if (matrix[row_idx - 1][col_idx] == IS_ALIVE || matrix[row_idx - 1][col_idx] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;
                 }
 
-                if (row_idx > 0 && col_idx < NUM_COLS - 1) {
+                if (is_neighbor_in_field(row_idx - 1, col_idx + 1)) {
                     if (matrix[row_idx - 1][col_idx + 1] == IS_ALIVE
                         || matrix[row_idx - 1][col_idx + 1] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;
                 }
 
-                if (col_idx > 0) {
+                if (is_neighbor_in_field(row_idx, col_idx - 1)) {
                     if (matrix[row_idx][col_idx - 1] == IS_ALIVE || matrix[row_idx][col_idx - 1] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;
                 }
 
-                if (col_idx < NUM_COLS - 1) {
+                if (is_neighbor_in_field(row_idx, col_idx + 1)) {
                     if (matrix[row_idx][col_idx + 1] == IS_ALIVE || matrix[row_idx][col_idx + 1] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;
                 }
 
-                if (row_idx < NUM_ROWS - 1 && col_idx > 0) {
+                if (is_neighbor_in_field(row_idx + 1, col_idx - 1)) {
                     if (matrix[row_idx + 1][col_idx - 1] == IS_ALIVE
                         || matrix[row_idx + 1][col_idx - 1] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;
                 }
 
-                if (row_idx < NUM_ROWS - 1) {
+                if (is_neighbor_in_field(row_idx + 1, col_idx)) {
                     if (matrix[row_idx + 1][col_idx] == IS_ALIVE || matrix[row_idx + 1][col_idx] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;
                 }
 
-                if (row_idx < NUM_ROWS - 1 && col_idx < NUM_COLS - 1) {
+                if (is_neighbor_in_field(row_idx + 1, col_idx + 1)) {
                     if (matrix[row_idx + 1][col_idx + 1] == IS_ALIVE
                         || matrix[row_idx + 1][col_idx + 1] == BECOMES_DEAD)
                         num_live_neighbors = num_live_neighbors + 1;

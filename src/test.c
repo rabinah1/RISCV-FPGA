@@ -29,6 +29,12 @@ uint32_t test_recursion(uint32_t k)
         return 0;
 }
 
+void modify_array(uint32_t *arr)
+{
+    arr[2] = 100;
+    arr[4] = -20;
+}
+
 uint32_t main(void)
 {
     uint32_t a = 12;
@@ -37,6 +43,12 @@ uint32_t main(void)
     uint32_t d = 30;
     uint32_t res = 0;
     uint32_t idx = 0;
+    int32_t item_1 = 1;
+    int32_t item_2 = 2;
+    int32_t item_3 = 3;
+    int32_t item_4 = 4;
+    int32_t item_5 = 5;
+    int32_t arr[] = {item_1, item_2, item_3, item_4, item_5};
     struct my_struct s;
     s.member_1 = 5;
     s.member_2 = 10;
@@ -62,6 +74,11 @@ uint32_t main(void)
             idx = idx + 3;
         }
     }
+
+    modify_array(arr);
+
+    for (uint32_t i = 0; i < 5; i++)
+	res = res + arr[i];
 
     return res;
 }
