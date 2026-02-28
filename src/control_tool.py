@@ -4,14 +4,20 @@ import argparse
 import serial
 import tinyrv
 from time import sleep
+from typing import Dict
 
 BAUD_RATE = 9600
 NUM_OF_REGS = 32
-NUM_OF_BYTES = 128  # There are 32 registers, each of size 4 bytes (1 byte = 8 bits)
+NUM_OF_BYTES = 128
 WORD_LENGTH = 32
+SERIAL_TIMEOUT = 5
+MAX_PC_STALL_COUNT = 10
+BYTES_PER_REGISTER = 4
+UART_READ_TRIG = 1
+UART_WRITE_TRIG = 0
 
 
-def _parse_args():
+def _parse_args() -> argparse.Namespace:
     descr = """
 This script can be used to interact with the implemented CPU.
 """
@@ -65,45 +71,61 @@ This script can be used to interact with the implemented CPU.
     return args
 
 
-def _load_prog(args):
+def _load_prog(args: argparse.Namespace) -> None:
     with open(args.binary, "rb") as f:
         data = f.read()
 
-    ser = serial.Serial(args.serial_port, BAUD_RATE)
+    try:
+        ser = serial.Serial(args.serial_port, BAUD_RATE, timeout=SERIAL_TIMEOUT)
+    except serial.SerialException as e:
+        print(f"Serial communication error when loading program: {e}")
+        return
     ser.reset_output_buffer()
-    ser.write(bytes([0]) + data)
+    ser.write(bytes([UART_WRITE_TRIG]) + data)
     ser.flush()
     ser.close()
 
 
-def _read_regs(serial_port, print_result):
-    ser = serial.Serial(serial_port, BAUD_RATE, timeout=5)
-    ser.write(bytes([1]))
+def _print_registers(registers: Dict[str, int]) -> None:
+    for reg_name, reg_value in registers.items():
+        print(f"{reg_name} : {reg_value}")
+
+
+def _bytes_to_register(bytes_data: list[int], reg_index: int) -> int:
+    offset = reg_index * BYTES_PER_REGISTER
+    return (
+        (bytes_data[offset + 3] << 24)
+        | (bytes_data[offset + 2] << 16)
+        | (bytes_data[offset + 1] << 8)
+        | (bytes_data[offset])
+    )
+
+
+def _read_regs(serial_port: str, print_result: bool) -> Dict[str, int]:
+    try:
+        ser = serial.Serial(serial_port, BAUD_RATE, timeout=SERIAL_TIMEOUT)
+    except serial.SerialException as e:
+        print(f"Serial communication error when reading registers: {e}")
+        return {}
+    ser.write(bytes([UART_READ_TRIG]))
     regs = ser.read(NUM_OF_BYTES)
     regs = [i for i in regs]
     reg_values = {}
-    temp = 0
-    idx = 0
     if len(regs) != NUM_OF_BYTES:
         print(
             f"Something went wrong with fetching the registers: received {len(regs)} bytes, "
             f"expected {NUM_OF_BYTES}."
         )
         return reg_values
-    while idx < NUM_OF_REGS:
-        reg_values[f"x{idx}"] = (
-            (regs[temp + 3] << 24) | (regs[temp + 2] << 16) | (regs[temp + 1] << 8) | regs[temp]
-        )
-        temp = temp + 4
-        idx = idx + 1
+    reg_values = {f"x{idx}": _bytes_to_register(regs, idx) for idx in range(0, NUM_OF_REGS)}
+    ser.close()
     if print_result:
-        for key, value in reg_values.items():
-            print(f"{key} : {value}")
+        _print_registers(reg_values)
 
     return reg_values
 
 
-def _simulate(binary, trace, print_result):
+def _simulate(binary: str, trace: bool, print_result: bool) -> Dict[str, int]:
     with open(binary, "rb") as f:
         data = f.read()
 
@@ -113,9 +135,7 @@ def _simulate(binary, trace, print_result):
 
     previous_pc = rv.pc
     no_pc_change_count = 0
-    while True:
-        if no_pc_change_count > 10:
-            break
+    while no_pc_change_count <= MAX_PC_STALL_COUNT:
         rv.step(trace)
         if rv.pc == previous_pc:
             no_pc_change_count += 1
@@ -123,19 +143,14 @@ def _simulate(binary, trace, print_result):
             no_pc_change_count = 0
         previous_pc = rv.pc
 
-    regs = {}
-    idx = 0
-    while idx < NUM_OF_REGS:
-        regs[f"x{idx}"] = rv.x[idx]
-        idx = idx + 1
+    regs = {f"x{idx}": rv.x[idx] for idx in range(0, NUM_OF_REGS)}
     if print_result:
-        for key, value in regs.items():
-            print(f"{key} : {value}")
+        _print_registers(regs)
 
     return regs
 
 
-def _test_hw(args):
+def _test_hw(args: argparse.Namespace) -> None:
     print("Loading binary to the board...")
     _load_prog(args)
     sleep(2)
