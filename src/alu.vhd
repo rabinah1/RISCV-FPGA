@@ -19,15 +19,33 @@ end entity alu;
 
 architecture rtl of alu is
 
+  subtype word_t is std_logic_vector(31 downto 0);
+
+    constant ZERO_WORD : word_t := (others => '0');
+    constant ONE_WORD  : word_t := std_logic_vector(to_unsigned(1, word_t'length));
+
     function signed_add (
-        in_1 : std_logic_vector(31 downto 0);
-        in_2 : std_logic_vector(31 downto 0)
-    ) return std_logic_vector is
+        in_1 : word_t;
+        in_2 : word_t
+    ) return word_t is
     begin
 
         return std_logic_vector(signed(in_1) + signed(in_2));
 
     end function signed_add;
+
+    function boolean_to_word (
+        condition : boolean
+    ) return word_t is
+    begin
+
+        if (condition) then
+            return ONE_WORD;
+        else
+            return ZERO_WORD;
+        end if;
+
+    end function boolean_to_word;
 
 begin
 
@@ -35,161 +53,80 @@ begin
     begin
 
         if (reset = '1' or halt = '1') then
-            result <= (others => '0');
+            result <= ZERO_WORD;
         elsif (rising_edge(clk)) then
             if (enable = '1') then
 
                 case operator is
 
-                    when ADD =>
+                    when ADD | ADDI | LW | SW =>
 
-                        result <= signed_add(input_1, input_2);
-
-                    when ADDI =>
-
+                        -- input_2 is sign extended immediate for LW/SW
                         result <= signed_add(input_1, input_2);
 
                     when MY_SUB =>
 
                         result <= std_logic_vector(signed(input_1) - signed(input_2));
 
-                    when MY_SLL =>
+                    when MY_SLL | SLLI =>
 
                         result <= std_logic_vector(shift_left(unsigned(input_1), to_integer(unsigned(input_2))));
 
-                    when SLLI =>
+                    when SLT | SLTI =>
 
-                        result <= std_logic_vector(shift_left(unsigned(input_1), to_integer(unsigned(input_2))));
+                        result <= boolean_to_word(signed(input_1) < signed(input_2));
 
-                    when SLT =>
+                    when SLTU | SLTIU =>
 
-                        if (signed(input_1) < signed(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= boolean_to_word(unsigned(input_1) < unsigned(input_2));
 
-                    when SLTI =>
-
-                        if (signed(input_1) < signed(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
-
-                    when SLTU =>
-
-                        if (unsigned(input_1) < unsigned(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
-
-                    when SLTIU =>
-
-                        if (unsigned(input_1) < unsigned(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
-
-                    when MY_XOR =>
+                    when MY_XOR | XORI =>
 
                         result <= input_1 xor input_2;
 
-                    when XORI =>
-
-                        result <= input_1 xor input_2;
-
-                    when MY_SRL =>
+                    when MY_SRL | SRLI =>
 
                         result <= std_logic_vector(shift_right(unsigned(input_1), to_integer(unsigned(input_2))));
 
-                    when SRLI =>
-
-                        result <= std_logic_vector(shift_right(unsigned(input_1), to_integer(unsigned(input_2))));
-
-                    when MY_OR =>
+                    when MY_OR | ORI =>
 
                         result <= input_1 or input_2;
 
-                    when ORI =>
-
-                        result <= input_1 or input_2;
-
-                    when MY_AND =>
+                    when MY_AND | ANDI =>
 
                         result <= input_1 and input_2;
-
-                    when ANDI =>
-
-                        result <= input_1 and input_2;
-
-                    when LW =>
-
-                        -- input_2 is sign extended immediate, is this okay?
-                        result <= signed_add(input_1, input_2);
-
-                    when SW =>
-
-                        -- input_2 is sign extended immediate, is this okay?
-                        result <= signed_add(input_1, input_2);
 
                     when BEQ =>
 
-                        if (unsigned(input_1) = unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= boolean_to_word(unsigned(input_1) = unsigned(input_2));
 
                     when BNE =>
 
-                        if (unsigned(input_1) /= unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= boolean_to_word(unsigned(input_1) /= unsigned(input_2));
 
                     when BLT =>
 
-                        if (signed(input_1) < signed(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= boolean_to_word(signed(input_1) < signed(input_2));
 
                     when BGE =>
 
-                        if (signed(input_1) >= signed(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= boolean_to_word(signed(input_1) >= signed(input_2));
 
                     when BLTU =>
 
-                        if (unsigned(input_1) < unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= boolean_to_word(unsigned(input_1) < unsigned(input_2));
 
                     when BGEU =>
 
-                        if (unsigned(input_1) >= unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= boolean_to_word(unsigned(input_1) >= unsigned(input_2));
 
                     when JAL =>
 
-                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, 32));
+                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, word_t'length));
 
                     when JALR =>
 
-                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, 32));
+                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, word_t'length));
 
                     when LUI =>
 
@@ -201,7 +138,7 @@ begin
 
                     when others =>
 
-                        result <= (others => '0');
+                        result <= ZERO_WORD;
 
                 end case;
 

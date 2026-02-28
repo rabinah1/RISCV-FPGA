@@ -19,11 +19,24 @@ end entity data_memory;
 
 architecture rtl of data_memory is
 
+  subtype word_t is std_logic_vector(31 downto 0);
+
     constant DATA_MEMORY_SIZE_WORDS : integer := 1600;
 
-    type memory is array(DATA_MEMORY_SIZE_WORDS - 1 downto 0) of std_logic_vector(31 downto 0);
+    type memory is array(DATA_MEMORY_SIZE_WORDS - 1 downto 0) of word_t;
 
     signal data_mem : memory := (others => (others => '0'));
+
+    constant ZERO_WORD : word_t := (others => '0');
+
+    function bytes_to_word_addr (
+        addr_bytes : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+    begin
+
+        return "00" & addr_bytes(31 downto 2);
+
+    end function bytes_to_word_addr;
 
 begin
 
@@ -35,18 +48,18 @@ begin
 
         if (reset = '1' or halt = '1') then
             mem_access_err <= '0';
-            output         <= (others => '0');
+            output         <= ZERO_WORD;
             address_words  := (others => '0');
         elsif (load_enable = '1') then
-            address_words := "00" & address_bytes(31 downto 2);
-            if (to_integer(unsigned(address_words)) >= DATA_MEMORY_SIZE_WORDS and write_back_enable = '1') then
+            address_words := bytes_to_word_addr(address_bytes);
+            if ((to_integer(unsigned(address_words)) >= DATA_MEMORY_SIZE_WORDS) and (write_back_enable = '1')) then
                 mem_access_err <= '1';
-                output         <= (others => '0');
+                output         <= ZERO_WORD;
             else
                 output <= data_mem(to_integer(unsigned(address_words)));
             end if;
         else
-            output <= (others => '0');
+            output <= ZERO_WORD;
         end if;
 
     end process read_process;
@@ -61,8 +74,8 @@ begin
             data_mem      <= (others => (others => '0'));
             address_words := (others => '0');
         elsif (rising_edge(clk)) then
-            address_words := "00" & address_bytes(31 downto 2);
-            if (write_enable = '1' and write_back_enable = '1' and mem_access_err = '0') then
+            address_words := bytes_to_word_addr(address_bytes);
+            if ((write_enable = '1') and (write_back_enable = '1') and (mem_access_err = '0')) then
                 data_mem(to_integer(unsigned(address_words))) <= write_data;
             end if;
         end if;
