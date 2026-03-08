@@ -22,7 +22,11 @@ STYLE_CHECK_FILES = \
 	state_machine.vhd \
 	states_package.vhd \
 	uart.vhd \
-	instruction_types_package.vhd
+	instruction_types_package.vhd \
+	arithmetic_pkg.vhd \
+	mux_2_inputs_latch.vhd \
+	uart_package.vhd \
+	clk_div.vhd
 
 FILES_TO_REMOVE = \
 	db \

@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.arithmetic_pkg.all;
 
 entity pc_adder is
     port (
@@ -26,8 +27,8 @@ begin
             sum_words <= (others => '0');
             sum_bytes := (others => '0');
         else
-            sum_bytes := std_logic_vector(signed(input_1_bytes) + signed(input_2_bytes));
-            sum_words <= "00" & sum_bytes(31 downto 2);
+            sum_bytes := add_signed(input_1_bytes, input_2_bytes);
+            sum_words <= byte_addr_to_word_addr(sum_bytes);
         end if;
 
     end process pc_adder;

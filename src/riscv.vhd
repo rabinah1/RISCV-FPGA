@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.arithmetic_pkg.all;
 
 entity riscv is
     port (
@@ -366,7 +367,7 @@ begin
             clk     => clk_500khz,
             reset   => reset,
             control => instruction_decoder_jalr_flag,
-            input_1 => program_counter_address_out(29 downto 0) & "00",
+            input_1 => word_addr_to_byte_addr(program_counter_address_out),
             input_2 => register_file_reg_out_1,
             halt    => halt,
             output  => pc_input_mux_output

@@ -61,6 +61,7 @@ set_global_assignment -name VHDL_SHOW_LMF_MAPPING_MESSAGES OFF
 set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
 
 set_global_assignment -name SDC_FILE riscv.sdc
+set_global_assignment -name VHDL_FILE arithmetic_pkg.vhd
 set_global_assignment -name VHDL_FILE opcode_pkg.vhd
 set_global_assignment -name VHDL_FILE instruction_decoder.vhd
 set_global_assignment -name VHDL_FILE register_file.vhd

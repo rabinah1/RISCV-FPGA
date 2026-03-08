@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.opcode_pkg.all;
+use work.arithmetic_pkg.all;
 
 entity alu is
     port (
@@ -19,16 +20,6 @@ end entity alu;
 
 architecture rtl of alu is
 
-    function signed_add (
-        in_1 : std_logic_vector(31 downto 0);
-        in_2 : std_logic_vector(31 downto 0)
-    ) return std_logic_vector is
-    begin
-
-        return std_logic_vector(signed(in_1) + signed(in_2));
-
-    end function signed_add;
-
 begin
 
     alu : process (all) is
@@ -43,55 +34,39 @@ begin
 
                     when ADD =>
 
-                        result <= signed_add(input_1, input_2);
+                        result <= add_signed(input_1, input_2);
 
                     when ADDI =>
 
-                        result <= signed_add(input_1, input_2);
+                        result <= add_signed(input_1, input_2);
 
                     when MY_SUB =>
 
-                        result <= std_logic_vector(signed(input_1) - signed(input_2));
+                        result <= sub_signed(input_1, input_2);
 
                     when MY_SLL =>
 
-                        result <= std_logic_vector(shift_left(unsigned(input_1), to_integer(unsigned(input_2))));
+                        result <= shift_left_logical(input_1, input_2);
 
                     when SLLI =>
 
-                        result <= std_logic_vector(shift_left(unsigned(input_1), to_integer(unsigned(input_2))));
+                        result <= shift_left_logical(input_1, input_2);
 
                     when SLT =>
 
-                        if (signed(input_1) < signed(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_less_than_signed(input_1, input_2);
 
                     when SLTI =>
 
-                        if (signed(input_1) < signed(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_less_than_signed(input_1, input_2);
 
                     when SLTU =>
 
-                        if (unsigned(input_1) < unsigned(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_less_than_unsigned(input_1, input_2);
 
                     when SLTIU =>
 
-                        if (unsigned(input_1) < unsigned(input_2)) then
-                            result <= (0 => '1', others => '0');
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_less_than_unsigned(input_1, input_2);
 
                     when MY_XOR =>
 
@@ -103,11 +78,11 @@ begin
 
                     when MY_SRL =>
 
-                        result <= std_logic_vector(shift_right(unsigned(input_1), to_integer(unsigned(input_2))));
+                        result <= shift_right_logical(input_1, input_2);
 
                     when SRLI =>
 
-                        result <= std_logic_vector(shift_right(unsigned(input_1), to_integer(unsigned(input_2))));
+                        result <= shift_right_logical(input_1, input_2);
 
                     when MY_OR =>
 
@@ -128,68 +103,44 @@ begin
                     when LW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= signed_add(input_1, input_2);
+                        result <= add_signed(input_1, input_2);
 
                     when SW =>
 
                         -- input_2 is sign extended immediate, is this okay?
-                        result <= signed_add(input_1, input_2);
+                        result <= add_signed(input_1, input_2);
 
                     when BEQ =>
 
-                        if (unsigned(input_1) = unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_equal(input_1, input_2);
 
                     when BNE =>
 
-                        if (unsigned(input_1) /= unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_not_equal(input_1, input_2);
 
                     when BLT =>
 
-                        if (signed(input_1) < signed(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_less_than_signed(input_1, input_2);
 
                     when BGE =>
 
-                        if (signed(input_1) >= signed(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_greater_equal_signed(input_1, input_2);
 
                     when BLTU =>
 
-                        if (unsigned(input_1) < unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_less_than_unsigned(input_1, input_2);
 
                     when BGEU =>
 
-                        if (unsigned(input_1) >= unsigned(input_2)) then
-                            result <= std_logic_vector(to_unsigned(1, 32));
-                        else
-                            result <= (others => '0');
-                        end if;
+                        result <= is_greater_equal_unsigned(input_1, input_2);
 
                     when JAL =>
 
-                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, 32));
+                        result <= std_logic_vector(unsigned(word_addr_to_byte_addr(pc_in)) + to_unsigned(4, 32));
 
                     when JALR =>
 
-                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + to_unsigned(4, 32));
+                        result <= std_logic_vector(unsigned(word_addr_to_byte_addr(pc_in)) + to_unsigned(4, 32));
 
                     when LUI =>
 
@@ -197,7 +148,7 @@ begin
 
                     when AUIPC =>
 
-                        result <= std_logic_vector(unsigned(pc_in(29 downto 0) & "00") + unsigned(input_2));
+                        result <= std_logic_vector(unsigned(word_addr_to_byte_addr(pc_in)) + unsigned(input_2));
 
                     when others =>
 

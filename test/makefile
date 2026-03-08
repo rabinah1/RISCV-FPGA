@@ -4,6 +4,7 @@ SHELL = /bin/bash
 .PHONY: check sta
 
 STYLE_CHECK_FILES = \
+	tb_common_pkg.vhd \
 	tb_program_counter.vhd \
 	tb_program_memory.vhd \
 	tb_instruction_decoder.vhd \

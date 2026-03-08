@@ -7856,7 +7856,7 @@
     "procedure_001": {
       "disable": false,
       "fixable": true,
-      "indent_size": 2,
+      "indent_size": 4,
       "indent_style": "spaces",
       "phase": 4,
       "severity": "Error",
@@ -7883,7 +7883,7 @@
     "procedure_004": {
       "disable": false,
       "fixable": true,
-      "indent_size": 2,
+      "indent_size": 4,
       "indent_style": "spaces",
       "phase": 4,
       "severity": "Error",
@@ -7901,7 +7901,7 @@
     "procedure_006": {
       "disable": false,
       "fixable": true,
-      "indent_size": 2,
+      "indent_size": 4,
       "indent_style": "spaces",
       "phase": 4,
       "severity": "Error",

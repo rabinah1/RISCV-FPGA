@@ -3,6 +3,7 @@ library vunit_lib;
     context vunit_lib.vunit_context;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.tb_common_pkg.all;
 
 entity tb_data_memory is
     generic (
@@ -61,14 +62,7 @@ begin
     clk_process : process is
     begin
 
-        clk <= '0';
-        wait for CLK_PERIOD / 2;
-        clk <= '1';
-        wait for CLK_PERIOD / 2;
-
-        if (check_sig = 1) then
-            wait;
-        end if;
+        clk_gen(clk, check_sig, CLK_PERIOD);
 
     end process clk_process;
 
