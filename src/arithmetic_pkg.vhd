@@ -113,9 +113,9 @@ package body arithmetic_pkg is
     begin
 
         if (signed(in_1) < signed(in_2)) then
-            return std_logic_vector(to_unsigned(1, 32));
+            return std_logic_vector(to_signed(1, 32));
         else
-            return std_logic_vector(to_unsigned(0, 32));
+            return std_logic_vector(to_signed(0, 32));
         end if;
 
     end function is_less_than_signed;
@@ -127,9 +127,9 @@ package body arithmetic_pkg is
     begin
 
         if (unsigned(in_1) < unsigned(in_2)) then
-            return std_logic_vector(to_unsigned(1, 32));
+            return std_logic_vector(to_signed(1, 32));
         else
-            return std_logic_vector(to_unsigned(0, 32));
+            return std_logic_vector(to_signed(0, 32));
         end if;
 
     end function is_less_than_unsigned;
@@ -141,9 +141,9 @@ package body arithmetic_pkg is
     begin
 
         if (unsigned(in_1) = unsigned(in_2)) then
-            return std_logic_vector(to_unsigned(1, 32));
+            return std_logic_vector(to_signed(1, 32));
         else
-            return std_logic_vector(to_unsigned(0, 32));
+            return std_logic_vector(to_signed(0, 32));
         end if;
 
     end function is_equal;
@@ -155,9 +155,9 @@ package body arithmetic_pkg is
     begin
 
         if (unsigned(in_1) /= unsigned(in_2)) then
-            return std_logic_vector(to_unsigned(1, 32));
+            return std_logic_vector(to_signed(1, 32));
         else
-            return std_logic_vector(to_unsigned(0, 32));
+            return std_logic_vector(to_signed(0, 32));
         end if;
 
     end function is_not_equal;
@@ -169,9 +169,9 @@ package body arithmetic_pkg is
     begin
 
         if (signed(in_1) >= signed(in_2)) then
-            return std_logic_vector(to_unsigned(1, 32));
+            return std_logic_vector(to_signed(1, 32));
         else
-            return std_logic_vector(to_unsigned(0, 32));
+            return std_logic_vector(to_signed(0, 32));
         end if;
 
     end function is_greater_equal_signed;
@@ -183,9 +183,9 @@ package body arithmetic_pkg is
     begin
 
         if (unsigned(in_1) >= unsigned(in_2)) then
-            return std_logic_vector(to_unsigned(1, 32));
+            return std_logic_vector(to_signed(1, 32));
         else
-            return std_logic_vector(to_unsigned(0, 32));
+            return std_logic_vector(to_signed(0, 32));
         end if;
 
     end function is_greater_equal_unsigned;
@@ -195,7 +195,7 @@ package body arithmetic_pkg is
     ) return std_logic_vector is
     begin
 
-        return "00" & byte_addr(31 downto 2);
+        return byte_addr(31) & "00" & byte_addr(30 downto 2);
 
     end function byte_addr_to_word_addr;
 
@@ -204,7 +204,7 @@ package body arithmetic_pkg is
     ) return std_logic_vector is
     begin
 
-        return word_addr(29 downto 0) & "00";
+        return word_addr(31) & word_addr(28 downto 0) & "00";
 
     end function word_addr_to_byte_addr;
 

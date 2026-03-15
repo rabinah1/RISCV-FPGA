@@ -136,11 +136,11 @@ begin
 
                     when JAL =>
 
-                        result <= std_logic_vector(unsigned(word_addr_to_byte_addr(pc_in)) + to_unsigned(4, 32));
+                        result <= std_logic_vector(signed(word_addr_to_byte_addr(pc_in)) + to_signed(4, 32));
 
                     when JALR =>
 
-                        result <= std_logic_vector(unsigned(word_addr_to_byte_addr(pc_in)) + to_unsigned(4, 32));
+                        result <= std_logic_vector(signed(word_addr_to_byte_addr(pc_in)) + to_signed(4, 32));
 
                     when LUI =>
 
@@ -148,7 +148,7 @@ begin
 
                     when AUIPC =>
 
-                        result <= std_logic_vector(unsigned(word_addr_to_byte_addr(pc_in)) + unsigned(input_2));
+                        result <= std_logic_vector(signed(word_addr_to_byte_addr(pc_in)) + signed(input_2));
 
                     when others =>
 

@@ -40,11 +40,11 @@ begin
             address_words  := (others => '0');
         elsif (load_enable = '1') then
             address_words := byte_addr_to_word_addr(address_bytes);
-            if (to_integer(unsigned(address_words)) >= DATA_MEMORY_SIZE_WORDS and write_back_enable = '1') then
+            if (to_integer(signed(address_words)) >= DATA_MEMORY_SIZE_WORDS and write_back_enable = '1') then
                 mem_access_err <= '1';
                 output         <= (others => '0');
             else
-                output <= data_mem(to_integer(unsigned(address_words)));
+                output <= data_mem(to_integer(signed(address_words)));
             end if;
         else
             output <= (others => '0');
@@ -64,7 +64,7 @@ begin
         elsif (rising_edge(clk)) then
             address_words := byte_addr_to_word_addr(address_bytes);
             if (write_enable = '1' and write_back_enable = '1' and mem_access_err = '0') then
-                data_mem(to_integer(unsigned(address_words))) <= write_data;
+                data_mem(to_integer(signed(address_words))) <= write_data;
             end if;
         end if;
 

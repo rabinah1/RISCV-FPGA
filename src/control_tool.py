@@ -91,14 +91,21 @@ def _print_registers(registers: Dict[str, int]) -> None:
         print(f"{reg_name} : {reg_value}")
 
 
+def _twos_complement(reg_value: int) -> int:
+    if reg_value & (1 << (WORD_LENGTH - 1)) != 0:
+        reg_value = reg_value - (1 << WORD_LENGTH)
+    return reg_value
+
+
 def _bytes_to_register(bytes_data: list[int], reg_index: int) -> int:
     offset = reg_index * BYTES_PER_REGISTER
-    return (
+    reg_value = (
         (bytes_data[offset + 3] << 24)
         | (bytes_data[offset + 2] << 16)
         | (bytes_data[offset + 1] << 8)
         | (bytes_data[offset])
     )
+    return _twos_complement(reg_value)
 
 
 def _read_regs(serial_port: str, print_result: bool) -> Dict[str, int]:

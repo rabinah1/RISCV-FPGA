@@ -367,6 +367,8 @@ begin
             clk     => clk_500khz,
             reset   => reset,
             control => instruction_decoder_jalr_flag,
+            -- TODO: input_1 probably should not use word_addr_to_byte_addr,
+            -- but in practice it shouldn't matter
             input_1 => word_addr_to_byte_addr(program_counter_address_out),
             input_2 => register_file_reg_out_1,
             halt    => halt,
