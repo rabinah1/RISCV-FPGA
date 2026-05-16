@@ -80,9 +80,17 @@ begin
 
                         result <= shift_right_logical(input_1, input_2);
 
+                    when MY_SRA =>
+
+                        result <= shift_right_arithmetic(input_1, input_2);
+
                     when SRLI =>
 
                         result <= shift_right_logical(input_1, input_2);
+
+                    when SRAI =>
+
+                        result <= shift_right_arithmetic(input_1, input_2);
 
                     when MY_OR =>
 

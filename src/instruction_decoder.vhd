@@ -69,12 +69,17 @@ begin
                     jump          <= '0';
                     jalr_flag     <= '0';
                 elsif (opcode = TYPE_I) then
-                    rd                      <= instruction(11 downto 7);
-                    alu_operation           <= opcode & '0' & instruction(14 downto 12);
+                    rd <= instruction(11 downto 7);
+                    if (instruction(14 downto 12) = "101") then -- SRLI or SRAI
+                        alu_operation          <= opcode & instruction(30) & instruction(14 downto 12);
+                        immediate(11 downto 0) <= "0000000" & instruction(24 downto 20);
+                    else
+                        alu_operation          <= opcode & '0' & instruction(14 downto 12);
+                        immediate(11 downto 0) <= instruction(31 downto 20);
+                    end if;
                     rs1                     <= instruction(19 downto 15);
                     rs2                     <= (others => '0');
                     write                   <= '1';
-                    immediate(11 downto 0)  <= instruction(31 downto 20);
                     immediate(31 downto 12) <= (others => instruction(31));
                     store                   <= '0';
                     load                    <= '0';

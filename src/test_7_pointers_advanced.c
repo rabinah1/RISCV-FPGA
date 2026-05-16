@@ -41,11 +41,11 @@ int32_t main(void)
     if (*ptr_offset != 40) return 5;
 
     /* Test 6: Pointer arithmetic - difference */
-    /* TODO: This test requires the srai instruction, which is not yet implemented */
-    /* int32_t *p1 = &arr[1]; */
-    /* int32_t *p2 = &arr[4]; */
-    /* int32_t diff = p2 - p1; */
-    /* if (diff != 3) return 6; */
+    int32_t *p1 = &arr[1];
+    int32_t *p2 = &arr[4];
+    int32_t diff = p2 - p1;
+    if (diff != 3) return 6;
+
     /* Test 7: Double pointer - pointer to pointer */
     int32_t **pptr = &ptr_x;
 

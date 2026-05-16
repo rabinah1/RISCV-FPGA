@@ -24,6 +24,11 @@ package arithmetic_pkg is
         in_shift : std_logic_vector(31 downto 0)
     ) return std_logic_vector;
 
+    function shift_right_arithmetic (
+        in_value : std_logic_vector(31 downto 0);
+        in_shift : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
     function is_less_than_signed (
         in_1 : std_logic_vector(31 downto 0);
         in_2 : std_logic_vector(31 downto 0)
@@ -105,6 +110,16 @@ package body arithmetic_pkg is
         return std_logic_vector(shift_right(unsigned(in_value), to_integer(unsigned(in_shift))));
 
     end function shift_right_logical;
+
+    function shift_right_arithmetic (
+        in_value : std_logic_vector(31 downto 0);
+        in_shift : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+    begin
+
+        return std_logic_vector(shift_right(signed(in_value), to_integer(unsigned(in_shift))));
+
+    end function shift_right_arithmetic;
 
     function is_less_than_signed (
         in_1 : std_logic_vector(31 downto 0);
