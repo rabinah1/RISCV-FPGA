@@ -9,7 +9,6 @@ entity program_memory is
         fetch_enable           : in    std_logic;
         write_trig             : in    std_logic;
         halt                   : in    std_logic;
-        write_done             : in    std_logic;
         data_word_from_uart    : in    std_logic_vector(31 downto 0);
         address_word_from_uart : in    std_logic_vector(31 downto 0);
         address_in             : in    std_logic_vector(31 downto 0);
@@ -20,7 +19,7 @@ end entity program_memory;
 
 architecture rtl of program_memory is
 
-    constant PROGRAM_MEMORY_SIZE_WORDS : integer := 535;
+    constant PROGRAM_MEMORY_SIZE_WORDS : integer := 4096;
 
     type memory is array(PROGRAM_MEMORY_SIZE_WORDS - 1 downto 0) of std_logic_vector(31 downto 0);
 
@@ -34,17 +33,12 @@ begin
         if (reset = '1') then
             instruction <= (others => '0');
             address_out <= (others => '0');
-            prog_mem    <= (others => (others => '0'));
         elsif (rising_edge(clk)) then
             if (halt = '1') then
                 instruction <= (others => '0');
                 address_out <= (others => '0');
-                if (write_done = '1') then
-                    prog_mem(PROGRAM_MEMORY_SIZE_WORDS - 1 downto to_integer(unsigned(address_word_from_uart)) + 1) <=
-                        (others => (others => '0'));
-                end if;
             elsif (fetch_enable = '1') then
-                instruction <= prog_mem(to_integer(unsigned(address_in(9 downto 0))));
+                instruction <= prog_mem(to_integer(unsigned(address_in)));
                 address_out <= address_in;
             end if;
             if (write_trig = '1') then

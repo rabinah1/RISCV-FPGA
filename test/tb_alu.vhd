@@ -298,6 +298,36 @@ begin
                 check_equal(result, std_logic_vector(to_unsigned(333, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
+            elsif run("test_sra_instruction") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_sra_instruction");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                enable    <= '1';
+                input_1   <= std_logic_vector(to_unsigned(2670, 32));
+                input_2   <= std_logic_vector(to_unsigned(3, 32));
+                operator  <= MY_SRA;
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(result, std_logic_vector(to_unsigned(333, 32)));
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_srai_instruction") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_srai_instruction");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                enable    <= '1';
+                input_1   <= std_logic_vector(to_signed(-8, 32));
+                input_2   <= std_logic_vector(to_unsigned(2, 32));
+                operator  <= SRAI;
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(result, std_logic_vector(to_signed(-2, 32)));
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
             elsif run("test_or_instruction") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_or_instruction");

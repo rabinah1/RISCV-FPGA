@@ -5,22 +5,23 @@ use work.arithmetic_pkg.all;
 
 entity data_memory is
     port (
-        clk               : in    std_logic;
-        reset             : in    std_logic;
-        address_bytes     : in    std_logic_vector(31 downto 0);
-        write_data        : in    std_logic_vector(31 downto 0);
-        write_enable      : in    std_logic;
-        load_enable       : in    std_logic;
-        write_back_enable : in    std_logic;
-        halt              : in    std_logic;
-        mem_access_err    : out   std_logic;
-        output            : out   std_logic_vector(31 downto 0)
+        clk                  : in    std_logic;
+        reset                : in    std_logic;
+        state_machine_enable : in    std_logic;
+        address_bytes        : in    std_logic_vector(31 downto 0);
+        write_data           : in    std_logic_vector(31 downto 0);
+        write_enable         : in    std_logic;
+        load_enable          : in    std_logic;
+        write_back_enable    : in    std_logic;
+        halt                 : in    std_logic;
+        mem_access_err       : out   std_logic;
+        output               : out   std_logic_vector(31 downto 0)
     );
 end entity data_memory;
 
 architecture rtl of data_memory is
 
-    constant DATA_MEMORY_SIZE_WORDS : integer := 1600;
+    constant DATA_MEMORY_SIZE_WORDS : integer := 4096;
 
     type memory is array(DATA_MEMORY_SIZE_WORDS - 1 downto 0) of std_logic_vector(31 downto 0);
 
@@ -38,16 +39,15 @@ begin
             mem_access_err <= '0';
             output         <= (others => '0');
             address_words  := (others => '0');
-        elsif (load_enable = '1') then
+        elsif (rising_edge(clk)) then
             address_words := byte_addr_to_word_addr(address_bytes);
-            if (to_integer(signed(address_words)) >= DATA_MEMORY_SIZE_WORDS and write_back_enable = '1') then
-                mem_access_err <= '1';
-                output         <= (others => '0');
-            else
+            if (load_enable = '1' and state_machine_enable = '1') then
+                if (to_integer(signed(address_words)) >= DATA_MEMORY_SIZE_WORDS) then
+                    mem_access_err <= '1';
+                    address_words  := (others => '0');
+                end if;
                 output <= data_mem(to_integer(signed(address_words)));
             end if;
-        else
-            output <= (others => '0');
         end if;
 
     end process read_process;
@@ -59,7 +59,6 @@ begin
     begin
 
         if (reset = '1' or halt = '1') then
-            data_mem      <= (others => (others => '0'));
             address_words := (others => '0');
         elsif (rising_edge(clk)) then
             address_words := byte_addr_to_word_addr(address_bytes);

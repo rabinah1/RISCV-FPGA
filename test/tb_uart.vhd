@@ -23,7 +23,6 @@ architecture tb of tb_uart is
     signal   data_out                : std_logic                     := '0';
     signal   halt                    : std_logic                     := '0';
     signal   write_trig              : std_logic                     := '0';
-    signal   write_done              : std_logic                     := '0';
     signal   trig_reg_dump           : std_logic                     := '0';
     signal   data_to_imem            : std_logic_vector(31 downto 0) := (others => '0');
     signal   address                 : std_logic_vector(31 downto 0) := (others => '0');
@@ -42,7 +41,6 @@ architecture tb of tb_uart is
             data_out              : out   std_logic;
             halt                  : out   std_logic;
             write_trig            : out   std_logic;
-            write_done            : out   std_logic;
             trig_reg_dump         : out   std_logic;
             data_to_imem          : out   std_logic_vector(31 downto 0);
             address               : out   std_logic_vector(31 downto 0)
@@ -62,7 +60,6 @@ begin
             data_out              => data_out,
             halt                  => halt,
             write_trig            => write_trig,
-            write_done            => write_done,
             trig_reg_dump         => trig_reg_dump,
             data_to_imem          => data_to_imem,
             address               => address
@@ -103,7 +100,6 @@ begin
                 check_equal(data_out, '1');
                 check_equal(halt, '0');
                 check_equal(write_trig, '0');
-                check_equal(write_done, '0');
                 check_equal(trig_reg_dump, '0');
                 check_equal(data_to_imem, std_logic_vector(to_unsigned(0, 32)));
                 check_equal(address, std_logic_vector(to_unsigned(0, 32)));
@@ -124,7 +120,6 @@ begin
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '0');
                 check_equal(write_trig, '0');
-                check_equal(write_done, '0');
                 check_equal(address, std_logic_vector(to_unsigned(0, 32)));
                 check_equal(trig_reg_dump, '0');
                 check_sig             <= 1;
@@ -143,7 +138,6 @@ begin
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '0');
-                check_equal(write_done, '0');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_halt_counter_is_between_50_and_100") then
@@ -160,7 +154,6 @@ begin
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1');
-                check_equal(write_done, '0');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_halt_counter_is_between_0_and_50") then
@@ -177,7 +170,6 @@ begin
                 rx_state     <= force idle;
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '1');
-                check_equal(write_done, '1');
                 check_sig    <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_one_packet_is_read") then

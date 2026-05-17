@@ -1,6 +1,7 @@
 add wave \
 sim:/tb_data_memory/clk \
 sim:/tb_data_memory/reset \
+sim:/tb_data_memory/state_machine_enable \
 sim:/tb_data_memory/address_bytes \
 sim:/tb_data_memory/write_data \
 sim:/tb_data_memory/write_enable \

@@ -160,7 +160,7 @@ def _simulate(binary: str, trace: bool, print_result: bool) -> Dict[str, int]:
 def _test_hw(args: argparse.Namespace) -> None:
     print("Loading binary to the board...")
     _load_prog(args)
-    sleep(2)
+    sleep(4)
     print("Dumping register file contents from the board...")
     hw_result = _read_regs(args.serial_port, args.print_result)
     sleep(1)

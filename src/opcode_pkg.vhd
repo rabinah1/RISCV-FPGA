@@ -15,7 +15,9 @@ package opcode_pkg is
     constant MY_XOR : std_logic_vector(10 downto 0) := "01100110100";
     constant XORI   : std_logic_vector(10 downto 0) := "00100110100";
     constant MY_SRL : std_logic_vector(10 downto 0) := "01100110101";
+    constant MY_SRA : std_logic_vector(10 downto 0) := "01100111101";
     constant SRLI   : std_logic_vector(10 downto 0) := "00100110101";
+    constant SRAI   : std_logic_vector(10 downto 0) := "00100111101";
     constant MY_OR  : std_logic_vector(10 downto 0) := "01100110110";
     constant ORI    : std_logic_vector(10 downto 0) := "00100110110";
     constant MY_AND : std_logic_vector(10 downto 0) := "01100110111";

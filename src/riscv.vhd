@@ -43,6 +43,7 @@ architecture struct of riscv is
     signal state_machine_fetch_enable        : std_logic;
     signal state_machine_decode_enable       : std_logic;
     signal state_machine_execute_enable      : std_logic;
+    signal state_machine_load_enable         : std_logic;
     signal state_machine_write_back_enable   : std_logic;
     signal clk_500khz                        : std_logic;
     signal uart_write_trig                   : std_logic;
@@ -51,7 +52,6 @@ architecture struct of riscv is
     signal uart_address_from_reg_file        : std_logic_vector(5 downto 0);
     signal uart_address                      : std_logic_vector(31 downto 0);
     signal halt                              : std_logic;
-    signal uart_write_done                   : std_logic;
     signal register_file_reg_dump_start      : std_logic;
     signal trig_reg_dump                     : std_logic;
 
@@ -87,7 +87,6 @@ architecture struct of riscv is
             fetch_enable           : in    std_logic;
             write_trig             : in    std_logic;
             halt                   : in    std_logic;
-            write_done             : in    std_logic;
             data_word_from_uart    : in    std_logic_vector(31 downto 0);
             address_word_from_uart : in    std_logic_vector(31 downto 0);
             address_in             : in    std_logic_vector(31 downto 0);
@@ -175,16 +174,17 @@ architecture struct of riscv is
 
     component data_memory is
         port (
-            clk               : in    std_logic;
-            reset             : in    std_logic;
-            address_bytes     : in    std_logic_vector(31 downto 0);
-            write_data        : in    std_logic_vector(31 downto 0);
-            write_enable      : in    std_logic;
-            load_enable       : in    std_logic;
-            write_back_enable : in    std_logic;
-            halt              : in    std_logic;
-            mem_access_err    : out   std_logic;
-            output            : out   std_logic_vector(31 downto 0)
+            clk                  : in    std_logic;
+            reset                : in    std_logic;
+            state_machine_enable : in    std_logic;
+            address_bytes        : in    std_logic_vector(31 downto 0);
+            write_data           : in    std_logic_vector(31 downto 0);
+            write_enable         : in    std_logic;
+            load_enable          : in    std_logic;
+            write_back_enable    : in    std_logic;
+            halt                 : in    std_logic;
+            mem_access_err       : out   std_logic;
+            output               : out   std_logic_vector(31 downto 0)
         );
     end component data_memory;
 
@@ -206,6 +206,7 @@ architecture struct of riscv is
             fetch_enable      : out   std_logic;
             decode_enable     : out   std_logic;
             execute_enable    : out   std_logic;
+            load_enable       : out   std_logic;
             write_back_enable : out   std_logic
         );
     end component state_machine;
@@ -229,7 +230,6 @@ architecture struct of riscv is
             data_out              : out   std_logic;
             halt                  : out   std_logic;
             write_trig            : out   std_logic;
-            write_done            : out   std_logic;
             trig_reg_dump         : out   std_logic;
             data_to_imem          : out   std_logic_vector(31 downto 0);
             address               : out   std_logic_vector(31 downto 0)
@@ -268,7 +268,6 @@ begin
             fetch_enable           => state_machine_fetch_enable,
             write_trig             => uart_write_trig,
             halt                   => halt,
-            write_done             => uart_write_done,
             data_word_from_uart    => uart_data_to_imem,
             address_word_from_uart => uart_address,
             address_in             => program_counter_address_out,
@@ -339,16 +338,17 @@ begin
 
     data_memory_unit : component data_memory
         port map (
-            clk               => clk_500khz,
-            reset             => reset,
-            address_bytes     => alu_result,
-            write_data        => register_file_reg_out_2,
-            write_enable      => instruction_decoder_store,
-            load_enable       => instruction_decoder_load,
-            write_back_enable => state_machine_write_back_enable,
-            halt              => halt,
-            mem_access_err    => mem_access_err,
-            output            => data_memory_output
+            clk                  => clk_500khz,
+            reset                => reset,
+            state_machine_enable => state_machine_load_enable,
+            address_bytes        => alu_result,
+            write_data           => register_file_reg_out_2,
+            write_enable         => instruction_decoder_store,
+            load_enable          => instruction_decoder_load,
+            write_back_enable    => state_machine_write_back_enable,
+            halt                 => halt,
+            mem_access_err       => mem_access_err,
+            output               => data_memory_output
         );
 
     pc_offset_mux : component mux_2_inputs
@@ -392,6 +392,7 @@ begin
             fetch_enable      => state_machine_fetch_enable,
             decode_enable     => state_machine_decode_enable,
             execute_enable    => state_machine_execute_enable,
+            load_enable       => state_machine_load_enable,
             write_back_enable => state_machine_write_back_enable
         );
 
@@ -413,7 +414,6 @@ begin
             data_out              => data_out,
             halt                  => halt,
             write_trig            => uart_write_trig,
-            write_done            => uart_write_done,
             trig_reg_dump         => trig_reg_dump,
             data_to_imem          => uart_data_to_imem,
             address               => uart_address

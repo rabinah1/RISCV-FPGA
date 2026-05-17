@@ -58,9 +58,9 @@ begin
 
         type reg_mem is array(31 downto 0) of std_logic_vector(31 downto 0);
 
-        type data_memory is array(1599 downto 0) of std_logic_vector(31 downto 0);
+        type data_memory is array(4095 downto 0) of std_logic_vector(31 downto 0);
 
-        type prog_memory is array(534 downto 0) of std_logic_vector(31 downto 0);
+        type prog_memory is array(4095 downto 0) of std_logic_vector(31 downto 0);
 
         alias    regs                is <<signal .tb_riscv.riscv_instance.register_file_unit.regs : reg_mem>>;
         alias    prog_mem            is <<signal .tb_riscv.riscv_instance.program_memory_unit.prog_mem : prog_memory>>;

@@ -10,6 +10,7 @@ entity state_machine is
         fetch_enable      : out   std_logic;
         decode_enable     : out   std_logic;
         execute_enable    : out   std_logic;
+        load_enable       : out   std_logic;
         write_back_enable : out   std_logic
     );
 end entity state_machine;
@@ -43,6 +44,7 @@ begin
             fetch_enable      <= '0';
             decode_enable     <= '0';
             execute_enable    <= '0';
+            load_enable       <= '0';
             write_back_enable <= '0';
             next_state        <= fetch;
         elsif (rising_edge(clk)) then
@@ -54,6 +56,7 @@ begin
                     fetch_enable      <= '0';
                     decode_enable     <= '0';
                     execute_enable    <= '0';
+                    load_enable       <= '0';
                     write_back_enable <= '0';
                     next_state        <= fetch;
 
@@ -62,6 +65,7 @@ begin
                     fetch_enable      <= '1';
                     decode_enable     <= '0';
                     execute_enable    <= '0';
+                    load_enable       <= '0';
                     write_back_enable <= '0';
                     next_state        <= decode;
 
@@ -70,6 +74,7 @@ begin
                     fetch_enable      <= '0';
                     decode_enable     <= '1';
                     execute_enable    <= '0';
+                    load_enable       <= '0';
                     write_back_enable <= '0';
                     next_state        <= execute;
 
@@ -78,6 +83,16 @@ begin
                     fetch_enable      <= '0';
                     decode_enable     <= '0';
                     execute_enable    <= '1';
+                    load_enable       <= '0';
+                    write_back_enable <= '0';
+                    next_state        <= load;
+
+                when load =>
+
+                    fetch_enable      <= '0';
+                    decode_enable     <= '0';
+                    execute_enable    <= '0';
+                    load_enable       <= '1';
                     write_back_enable <= '0';
                     next_state        <= write_back;
 
@@ -86,6 +101,7 @@ begin
                     fetch_enable      <= '0';
                     decode_enable     <= '0';
                     execute_enable    <= '0';
+                    load_enable       <= '0';
                     write_back_enable <= '1';
                     next_state        <= fetch;
 

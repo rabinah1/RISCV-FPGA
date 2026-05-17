@@ -13,33 +13,35 @@ end entity tb_data_memory;
 
 architecture tb of tb_data_memory is
 
-    signal   clk               : std_logic                     := '0';
-    signal   reset             : std_logic                     := '0';
-    signal   address_bytes     : std_logic_vector(31 downto 0) := (others => '0');
-    signal   write_data        : std_logic_vector(31 downto 0) := (others => '0');
-    signal   write_enable      : std_logic                     := '0';
-    signal   load_enable       : std_logic                     := '0';
-    signal   write_back_enable : std_logic                     := '0';
-    signal   halt              : std_logic                     := '0';
-    signal   mem_access_err    : std_logic                     := '0';
-    signal   output            : std_logic_vector(31 downto 0) := (others => '0');
-    signal   check_sig         : natural                       := 0;
-    constant CLK_PERIOD        : time                          := 2 us;
+    signal   clk                  : std_logic                     := '0';
+    signal   reset                : std_logic                     := '0';
+    signal   state_machine_enable : std_logic                     := '0';
+    signal   address_bytes        : std_logic_vector(31 downto 0) := (others => '0');
+    signal   write_data           : std_logic_vector(31 downto 0) := (others => '0');
+    signal   write_enable         : std_logic                     := '0';
+    signal   load_enable          : std_logic                     := '0';
+    signal   write_back_enable    : std_logic                     := '0';
+    signal   halt                 : std_logic                     := '0';
+    signal   mem_access_err       : std_logic                     := '0';
+    signal   output               : std_logic_vector(31 downto 0) := (others => '0');
+    signal   check_sig            : natural                       := 0;
+    constant CLK_PERIOD           : time                          := 2 us;
 
-    type memory is array(1599 downto 0) of std_logic_vector(31 downto 0);
+    type memory is array(4095 downto 0) of std_logic_vector(31 downto 0);
 
     component data_memory is
         port (
-            clk               : in    std_logic;
-            reset             : in    std_logic;
-            address_bytes     : in    std_logic_vector(31 downto 0);
-            write_data        : in    std_logic_vector(31 downto 0);
-            write_enable      : in    std_logic;
-            load_enable       : in    std_logic;
-            write_back_enable : in    std_logic;
-            halt              : in    std_logic;
-            mem_access_err    : out   std_logic;
-            output            : out   std_logic_vector(31 downto 0)
+            clk                  : in    std_logic;
+            reset                : in    std_logic;
+            state_machine_enable : in    std_logic;
+            address_bytes        : in    std_logic_vector(31 downto 0);
+            write_data           : in    std_logic_vector(31 downto 0);
+            write_enable         : in    std_logic;
+            load_enable          : in    std_logic;
+            write_back_enable    : in    std_logic;
+            halt                 : in    std_logic;
+            mem_access_err       : out   std_logic;
+            output               : out   std_logic_vector(31 downto 0)
         );
     end component data_memory;
 
@@ -47,16 +49,17 @@ begin
 
     data_memory_instance : component data_memory
         port map (
-            clk               => clk,
-            reset             => reset,
-            address_bytes     => address_bytes,
-            write_data        => write_data,
-            write_enable      => write_enable,
-            load_enable       => load_enable,
-            write_back_enable => write_back_enable,
-            halt              => halt,
-            mem_access_err    => mem_access_err,
-            output            => output
+            clk                  => clk,
+            reset                => reset,
+            state_machine_enable => state_machine_enable,
+            address_bytes        => address_bytes,
+            write_data           => write_data,
+            write_enable         => write_enable,
+            load_enable          => load_enable,
+            write_back_enable    => write_back_enable,
+            halt                 => halt,
+            mem_access_err       => mem_access_err,
+            output               => output
         );
 
     clk_process : process is
@@ -111,51 +114,54 @@ begin
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_address_check_fail");
                 info("--------------------------------------------------------------------------------");
-                reset             <= '1';
-                write_enable      <= '0';
-                load_enable       <= '1';
-                write_back_enable <= '1';
-                write_data        <= (others => '0');
-                address_bytes     <= std_logic_vector(to_unsigned(8000, 32));
+                reset                <= '1';
+                write_enable         <= '0';
+                load_enable          <= '1';
+                write_back_enable    <= '0';
+                state_machine_enable <= '1';
+                write_data           <= (others => '0');
+                address_bytes        <= std_logic_vector(to_unsigned(20000, 32));
                 wait for CLK_PERIOD * 2;
-                reset             <= '0';
+                reset                <= '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(mem_access_err, '1');
-                check_sig         <= 1;
+                check_sig            <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_address_check_pass") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_address_check_pass");
                 info("--------------------------------------------------------------------------------");
-                reset             <= '1';
-                write_enable      <= '0';
-                load_enable       <= '0';
-                write_back_enable <= '1';
-                write_data        <= (others => '0');
-                address_bytes     <= std_logic_vector(to_unsigned(4000, 32));
+                reset                <= '1';
+                write_enable         <= '0';
+                load_enable          <= '0';
+                write_back_enable    <= '0';
+                state_machine_enable <= '1';
+                write_data           <= (others => '0');
+                address_bytes        <= std_logic_vector(to_unsigned(4000, 32));
                 wait for CLK_PERIOD * 2;
-                reset             <= '0';
+                reset                <= '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(mem_access_err, '0');
-                check_sig         <= 1;
+                check_sig            <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_read_data") then
                 info("--------------------------------------------------------------------------------");
                 info("TEST CASE: test_read_data");
                 info("--------------------------------------------------------------------------------");
-                reset             <= '1';
-                write_enable      <= '0';
-                load_enable       <= '1';
-                write_back_enable <= '1';
-                write_data        <= (others => '0');
-                data_mem(12)      <= force std_logic_vector(to_unsigned(100, 32));
-                address_bytes     <= std_logic_vector(to_unsigned(48, 32));
+                reset                <= '1';
+                write_enable         <= '0';
+                load_enable          <= '1';
+                write_back_enable    <= '0';
+                state_machine_enable <= '1';
+                write_data           <= (others => '0');
+                data_mem(12)         <= force std_logic_vector(to_unsigned(100, 32));
+                address_bytes        <= std_logic_vector(to_unsigned(48, 32));
                 wait for CLK_PERIOD * 2;
-                reset             <= '0';
+                reset                <= '0';
                 wait for CLK_PERIOD * 2;
                 check_equal(output, std_logic_vector(to_unsigned(100, 32)));
                 check_equal(mem_access_err, '0');
-                check_sig         <= 1;
+                check_sig            <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_write_data") then
                 info("--------------------------------------------------------------------------------");

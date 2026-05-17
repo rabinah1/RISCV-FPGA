@@ -1,6 +1,6 @@
 MEMORY
 {
-    PMEM (rx)  : ORIGIN = 0x00000000, LENGTH = 0x85C
+    PMEM (rx)  : ORIGIN = 0x00000000, LENGTH = 0x4000
 }
 
 __stack_top = 0x1000;

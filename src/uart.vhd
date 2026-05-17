@@ -14,7 +14,6 @@ entity uart is
         data_out              : out   std_logic;
         halt                  : out   std_logic;
         write_trig            : out   std_logic;
-        write_done            : out   std_logic;
         trig_reg_dump         : out   std_logic;
         data_to_imem          : out   std_logic_vector(31 downto 0);
         address               : out   std_logic_vector(31 downto 0)
@@ -77,7 +76,6 @@ begin
             bit_idx               := 0;
             imem_idx              <= 0;
             halt_counter          <= 0;
-            write_done            <= '0';
             control_byte          <= '1';
             increment_address     <= '0';
             trig_reg_dump         <= '0';
@@ -106,9 +104,6 @@ begin
                                 if (halt_counter < 95) then
                                     write_trig <= '0';
                                 end if;
-                                if (halt_counter < 25) then
-                                    write_done <= '1';
-                                end if;
                             end if;
                         else
                             data_to_imem      <= (others => '0');
@@ -116,7 +111,6 @@ begin
                             increment_address <= '0';
                             halt              <= '0';
                             write_trig        <= '0';
-                            write_done        <= '0';
                             control_byte      <= '1';
                             packet            <= (others => '0');
                             address           <= (others => '0');

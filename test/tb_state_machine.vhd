@@ -19,6 +19,7 @@ architecture tb of tb_state_machine is
     signal   fetch_enable      : std_logic := '0';
     signal   decode_enable     : std_logic := '0';
     signal   execute_enable    : std_logic := '0';
+    signal   load_enable       : std_logic := '0';
     signal   write_back_enable : std_logic := '0';
     signal   check_sig         : natural   := 0;
     constant CLK_PERIOD        : time      := 2 us;
@@ -31,6 +32,7 @@ architecture tb of tb_state_machine is
             fetch_enable      : out   std_logic;
             decode_enable     : out   std_logic;
             execute_enable    : out   std_logic;
+            load_enable       : out   std_logic;
             write_back_enable : out   std_logic
         );
     end component state_machine;
@@ -45,6 +47,7 @@ begin
             fetch_enable      => fetch_enable,
             decode_enable     => decode_enable,
             execute_enable    => execute_enable,
+            load_enable       => load_enable,
             write_back_enable => write_back_enable
         );
 
@@ -76,6 +79,7 @@ begin
                 check_equal(fetch_enable, '0');
                 check_equal(decode_enable, '0');
                 check_equal(execute_enable, '0');
+                check_equal(load_enable, '0');
                 check_equal(write_back_enable, '0');
                 assert state = fetch;
                 assert next_state = fetch;
@@ -93,6 +97,7 @@ begin
                 check_equal(fetch_enable, '1');
                 check_equal(decode_enable, '0');
                 check_equal(execute_enable, '0');
+                check_equal(load_enable, '0');
                 check_equal(write_back_enable, '0');
                 assert next_state = decode;
                 check_sig <= 1;
@@ -109,6 +114,7 @@ begin
                 check_equal(fetch_enable, '0');
                 check_equal(decode_enable, '1');
                 check_equal(execute_enable, '0');
+                check_equal(load_enable, '0');
                 check_equal(write_back_enable, '0');
                 assert next_state = execute;
                 check_sig <= 1;
@@ -125,6 +131,24 @@ begin
                 check_equal(fetch_enable, '0');
                 check_equal(decode_enable, '0');
                 check_equal(execute_enable, '1');
+                check_equal(load_enable, '0');
+                check_equal(write_back_enable, '0');
+                assert next_state = load;
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_load_state") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_load_state");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                state     <= force load;
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(fetch_enable, '0');
+                check_equal(decode_enable, '0');
+                check_equal(execute_enable, '0');
+                check_equal(load_enable, '1');
                 check_equal(write_back_enable, '0');
                 assert next_state = write_back;
                 check_sig <= 1;
@@ -141,6 +165,7 @@ begin
                 check_equal(fetch_enable, '0');
                 check_equal(decode_enable, '0');
                 check_equal(execute_enable, '0');
+                check_equal(load_enable, '0');
                 check_equal(write_back_enable, '1');
                 assert next_state = fetch;
                 check_sig <= 1;
