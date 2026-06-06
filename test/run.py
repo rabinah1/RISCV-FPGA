@@ -14,7 +14,7 @@ for arg in sys.argv:
         break
 
 test_dir = os.path.dirname(__file__)
-src_dir = f"{test_dir}/../src"
+src_dir = f"{test_dir}/../src/hw"
 
 VU = VUnit.from_argv()
 VU.add_vhdl_builtins()

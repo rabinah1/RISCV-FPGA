@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import serial
 import tinyrv
 from time import sleep
 from typing import Dict
 
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 BAUD_RATE = 9600
 NUM_OF_REGS = 32
 NUM_OF_BYTES = 128
@@ -15,6 +17,20 @@ MAX_PC_STALL_COUNT = 10
 BYTES_PER_REGISTER = 4
 UART_READ_TRIG = 1
 UART_WRITE_TRIG = 0
+PROGRAMS = [
+    f"{SCRIPT_DIR}/test_1_arithmetic_extended",
+    f"{SCRIPT_DIR}/test_2_branches_extended",
+    f"{SCRIPT_DIR}/test_3_memory_jumps",
+    f"{SCRIPT_DIR}/test_4_structs",
+    f"{SCRIPT_DIR}/test_5_arrays_2d",
+    f"{SCRIPT_DIR}/test_6_linked_lists",
+    f"{SCRIPT_DIR}/test_7_pointers_advanced",
+    f"{SCRIPT_DIR}/test_8_recursion",
+    f"{SCRIPT_DIR}/test_9_mixed",
+    f"{SCRIPT_DIR}/test_10_edge_cases",
+    f"{SCRIPT_DIR}/test",
+    f"{SCRIPT_DIR}/game_of_life",
+]
 
 
 def _parse_args() -> argparse.Namespace:
@@ -56,7 +72,8 @@ This script can be used to interact with the implemented CPU.
     hw_test_parser = subparsers.add_parser(
         "test_hw", help="Run a binary on HW and compare the results against a reference model."
     )
-    hw_test_parser.add_argument("binary", type=str, help="Path to the binary file.")
+    hw_test_parser.add_argument("--binary", type=str, help="Path to the binary file.")
+    hw_test_parser.add_argument("--all", action="store_true", help="Run all binaries.")
     hw_test_parser.add_argument(
         "--serial_port",
         type=str,
@@ -157,8 +174,8 @@ def _simulate(binary: str, trace: bool, print_result: bool) -> Dict[str, int]:
     return regs
 
 
-def _test_hw(args: argparse.Namespace) -> None:
-    print("Loading binary to the board...")
+def _test_hw_one(args: argparse.Namespace) -> None:
+    print(f"Loading binary {args.binary} to the board...")
     _load_prog(args)
     sleep(4)
     print("Dumping register file contents from the board...")
@@ -168,13 +185,29 @@ def _test_hw(args: argparse.Namespace) -> None:
     simulation_result = _simulate(args.binary, False, args.print_result)
 
     if hw_result == simulation_result:
-        print("Tests passed")
+        print("**************************************************************")
+        print(f"Tests passed for {args.binary}")
+        print("**************************************************************\n")
     else:
-        print("Tests failed")
+        print("**************************************************************")
+        print(f"Tests failed for {args.binary}")
+        print("**************************************************************")
         print("Registers dumped from HW:")
         print(hw_result)
         print("Registers based on reference model:")
         print(simulation_result)
+        print("\n")
+
+
+def _test_hw(args: argparse.Namespace) -> None:
+    if args.all:
+        for program in PROGRAMS:
+            args.binary = program
+            _test_hw_one(args)
+    elif args.binary:
+        _test_hw_one(args)
+    else:
+        print("Either '--all' or '--binary' flag must be provided.")
 
 
 def main():
