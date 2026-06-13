@@ -21,7 +21,9 @@ entity instruction_decoder is
         branch        : out   std_logic;
         jump          : out   std_logic;
         jalr_flag     : out   std_logic;
-        unknown_instr : out   std_logic
+        unknown_instr : out   std_logic;
+        load_type     : out   std_logic_vector(2 downto 0);
+        store_type    : out   std_logic_vector(2 downto 0)
     );
 end entity instruction_decoder;
 
@@ -50,6 +52,8 @@ begin
             jump          <= '0';
             jalr_flag     <= '0';
             unknown_instr <= '0';
+            load_type     <= (others => '0');
+            store_type    <= (others => '0');
             opcode        := (others => '0');
         elsif (rising_edge(clk)) then
             if (enable = '1') then
@@ -68,6 +72,8 @@ begin
                     branch        <= '0';
                     jump          <= '0';
                     jalr_flag     <= '0';
+                    load_type     <= (others => '0');
+                    store_type    <= (others => '0');
                 elsif (opcode = TYPE_I) then
                     rd <= instruction(11 downto 7);
                     if (instruction(14 downto 12) = "101") then -- SRLI or SRAI
@@ -87,6 +93,8 @@ begin
                     branch                  <= '0';
                     jump                    <= '0';
                     jalr_flag               <= '0';
+                    load_type               <= (others => '0');
+                    store_type              <= (others => '0');
                 elsif (opcode = TYPE_LOAD) then
                     rd                      <= instruction(11 downto 7);
                     alu_operation           <= opcode & '0' & instruction(14 downto 12);
@@ -101,6 +109,8 @@ begin
                     branch                  <= '0';
                     jump                    <= '0';
                     jalr_flag               <= '0';
+                    load_type               <= instruction(14 downto 12);
+                    store_type              <= (others => '0');
                 elsif (opcode = TYPE_STORE) then
                     immediate(11 downto 0)  <= instruction(31 downto 25) & instruction(11 downto 7);
                     immediate(31 downto 12) <= (others => instruction(31));
@@ -115,6 +125,8 @@ begin
                     branch                  <= '0';
                     jump                    <= '0';
                     jalr_flag               <= '0';
+                    load_type               <= (others => '0');
+                    store_type              <= instruction(14 downto 12);
                 elsif (opcode = TYPE_CONDITIONAL) then
                     immediate(12 downto 0)  <= instruction(31) & instruction(7) &
                                                instruction(30 downto 25) & instruction(11 downto 8) & '0';
@@ -130,6 +142,8 @@ begin
                     branch                  <= '1';
                     jump                    <= '0';
                     jalr_flag               <= '0';
+                    load_type               <= (others => '0');
+                    store_type              <= (others => '0');
                 elsif (opcode = TYPE_JAL) then
                     immediate(20 downto 0)  <= instruction(31) & instruction(19 downto 12) &
                                                instruction(20) & instruction(30 downto 21) & '0';
@@ -145,6 +159,8 @@ begin
                     branch                  <= '0';
                     jump                    <= '1';
                     jalr_flag               <= '0';
+                    load_type               <= (others => '0');
+                    store_type              <= (others => '0');
                 elsif (opcode = TYPE_JALR) then
                     immediate(11 downto 0)  <= instruction(31 downto 20);
                     immediate(31 downto 12) <= (others => instruction(31));
@@ -159,6 +175,8 @@ begin
                     branch                  <= '0';
                     jump                    <= '1';
                     jalr_flag               <= '1';
+                    load_type               <= (others => '0');
+                    store_type              <= (others => '0');
                 elsif (opcode = TYPE_U) then
                     rd            <= instruction(11 downto 7);
                     alu_operation <= opcode & "0000";
@@ -172,6 +190,8 @@ begin
                     branch        <= '0';
                     jump          <= '0';
                     jalr_flag     <= '0';
+                    load_type     <= (others => '0');
+                    store_type    <= (others => '0');
                 elsif (opcode = TYPE_AUIPC) then
                     rd            <= instruction(11 downto 7);
                     alu_operation <= opcode & "0000";
@@ -185,6 +205,8 @@ begin
                     branch        <= '0';
                     jump          <= '0';
                     jalr_flag     <= '0';
+                    load_type     <= (others => '0');
+                    store_type    <= (others => '0');
                 else
                     rd            <= (others => '0');
                     alu_operation <= (others => '0');
@@ -198,6 +220,8 @@ begin
                     branch        <= '0';
                     jump          <= '0';
                     jalr_flag     <= '0';
+                    load_type     <= (others => '0');
+                    store_type    <= (others => '0');
                     if (opcode /= "0000000") then
                         unknown_instr <= '1';
                     end if;

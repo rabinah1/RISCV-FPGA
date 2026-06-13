@@ -54,6 +54,8 @@ architecture struct of riscv is
     signal halt                              : std_logic;
     signal register_file_reg_dump_start      : std_logic;
     signal trig_reg_dump                     : std_logic;
+    signal load_type                         : std_logic_vector(2 downto 0);
+    signal store_type                        : std_logic_vector(2 downto 0);
 
     component alu is
         port (
@@ -134,7 +136,9 @@ architecture struct of riscv is
             branch        : out   std_logic;
             jump          : out   std_logic;
             jalr_flag     : out   std_logic;
-            unknown_instr : out   std_logic
+            unknown_instr : out   std_logic;
+            load_type     : out   std_logic_vector(2 downto 0);
+            store_type    : out   std_logic_vector(2 downto 0)
         );
     end component instruction_decoder;
 
@@ -163,12 +167,13 @@ architecture struct of riscv is
 
     component writeback_mux is
         port (
-            reset   : in    std_logic;
-            control : in    std_logic;
-            input_1 : in    std_logic_vector(31 downto 0);
-            input_2 : in    std_logic_vector(31 downto 0);
-            halt    : in    std_logic;
-            output  : out   std_logic_vector(31 downto 0)
+            reset     : in    std_logic;
+            control   : in    std_logic;
+            input_1   : in    std_logic_vector(31 downto 0);
+            input_2   : in    std_logic_vector(31 downto 0);
+            halt      : in    std_logic;
+            load_type : in    std_logic_vector(2 downto 0);
+            output    : out   std_logic_vector(31 downto 0)
         );
     end component writeback_mux;
 
@@ -184,7 +189,8 @@ architecture struct of riscv is
             write_back_enable    : in    std_logic;
             halt                 : in    std_logic;
             mem_access_err       : out   std_logic;
-            output               : out   std_logic_vector(31 downto 0)
+            output               : out   std_logic_vector(31 downto 0);
+            store_type           : in    std_logic_vector(2 downto 0)
         );
     end component data_memory;
 
@@ -313,7 +319,9 @@ begin
             branch        => instruction_decoder_branch,
             jump          => instruction_decoder_jump,
             jalr_flag     => instruction_decoder_jalr_flag,
-            unknown_instr => unknown_instr
+            unknown_instr => unknown_instr,
+            load_type     => load_type,
+            store_type    => store_type
         );
 
     alu_src_mux : component mux_2_inputs_latch
@@ -328,12 +336,13 @@ begin
 
     writeback_mux_unit : component writeback_mux
         port map (
-            reset   => reset,
-            control => instruction_decoder_load,
-            input_1 => alu_result,
-            input_2 => data_memory_output,
-            halt    => halt,
-            output  => writeback_mux_output
+            reset     => reset,
+            control   => instruction_decoder_load,
+            input_1   => alu_result,
+            input_2   => data_memory_output,
+            halt      => halt,
+            load_type => load_type,
+            output    => writeback_mux_output
         );
 
     data_memory_unit : component data_memory
@@ -348,7 +357,8 @@ begin
             write_back_enable    => state_machine_write_back_enable,
             halt                 => halt,
             mem_access_err       => mem_access_err,
-            output               => data_memory_output
+            output               => data_memory_output,
+            store_type           => store_type
         );
 
     pc_offset_mux : component mux_2_inputs

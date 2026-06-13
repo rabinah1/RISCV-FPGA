@@ -31,6 +31,8 @@ architecture tb of tb_instruction_decoder is
     signal   jump          : std_logic;
     signal   jalr_flag     : std_logic;
     signal   unknown_instr : std_logic;
+    signal   load_type     : std_logic_vector(2 downto 0);
+    signal   store_type    : std_logic_vector(2 downto 0);
     signal   check_sig     : natural   := 0;
     constant CLK_PERIOD    : time      := 2 us;
 
@@ -53,7 +55,9 @@ architecture tb of tb_instruction_decoder is
             branch        : out   std_logic;
             jump          : out   std_logic;
             jalr_flag     : out   std_logic;
-            unknown_instr : out   std_logic
+            unknown_instr : out   std_logic;
+            load_type     : out   std_logic_vector(2 downto 0);
+            store_type    : out   std_logic_vector(2 downto 0)
         );
     end component instruction_decoder;
 
@@ -78,7 +82,9 @@ begin
             branch        => branch,
             jump          => jump,
             jalr_flag     => jalr_flag,
-            unknown_instr => unknown_instr
+            unknown_instr => unknown_instr,
+            load_type     => load_type,
+            store_type    => store_type
         );
 
     clk_process : process is
@@ -117,6 +123,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_R_type_instruction") then
@@ -142,6 +150,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_I_type_instruction") then
@@ -167,6 +177,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_load_instruction") then
@@ -192,6 +204,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(2, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_store_instruction") then
@@ -218,6 +232,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(2, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_conditional_instruction") then
@@ -244,6 +260,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_jal_instruction") then
@@ -270,6 +288,8 @@ begin
                 check_equal(jump, '1');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_jalr_instruction") then
@@ -295,6 +315,8 @@ begin
                 check_equal(jump, '1');
                 check_equal(jalr_flag, '1');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_U_type_instruction") then
@@ -320,6 +342,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_AUIPC_instruction") then
@@ -345,6 +369,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_unknown_instruction_type") then
@@ -370,6 +396,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '1');
+                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

@@ -14,6 +14,7 @@ entity data_memory is
         load_enable          : in    std_logic;
         write_back_enable    : in    std_logic;
         halt                 : in    std_logic;
+        store_type           : in    std_logic_vector(2 downto 0);
         mem_access_err       : out   std_logic;
         output               : out   std_logic_vector(31 downto 0)
     );
@@ -27,7 +28,27 @@ architecture rtl of data_memory is
 
     signal data_mem : memory := (others => (others => '0'));
 
+    signal temp_mem : std_logic_vector(31 downto 0) := (others => '0');
+
 begin
+
+    temp_mem_process : process (all) is
+
+        variable address_words : std_logic_vector(31 downto 0) := (others => '0');
+
+    begin
+
+        if (reset = '1' or halt = '1') then
+            temp_mem      <= (others => '0');
+            address_words := (others => '0');
+        elsif (falling_edge(clk)) then
+            address_words := byte_addr_to_word_addr(address_bytes);
+            if (to_integer(signed(address_words)) < DATA_MEMORY_SIZE_WORDS) then
+                temp_mem <= data_mem(to_integer(signed(address_words)));
+            end if;
+        end if;
+
+    end process temp_mem_process;
 
     read_process : process (all) is
 
@@ -63,7 +84,15 @@ begin
         elsif (rising_edge(clk)) then
             address_words := byte_addr_to_word_addr(address_bytes);
             if (write_enable = '1' and write_back_enable = '1' and mem_access_err = '0') then
-                data_mem(to_integer(signed(address_words))) <= write_data;
+                if (store_type = "010") then
+                    data_mem(to_integer(signed(address_words))) <= write_data;
+                elsif (store_type = "000") then
+                    data_mem(to_integer(signed(address_words))) <= temp_mem(31 downto 8) & write_data(7 downto 0);
+                elsif (store_type = "001") then
+                    data_mem(to_integer(signed(address_words))) <= temp_mem(31 downto 16) & write_data(15 downto 0);
+                else
+                    data_mem(to_integer(signed(address_words))) <= (others => '0');
+                end if;
             end if;
         end if;
 

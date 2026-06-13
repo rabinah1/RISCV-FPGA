@@ -23,7 +23,13 @@ package opcode_pkg is
     constant MY_AND : std_logic_vector(10 downto 0) := "01100110111";
     constant ANDI   : std_logic_vector(10 downto 0) := "00100110111";
     constant LW     : std_logic_vector(10 downto 0) := "00000110010";
+    constant LB     : std_logic_vector(10 downto 0) := "00000110000";
+    constant LBU    : std_logic_vector(10 downto 0) := "00000110100";
+    constant LH     : std_logic_vector(10 downto 0) := "00000110001";
+    constant LHU    : std_logic_vector(10 downto 0) := "00000110101";
     constant SW     : std_logic_vector(10 downto 0) := "01000110010";
+    constant SB     : std_logic_vector(10 downto 0) := "01000110000";
+    constant SH     : std_logic_vector(10 downto 0) := "01000110001";
     constant BEQ    : std_logic_vector(10 downto 0) := "11000110000";
     constant BNE    : std_logic_vector(10 downto 0) := "11000110001";
     constant BLT    : std_logic_vector(10 downto 0) := "11000110100";

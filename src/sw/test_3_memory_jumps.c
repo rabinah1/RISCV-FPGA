@@ -133,6 +133,26 @@ int32_t main(void)
 
     if (result != 15) return 20;
 
+    /* Test 18: LB/LBU/SB byte memory operations */
+    int32_t mem[4];
+    mem[0] = 234714;
+    int8_t byte_signed_load = (int8_t)mem[0];
+
+    if (byte_signed_load != -38) return 21;
+
+    uint8_t byte_unsigned_load = (uint8_t)mem[0];
+
+    if (byte_unsigned_load != 218) return 22;
+
+    /* Test 19: LH/LHU/SH halfword memory operations */
+    int16_t half_signed_load = (int16_t)mem[0];
+
+    if (half_signed_load != -27430) return 23;
+
+    uint16_t half_unsigned_load = (uint16_t)mem[0];
+
+    if (half_unsigned_load != 38106) return 24;
+
     /* All tests passed */
     return 0;
 }

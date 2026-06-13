@@ -22,6 +22,7 @@ architecture tb of tb_data_memory is
     signal   load_enable          : std_logic                     := '0';
     signal   write_back_enable    : std_logic                     := '0';
     signal   halt                 : std_logic                     := '0';
+    signal   store_type           : std_logic_vector(2 downto 0)  := (others => '0');
     signal   mem_access_err       : std_logic                     := '0';
     signal   output               : std_logic_vector(31 downto 0) := (others => '0');
     signal   check_sig            : natural                       := 0;
@@ -40,6 +41,7 @@ architecture tb of tb_data_memory is
             load_enable          : in    std_logic;
             write_back_enable    : in    std_logic;
             halt                 : in    std_logic;
+            store_type           : in    std_logic_vector(2 downto 0);
             mem_access_err       : out   std_logic;
             output               : out   std_logic_vector(31 downto 0)
         );
@@ -58,6 +60,7 @@ begin
             load_enable          => load_enable,
             write_back_enable    => write_back_enable,
             halt                 => halt,
+            store_type           => store_type,
             mem_access_err       => mem_access_err,
             output               => output
         );
@@ -72,6 +75,7 @@ begin
     test_runner : process is
 
         alias data_mem is <<signal .tb_data_memory.data_memory_instance.data_mem : memory>>;
+        alias temp_mem is <<signal .tb_data_memory.data_memory_instance.temp_mem : std_logic_vector(31 downto 0)>>;
 
     begin
 
@@ -161,23 +165,69 @@ begin
                 wait for CLK_PERIOD * 2;
                 check_equal(output, std_logic_vector(to_unsigned(100, 32)));
                 check_equal(mem_access_err, '0');
+                check_equal(temp_mem, std_logic_vector(to_unsigned(100, 32)));
                 check_sig            <= 1;
                 info("===== TEST CASE FINISHED =====");
-            elsif run("test_write_data") then
+            elsif run("test_write_data_sw") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_write_data");
+                info("TEST CASE: test_write_data_sw");
                 info("--------------------------------------------------------------------------------");
                 reset             <= '1';
                 wait for CLK_PERIOD * 2;
                 reset             <= '0';
                 write_enable      <= '1';
                 write_back_enable <= '1';
-                write_data        <= std_logic_vector(to_unsigned(155, 32));
+                store_type        <= "010";
+                write_data        <= std_logic_vector(to_unsigned(500160, 32));
                 address_bytes     <= std_logic_vector(to_unsigned(24, 32));
                 wait for CLK_PERIOD * 2;
                 write_enable      <= '0';
                 wait for CLK_PERIOD * 2;
-                check_equal(data_mem(6), std_logic_vector(to_unsigned(155, 32)));
+                check_equal(data_mem(6), std_logic_vector(to_unsigned(500160, 32)));
+                check_equal(mem_access_err, '0');
+                check_sig         <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_write_data_sb") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_write_data_sb");
+                info("--------------------------------------------------------------------------------");
+                reset             <= '1';
+                wait for CLK_PERIOD * 2;
+                reset             <= '0';
+                write_enable      <= '1';
+                write_back_enable <= '1';
+                store_type        <= "010";
+                write_data        <= std_logic_vector(to_unsigned(964160, 32));
+                address_bytes     <= std_logic_vector(to_unsigned(24, 32));
+                wait for CLK_PERIOD * 2;
+                store_type        <= "000";
+                write_data        <= std_logic_vector(to_unsigned(500160, 32));
+                wait for CLK_PERIOD * 2;
+                write_enable      <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(data_mem(6), std_logic_vector(to_unsigned(964288, 32)));
+                check_equal(mem_access_err, '0');
+                check_sig         <= 1;
+            elsif run("test_write_data_sh") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_write_data_sh");
+                info("--------------------------------------------------------------------------------");
+                reset             <= '1';
+                wait for CLK_PERIOD * 2;
+                reset             <= '0';
+                write_enable      <= '1';
+                write_back_enable <= '1';
+                store_type        <= "010";
+                write_data        <= std_logic_vector(to_unsigned(964160, 32));
+                address_bytes     <= std_logic_vector(to_unsigned(24, 32));
+                wait for CLK_PERIOD * 2;
+                store_type        <= "001";
+                write_data        <= std_logic_vector(to_unsigned(500160, 32));
+                address_bytes     <= std_logic_vector(to_unsigned(24, 32));
+                wait for CLK_PERIOD * 2;
+                write_enable      <= '0';
+                wait for CLK_PERIOD * 2;
+                check_equal(data_mem(6), std_logic_vector(to_unsigned(958912, 32)));
                 check_equal(mem_access_err, '0');
                 check_sig         <= 1;
                 info("===== TEST CASE FINISHED =====");

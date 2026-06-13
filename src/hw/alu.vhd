@@ -108,6 +108,22 @@ begin
 
                         result <= input_1 and input_2;
 
+                    when LB =>
+
+                        result <= add_signed(input_1, input_2);
+
+                    when LBU =>
+
+                        result <= add_signed(input_1, input_2);
+
+                    when LH =>
+
+                        result <= add_signed(input_1, input_2);
+
+                    when LHU =>
+
+                        result <= add_signed(input_1, input_2);
+
                     when LW =>
 
                         -- input_2 is sign extended immediate, is this okay?
@@ -116,6 +132,14 @@ begin
                     when SW =>
 
                         -- input_2 is sign extended immediate, is this okay?
+                        result <= add_signed(input_1, input_2);
+
+                    when SB =>
+
+                        result <= add_signed(input_1, input_2);
+
+                    when SH =>
+
                         result <= add_signed(input_1, input_2);
 
                     when BEQ =>

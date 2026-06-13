@@ -18,17 +18,19 @@ architecture tb of tb_writeback_mux is
     signal   input_2    : std_logic_vector(31 downto 0) := (others => '0');
     signal   halt       : std_logic                     := '0';
     signal   output     : std_logic_vector(31 downto 0) := (others => '0');
+    signal   load_type  : std_logic_vector(2 downto 0)  := (others => '0');
     signal   check_sig  : natural                       := 0;
     constant CLK_PERIOD : time                          := 2 us;
 
     component writeback_mux is
         port (
-            reset   : in    std_logic;
-            control : in    std_logic;
-            input_1 : in    std_logic_vector(31 downto 0);
-            input_2 : in    std_logic_vector(31 downto 0);
-            halt    : in    std_logic;
-            output  : out   std_logic_vector(31 downto 0)
+            reset     : in    std_logic;
+            control   : in    std_logic;
+            input_1   : in    std_logic_vector(31 downto 0);
+            input_2   : in    std_logic_vector(31 downto 0);
+            load_type : in    std_logic_vector(2 downto 0);
+            halt      : in    std_logic;
+            output    : out   std_logic_vector(31 downto 0)
         );
     end component writeback_mux;
 
@@ -36,12 +38,13 @@ begin
 
     writeback_mux_instance : component writeback_mux
         port map (
-            reset   => reset,
-            control => control,
-            input_1 => input_1,
-            input_2 => input_2,
-            halt    => halt,
-            output  => output
+            reset     => reset,
+            control   => control,
+            input_1   => input_1,
+            input_2   => input_2,
+            load_type => load_type,
+            halt      => halt,
+            output    => output
         );
 
     test_runner : process is
@@ -59,10 +62,25 @@ begin
                 reset     <= '1';
                 control   <= '0';
                 halt      <= '0';
-                input_1   <= std_logic_vector(to_unsigned(123, 32));
-                input_2   <= std_logic_vector(to_unsigned(456, 32));
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(456, 32));
+                load_type <= "010";
                 wait for CLK_PERIOD * 2;
-                check_equal(output, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(output, std_logic_vector(to_signed(0, 32)));
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_output_is_zero_if_halt_is_enabled") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_output_is_zero_if_halt_is_enabled");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '0';
+                control   <= '0';
+                halt      <= '1';
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(456, 32));
+                load_type <= "010";
+                wait for CLK_PERIOD * 2;
+                check_equal(output, std_logic_vector(to_signed(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_output_is_input_1_when_control_is_zero") then
@@ -74,25 +92,91 @@ begin
                 reset     <= '0';
                 control   <= '0';
                 halt      <= '0';
-                input_1   <= std_logic_vector(to_unsigned(123, 32));
-                input_2   <= std_logic_vector(to_unsigned(456, 32));
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(456, 32));
+                load_type <= "010";
                 wait for CLK_PERIOD * 2;
                 check_equal(output, input_1);
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
-            elsif run("test_output_is_input_2_when_control_is_one") then
+            elsif run("test_output_is_input_2_when_control_is_one_with_LW") then
                 info("--------------------------------------------------------------------------------");
-                info("TEST CASE: test_output_is_input_2_when_control_is_one");
+                info("TEST CASE: test_output_is_input_2_when_control_is_one_with_LW");
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 control   <= '1';
                 halt      <= '0';
-                input_1   <= std_logic_vector(to_unsigned(123, 32));
-                input_2   <= std_logic_vector(to_unsigned(456, 32));
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(234714, 32));
+                load_type <= "010";
                 wait for CLK_PERIOD * 2;
                 check_equal(output, input_2);
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_output_is_input_2_when_control_is_one_with_LB") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_output_is_input_2_when_control_is_one_with_LB");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                control   <= '1';
+                halt      <= '0';
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(234714, 32));
+                load_type <= "000";
+                wait for CLK_PERIOD * 2;
+                check_equal(output, std_logic_vector(to_signed(-38, 32)));
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_output_is_input_2_when_control_is_one_with_LH") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_output_is_input_2_when_control_is_one_with_LH");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                control   <= '1';
+                halt      <= '0';
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(234714, 32));
+                load_type <= "001";
+                wait for CLK_PERIOD * 2;
+                check_equal(output, std_logic_vector(to_signed(-27430, 32)));
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_output_is_input_2_when_control_is_one_with_LBU") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_output_is_input_2_when_control_is_one_with_LBU");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                control   <= '1';
+                halt      <= '0';
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(234714, 32));
+                load_type <= "100";
+                wait for CLK_PERIOD * 2;
+                check_equal(output, std_logic_vector(to_signed(218, 32)));
+                check_sig <= 1;
+                info("===== TEST CASE FINISHED =====");
+            elsif run("test_output_is_input_2_when_control_is_one_with_LHU") then
+                info("--------------------------------------------------------------------------------");
+                info("TEST CASE: test_output_is_input_2_when_control_is_one_with_LHU");
+                info("--------------------------------------------------------------------------------");
+                reset     <= '1';
+                wait for CLK_PERIOD * 2;
+                reset     <= '0';
+                control   <= '1';
+                halt      <= '0';
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(234714, 32));
+                load_type <= "101";
+                wait for CLK_PERIOD * 2;
+                check_equal(output, std_logic_vector(to_signed(38106, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;
