@@ -2,7 +2,7 @@ SHELL = /bin/bash
 CC = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-gcc
 LD = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-ld
 OC = /opt/riscv32-gnu-toolchain-elf-bin/bin/riscv32-unknown-elf-objcopy
-COMPILER_ARGS = -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -ffunction-sections
+COMPILER_ARGS = -march=rv32im -mabi=ilp32 -ffreestanding -nostdlib -ffunction-sections
 
 .DELETE_ON_ERROR:
 .PHONY: sw clean sta

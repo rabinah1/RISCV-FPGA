@@ -101,8 +101,8 @@ begin
                 check_equal(halt, '0');
                 check_equal(write_trig, '0');
                 check_equal(trig_reg_dump, '0');
-                check_equal(data_to_imem, std_logic_vector(to_unsigned(0, 32)));
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(data_to_imem, std_logic_vector(to_signed(0, 32)));
+                check_equal(address, std_logic_vector(to_signed(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_rx_idle_state_when_halt_counter_is_zero") then
@@ -120,7 +120,7 @@ begin
                 wait for CLK_PERIOD * 2;
                 check_equal(halt, '0');
                 check_equal(write_trig, '0');
-                check_equal(address, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(address, std_logic_vector(to_signed(0, 32)));
                 check_equal(trig_reg_dump, '0');
                 check_sig             <= 1;
                 info("===== TEST CASE FINISHED =====");

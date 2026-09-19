@@ -7890,7 +7890,7 @@
       "user_error_message": ""
     },
     "procedure_005": {
-      "disable": false,
+      "disable": true,
       "fixable": true,
       "indent_size": 2,
       "indent_style": "spaces",

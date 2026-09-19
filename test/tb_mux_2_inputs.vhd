@@ -69,9 +69,9 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset     <= '1';
                 control   <= '0';
-                input_1   <= std_logic_vector(to_unsigned(123, 32));
+                input_1   <= std_logic_vector(to_signed(123, 32));
                 wait for CLK_PERIOD * 2;
-                check_equal(output, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(output, std_logic_vector(to_signed(0, 32)));
                 check_sig <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_output_is_one_when_control_is_zero") then
@@ -82,8 +82,8 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 control   <= '0';
-                input_1   <= std_logic_vector(to_unsigned(123, 32));
-                input_2   <= std_logic_vector(to_unsigned(456, 32));
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(456, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(output, input_1);
                 check_sig <= 1;
@@ -96,8 +96,8 @@ begin
                 wait for CLK_PERIOD * 2;
                 reset     <= '0';
                 control   <= '1';
-                input_1   <= std_logic_vector(to_unsigned(123, 32));
-                input_2   <= std_logic_vector(to_unsigned(456, 32));
+                input_1   <= std_logic_vector(to_signed(123, 32));
+                input_2   <= std_logic_vector(to_signed(456, 32));
                 wait for CLK_PERIOD * 2;
                 check_equal(output, input_2);
                 check_sig <= 1;

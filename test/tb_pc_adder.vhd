@@ -54,9 +54,9 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset         <= '1';
                 halt          <= '0';
-                input_1_bytes <= std_logic_vector(to_unsigned(23, 32));
-                input_2_bytes <= std_logic_vector(to_unsigned(33, 32));
-                check_equal(sum_words, std_logic_vector(to_unsigned(0, 32)));
+                input_1_bytes <= std_logic_vector(to_signed(23, 32));
+                input_2_bytes <= std_logic_vector(to_signed(33, 32));
+                check_equal(sum_words, std_logic_vector(to_signed(0, 32)));
                 check_sig     <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_sum_is_zero_when_halt_is_enabled") then
@@ -65,9 +65,9 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset         <= '0';
                 halt          <= '1';
-                input_1_bytes <= std_logic_vector(to_unsigned(23, 32));
-                input_2_bytes <= std_logic_vector(to_unsigned(33, 32));
-                check_equal(sum_words, std_logic_vector(to_unsigned(0, 32)));
+                input_1_bytes <= std_logic_vector(to_signed(23, 32));
+                input_2_bytes <= std_logic_vector(to_signed(33, 32));
+                check_equal(sum_words, std_logic_vector(to_signed(0, 32)));
                 check_sig     <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_inputs_are_summed_when_reset_and_halt_are_disabled") then
@@ -76,10 +76,10 @@ begin
                 info("--------------------------------------------------------------------------------");
                 reset         <= '0';
                 halt          <= '0';
-                input_1_bytes <= std_logic_vector(to_unsigned(23, 32));
-                input_2_bytes <= std_logic_vector(to_unsigned(33, 32));
+                input_1_bytes <= std_logic_vector(to_signed(23, 32));
+                input_2_bytes <= std_logic_vector(to_signed(33, 32));
                 wait for 10 us;
-                check_equal(sum_words, std_logic_vector(to_unsigned(14, 32)));
+                check_equal(sum_words, std_logic_vector(to_signed(14, 32)));
                 check_sig     <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

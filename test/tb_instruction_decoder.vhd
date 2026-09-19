@@ -22,7 +22,7 @@ architecture tb of tb_instruction_decoder is
     signal   rs2           : std_logic_vector(4 downto 0);
     signal   rd            : std_logic_vector(4 downto 0);
     signal   write         : std_logic;
-    signal   alu_operation : std_logic_vector(10 downto 0);
+    signal   alu_operation : std_logic_vector(16 downto 0);
     signal   alu_source    : std_logic;
     signal   immediate     : std_logic_vector(31 downto 0);
     signal   load          : std_logic;
@@ -47,7 +47,7 @@ architecture tb of tb_instruction_decoder is
             rs2           : out   std_logic_vector(4 downto 0);
             rd            : out   std_logic_vector(4 downto 0);
             write         : out   std_logic;
-            alu_operation : out   std_logic_vector(10 downto 0);
+            alu_operation : out   std_logic_vector(16 downto 0);
             alu_source    : out   std_logic;
             immediate     : out   std_logic_vector(31 downto 0);
             load          : out   std_logic;
@@ -110,21 +110,21 @@ begin
                 enable      <= '1';
                 instruction <= "01010101010101010101010101010101";
                 wait for CLK_PERIOD * 2;
-                check_equal(rs1, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(rd, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(rs1, std_logic_vector(to_signed(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
+                check_equal(rd, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '0');
-                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 11)));
+                check_equal(alu_operation, std_logic_vector(to_signed(0, 17)));
                 check_equal(alu_source, '0');
-                check_equal(immediate, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(immediate, std_logic_vector(to_signed(0, 32)));
                 check_equal(load, '0');
                 check_equal(store, '0');
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_R_type_instruction") then
@@ -138,20 +138,20 @@ begin
                 instruction <= "10101010101010101010101010110011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction(11 downto 7));
-                check_equal(alu_operation, "0110011" & instruction(30) & instruction(14 downto 12));
+                check_equal(alu_operation, "0110011" & instruction(31 downto 25) & instruction(14 downto 12));
                 check_equal(rs1, instruction(19 downto 15));
                 check_equal(rs2, instruction(24 downto 20));
                 check_equal(write, '1');
                 check_equal(store, '0');
                 check_equal(load, '0');
-                check_equal(immediate, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(immediate, std_logic_vector(to_signed(0, 32)));
                 check_equal(alu_source, '1');
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_I_type_instruction") then
@@ -165,9 +165,9 @@ begin
                 instruction <= "10101010101010101010101010010011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction(11 downto 7));
-                check_equal(alu_operation, "0010011" & '0' & instruction(14 downto 12));
+                check_equal(alu_operation, "0010011" & '0' & instruction(14 downto 12) & "000000");
                 check_equal(rs1, instruction(19 downto 15));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '1');
                 check_equal(store, '0');
                 check_equal(load, '0');
@@ -177,8 +177,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_load_instruction") then
@@ -192,9 +192,9 @@ begin
                 instruction <= "10101010101010101010101010000011";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction(11 downto 7));
-                check_equal(alu_operation, "0000011" & '0' & instruction(14 downto 12));
+                check_equal(alu_operation, "0000011" & '0' & instruction(14 downto 12) & "000000");
                 check_equal(rs1, instruction(19 downto 15));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '1');
                 check_equal(store, '0');
                 check_equal(load, '1');
@@ -204,8 +204,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(2, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(2, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_store_instruction") then
@@ -218,8 +218,8 @@ begin
                 reset       <= '0';
                 instruction <= "10101010101010101010101010100011";
                 wait for CLK_PERIOD * 2;
-                check_equal(rd, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(alu_operation, "0100011" & '0' & instruction(14 downto 12));
+                check_equal(rd, std_logic_vector(to_signed(0, 5)));
+                check_equal(alu_operation, "0100011" & '0' & instruction(14 downto 12) & "000000");
                 check_equal(rs1, instruction(19 downto 15));
                 check_equal(rs2, instruction(24 downto 20));
                 check_equal(write, '0');
@@ -232,8 +232,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(2, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(2, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_conditional_instruction") then
@@ -246,8 +246,8 @@ begin
                 reset       <= '0';
                 instruction <= "11010101010101010100101011100011";
                 wait for CLK_PERIOD * 2;
-                check_equal(rd, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(alu_operation, "1100011" & '0' & instruction(14 downto 12));
+                check_equal(rd, std_logic_vector(to_signed(0, 5)));
+                check_equal(alu_operation, "1100011" & '0' & instruction(14 downto 12) & "000000");
                 check_equal(rs1, instruction(19 downto 15));
                 check_equal(rs2, instruction(24 downto 20));
                 check_equal(write, '0');
@@ -260,8 +260,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_jal_instruction") then
@@ -275,9 +275,9 @@ begin
                 instruction <= "01010101010101010100101011101111";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction(11 downto 7));
-                check_equal(alu_operation, std_logic_vector(unsigned'("11011110000")));
-                check_equal(rs1, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(alu_operation, std_logic_vector(unsigned'("11011110000000000")));
+                check_equal(rs1, std_logic_vector(to_signed(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '1');
                 check_equal(store, '0');
                 check_equal(load, '0');
@@ -288,8 +288,8 @@ begin
                 check_equal(jump, '1');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_jalr_instruction") then
@@ -303,9 +303,9 @@ begin
                 instruction <= "01010101010101010100101011100111";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction(11 downto 7));
-                check_equal(alu_operation, "1100111" & '0' & instruction(14 downto 12));
+                check_equal(alu_operation, "1100111" & '0' & instruction(14 downto 12) & "000000");
                 check_equal(rs1, instruction(19 downto 15));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '1');
                 check_equal(store, '0');
                 check_equal(load, '0');
@@ -315,8 +315,8 @@ begin
                 check_equal(jump, '1');
                 check_equal(jalr_flag, '1');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_U_type_instruction") then
@@ -330,9 +330,9 @@ begin
                 instruction <= "01010101010101010100101010110111";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction(11 downto 7));
-                check_equal(alu_operation, std_logic_vector(unsigned'("01101110000")));
-                check_equal(rs1, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(alu_operation, std_logic_vector(unsigned'("01101110000000000")));
+                check_equal(rs1, std_logic_vector(to_signed(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '1');
                 check_equal(store, '0');
                 check_equal(load, '0');
@@ -342,8 +342,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_AUIPC_instruction") then
@@ -357,9 +357,9 @@ begin
                 instruction <= "01010101010101010100101010010111";
                 wait for CLK_PERIOD * 2;
                 check_equal(rd, instruction(11 downto 7));
-                check_equal(alu_operation, std_logic_vector(unsigned'("00101110000")));
-                check_equal(rs1, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(alu_operation, std_logic_vector(unsigned'("00101110000000000")));
+                check_equal(rs1, std_logic_vector(to_signed(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '1');
                 check_equal(store, '0');
                 check_equal(load, '0');
@@ -369,8 +369,8 @@ begin
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '0');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             elsif run("test_decode_unknown_instruction_type") then
@@ -383,21 +383,21 @@ begin
                 reset       <= '0';
                 instruction <= "10101010101010101011111111111111";
                 wait for CLK_PERIOD * 2;
-                check_equal(rs1, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(rs2, std_logic_vector(to_unsigned(0, 5)));
-                check_equal(rd, std_logic_vector(to_unsigned(0, 5)));
+                check_equal(rs1, std_logic_vector(to_signed(0, 5)));
+                check_equal(rs2, std_logic_vector(to_signed(0, 5)));
+                check_equal(rd, std_logic_vector(to_signed(0, 5)));
                 check_equal(write, '0');
-                check_equal(alu_operation, std_logic_vector(to_unsigned(0, 11)));
+                check_equal(alu_operation, std_logic_vector(to_signed(0, 17)));
                 check_equal(alu_source, '0');
-                check_equal(immediate, std_logic_vector(to_unsigned(0, 32)));
+                check_equal(immediate, std_logic_vector(to_signed(0, 32)));
                 check_equal(load, '0');
                 check_equal(store, '0');
                 check_equal(branch, '0');
                 check_equal(jump, '0');
                 check_equal(jalr_flag, '0');
                 check_equal(unknown_instr, '1');
-                check_equal(load_type, std_logic_vector(to_unsigned(0, 3)));
-                check_equal(store_type, std_logic_vector(to_unsigned(0, 3)));
+                check_equal(load_type, std_logic_vector(to_signed(0, 3)));
+                check_equal(store_type, std_logic_vector(to_signed(0, 3)));
                 check_sig   <= 1;
                 info("===== TEST CASE FINISHED =====");
             end if;

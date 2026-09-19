@@ -13,7 +13,7 @@ entity instruction_decoder is
         rs2           : out   std_logic_vector(4 downto 0);
         rd            : out   std_logic_vector(4 downto 0);
         write         : out   std_logic;
-        alu_operation : out   std_logic_vector(10 downto 0);
+        alu_operation : out   std_logic_vector(16 downto 0);
         alu_source    : out   std_logic;
         immediate     : out   std_logic_vector(31 downto 0);
         load          : out   std_logic;
@@ -61,7 +61,7 @@ begin
                 opcode := instruction(6 downto 0);
                 if (opcode = TYPE_R) then
                     rd            <= instruction(11 downto 7);
-                    alu_operation <= opcode & instruction(30) & instruction(14 downto 12);
+                    alu_operation <= opcode & instruction(31 downto 25) & instruction(14 downto 12);
                     rs1           <= instruction(19 downto 15);
                     rs2           <= instruction(24 downto 20);
                     write         <= '1';
@@ -77,10 +77,10 @@ begin
                 elsif (opcode = TYPE_I) then
                     rd <= instruction(11 downto 7);
                     if (instruction(14 downto 12) = "101") then -- SRLI or SRAI
-                        alu_operation          <= opcode & instruction(30) & instruction(14 downto 12);
+                        alu_operation          <= opcode & instruction(30) & instruction(14 downto 12) & "000000";
                         immediate(11 downto 0) <= "0000000" & instruction(24 downto 20);
                     else
-                        alu_operation          <= opcode & '0' & instruction(14 downto 12);
+                        alu_operation          <= opcode & '0' & instruction(14 downto 12) & "000000";
                         immediate(11 downto 0) <= instruction(31 downto 20);
                     end if;
                     rs1                     <= instruction(19 downto 15);
@@ -97,7 +97,7 @@ begin
                     store_type              <= (others => '0');
                 elsif (opcode = TYPE_LOAD) then
                     rd                      <= instruction(11 downto 7);
-                    alu_operation           <= opcode & '0' & instruction(14 downto 12);
+                    alu_operation           <= opcode & '0' & instruction(14 downto 12) & "000000";
                     rs1                     <= instruction(19 downto 15);
                     rs2                     <= (others => '0');
                     write                   <= '1';
@@ -116,7 +116,7 @@ begin
                     immediate(31 downto 12) <= (others => instruction(31));
                     rs2                     <= instruction(24 downto 20);
                     rs1                     <= instruction(19 downto 15);
-                    alu_operation           <= opcode & '0' & instruction(14 downto 12);
+                    alu_operation           <= opcode & '0' & instruction(14 downto 12) & "000000";
                     store                   <= '1';
                     load                    <= '0';
                     rd                      <= (others => '0');
@@ -133,7 +133,7 @@ begin
                     immediate(31 downto 13) <= (others => instruction(31));
                     rs2                     <= instruction(24 downto 20);
                     rs1                     <= instruction(19 downto 15);
-                    alu_operation           <= opcode & '0' & instruction(14 downto 12);
+                    alu_operation           <= opcode & '0' & instruction(14 downto 12) & "000000";
                     store                   <= '0';
                     load                    <= '0';
                     rd                      <= (others => '0');
@@ -149,7 +149,7 @@ begin
                                                instruction(20) & instruction(30 downto 21) & '0';
                     immediate(31 downto 21) <= (others => instruction(31));
                     rd                      <= instruction(11 downto 7);
-                    alu_operation           <= opcode & "0000";
+                    alu_operation           <= opcode & "0000" & "000000";
                     store                   <= '0';
                     load                    <= '0';
                     rs1                     <= (others => '0');
@@ -165,7 +165,7 @@ begin
                     immediate(11 downto 0)  <= instruction(31 downto 20);
                     immediate(31 downto 12) <= (others => instruction(31));
                     rs1                     <= instruction(19 downto 15);
-                    alu_operation           <= opcode & '0' & instruction(14 downto 12);
+                    alu_operation           <= opcode & '0' & instruction(14 downto 12) & "000000";
                     rd                      <= instruction(11 downto 7);
                     store                   <= '0';
                     load                    <= '0';
@@ -179,7 +179,7 @@ begin
                     store_type              <= (others => '0');
                 elsif (opcode = TYPE_U) then
                     rd            <= instruction(11 downto 7);
-                    alu_operation <= opcode & "0000";
+                    alu_operation <= opcode & "0000" & "000000";
                     rs1           <= (others => '0');
                     rs2           <= (others => '0');
                     write         <= '1';
@@ -194,7 +194,7 @@ begin
                     store_type    <= (others => '0');
                 elsif (opcode = TYPE_AUIPC) then
                     rd            <= instruction(11 downto 7);
-                    alu_operation <= opcode & "0000";
+                    alu_operation <= opcode & "0000" & "000000";
                     rs1           <= (others => '0');
                     rs2           <= (others => '0');
                     write         <= '1';
