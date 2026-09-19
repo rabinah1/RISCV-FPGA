@@ -12,7 +12,7 @@ entity alu is
         input_1  : in    std_logic_vector(31 downto 0);
         input_2  : in    std_logic_vector(31 downto 0);
         pc_in    : in    std_logic_vector(31 downto 0);
-        operator : in    std_logic_vector(10 downto 0);
+        operator : in    std_logic_vector(16 downto 0);
         halt     : in    std_logic;
         result   : out   std_logic_vector(31 downto 0)
     );
@@ -181,6 +181,38 @@ begin
                     when AUIPC =>
 
                         result <= std_logic_vector(signed(word_addr_to_byte_addr(pc_in)) + signed(input_2));
+
+                    when MUL =>
+
+                        result <= mul_signed_low(input_1, input_2);
+
+                    when MULH =>
+
+                        result <= mul_signed_high(input_1, input_2);
+
+                    when MULSU =>
+
+                        result <= mul_signed_unsigned_high(input_1, input_2);
+
+                    when MULU =>
+
+                        result <= mul_unsigned_high(input_1, input_2);
+
+                    when DIV =>
+
+                        result <= div_signed(input_1, input_2);
+
+                    when DIVU =>
+
+                        result <= div_unsigned(input_1, input_2);
+
+                    when MY_REM =>
+
+                        result <= rem_signed(input_1, input_2);
+
+                    when REMU =>
+
+                        result <= rem_unsigned(input_1, input_2);
 
                     when others =>
 

@@ -67,6 +67,46 @@ package arithmetic_pkg is
         word_addr : std_logic_vector(31 downto 0)
     ) return std_logic_vector;
 
+    function mul_signed_low (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
+    function mul_signed_high (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
+    function mul_unsigned_high (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
+    function mul_signed_unsigned_high (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
+    function div_signed (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
+    function div_unsigned (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
+    function rem_signed (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
+    function rem_unsigned (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector;
+
 end package arithmetic_pkg;
 
 package body arithmetic_pkg is
@@ -222,5 +262,101 @@ package body arithmetic_pkg is
         return word_addr(31) & word_addr(28 downto 0) & "00";
 
     end function word_addr_to_byte_addr;
+
+    function mul_signed_low (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+
+        variable full_result : std_logic_vector(63 downto 0);
+
+    begin
+
+        full_result := std_logic_vector(signed(in_1) * signed(in_2));
+        return full_result(31 downto 0);
+
+    end function mul_signed_low;
+
+    function mul_signed_high (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+
+        variable full_result : std_logic_vector(63 downto 0);
+
+    begin
+
+        full_result := std_logic_vector(signed(in_1) * signed(in_2));
+        return full_result(63 downto 32);
+
+    end function mul_signed_high;
+
+    function mul_unsigned_high (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+
+        variable full_result : std_logic_vector(63 downto 0);
+
+    begin
+
+        full_result := std_logic_vector(unsigned(in_1) * unsigned(in_2));
+        return full_result(63 downto 32);
+
+    end function mul_unsigned_high;
+
+    function mul_signed_unsigned_high (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+
+        variable full_result : std_logic_vector(64 downto 0);
+
+    begin
+
+        full_result := std_logic_vector(signed(in_1) * ('0' & signed(in_2)));
+        return full_result(63 downto 32);
+
+    end function mul_signed_unsigned_high;
+
+    function div_signed (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+    begin
+
+        return std_logic_vector(signed(in_1) / signed(in_2));
+
+    end function div_signed;
+
+    function div_unsigned (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+    begin
+
+        return std_logic_vector(unsigned(in_1) / unsigned(in_2));
+
+    end function div_unsigned;
+
+    function rem_signed (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+    begin
+
+        return std_logic_vector(signed(in_1) rem signed(in_2));
+
+    end function rem_signed;
+
+    function rem_unsigned (
+        in_1 : std_logic_vector(31 downto 0);
+        in_2 : std_logic_vector(31 downto 0)
+    ) return std_logic_vector is
+    begin
+
+        return std_logic_vector(unsigned(in_1) rem unsigned(in_2));
+
+    end function rem_unsigned;
 
 end package body arithmetic_pkg;
