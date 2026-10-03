@@ -16,6 +16,9 @@ FILES_TO_REMOVE = \
 	game_of_life \
 	game_of_life.s \
 	game_of_life.o \
+	ma_filter \
+	ma_filter.s \
+	ma_filter.o \
 	test_1_arithmetic_extended.o \
 	test_1_arithmetic_extended.s \
 	test_1_arithmetic_extended \
@@ -50,6 +53,7 @@ FILES_TO_REMOVE = \
 sw:
 	@$(CC) $(COMPILER_ARGS) -S test.c
 	@$(CC) $(COMPILER_ARGS) -S game_of_life.c
+	@$(CC) $(COMPILER_ARGS) -S ma_filter.c
 	@$(CC) $(COMPILER_ARGS) -S test_1_arithmetic_extended.c
 	@$(CC) $(COMPILER_ARGS) -S test_2_branches_extended.c
 	@$(CC) $(COMPILER_ARGS) -S test_3_memory_jumps.c
@@ -63,6 +67,7 @@ sw:
 	@$(CC) $(COMPILER_ARGS) -c startup.S -o startup.o
 	@$(CC) $(COMPILER_ARGS) -c test.c -o test.o
 	@$(CC) $(COMPILER_ARGS) -c game_of_life.c -o game_of_life.o
+	@$(CC) $(COMPILER_ARGS) -c ma_filter.c -o ma_filter.o
 	@$(CC) $(COMPILER_ARGS) -c test_1_arithmetic_extended.c -o test_1_arithmetic_extended.o
 	@$(CC) $(COMPILER_ARGS) -c test_2_branches_extended.c -o test_2_branches_extended.o
 	@$(CC) $(COMPILER_ARGS) -c test_3_memory_jumps.c -o test_3_memory_jumps.o
@@ -75,6 +80,7 @@ sw:
 	@$(CC) $(COMPILER_ARGS) -c test_10_edge_cases.c -o test_10_edge_cases.o
 	@$(LD) -T ./custom.ld -o test startup.o test.o
 	@$(LD) -T ./custom.ld -o game_of_life startup.o game_of_life.o
+	@$(LD) -T ./custom.ld -o ma_filter startup.o ma_filter.o
 	@$(LD) -T ./custom.ld -o test_1_arithmetic_extended startup.o test_1_arithmetic_extended.o
 	@$(LD) -T ./custom.ld -o test_2_branches_extended startup.o test_2_branches_extended.o
 	@$(LD) -T ./custom.ld -o test_3_memory_jumps startup.o test_3_memory_jumps.o
@@ -88,6 +94,7 @@ sw:
 	@$(OC) -O binary startup.o startup
 	@$(OC) -O binary test test
 	@$(OC) -O binary game_of_life game_of_life
+	@$(OC) -O binary ma_filter ma_filter
 	@$(OC) -O binary test_1_arithmetic_extended test_1_arithmetic_extended
 	@$(OC) -O binary test_2_branches_extended test_2_branches_extended
 	@$(OC) -O binary test_3_memory_jumps test_3_memory_jumps
