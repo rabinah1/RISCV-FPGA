@@ -13,6 +13,9 @@ startup.o
 game_of_life
 game_of_life.s
 game_of_life.o
+ma_filter
+ma_filter.o
+ma_filter.s
 test_10_edge_cases
 test_10_edge_cases.o
 test_10_edge_cases.s

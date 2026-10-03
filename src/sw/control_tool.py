@@ -30,6 +30,7 @@ PROGRAMS = [
     f"{SCRIPT_DIR}/test_10_edge_cases",
     f"{SCRIPT_DIR}/test",
     f"{SCRIPT_DIR}/game_of_life",
+    f"{SCRIPT_DIR}/ma_filter",
 ]
 
 
