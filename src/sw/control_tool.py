@@ -43,6 +43,8 @@ This script can be used to interact with the implemented CPU.
     )
     subparsers = parser.add_subparsers(dest="command")
 
+    parser.add_argument("--verbose", action="store_true", help="Enable more verbose logging.")
+
     load_parser = subparsers.add_parser(
         "load_prog", help="Load a program binary to the program memory."
     )
@@ -89,19 +91,38 @@ This script can be used to interact with the implemented CPU.
     return args
 
 
+def _read_file_and_check_errors(binary: str) -> str:
+    try:
+        with open(binary, "rb") as f:
+            data = f.read()
+    except FileNotFoundError:
+        print(f"Error: The file {binary} was not found")
+        return ""
+    except Exception as e:
+        print(f"An unexpected error occurred when opening file {binary}: {e}")
+        return ""
+
+    return data
+
+
 def _load_prog(args: argparse.Namespace) -> None:
-    with open(args.binary, "rb") as f:
-        data = f.read()
+    data = _read_file_and_check_errors(args.binary)
+    if not data:
+        return
 
     try:
         ser = serial.Serial(args.serial_port, BAUD_RATE, timeout=SERIAL_TIMEOUT)
     except serial.SerialException as e:
-        print(f"Serial communication error when loading program: {e}")
+        print(f"Serial communication error when loading program {args.binary}: {e}")
         return
     ser.reset_output_buffer()
-    ser.write(bytes([UART_WRITE_TRIG]) + data)
+    num_bytes = ser.write(bytes([UART_WRITE_TRIG]) + data)
+    if args.verbose:
+        print(f"Wrote {num_bytes} bytes when loading {args.binary}")
     ser.flush()
     ser.close()
+    if args.verbose:
+        print(f"Successfully loaded {args.binary}")
 
 
 def _print_registers(registers: Dict[str, int]) -> None:
@@ -126,13 +147,15 @@ def _bytes_to_register(bytes_data: list[int], reg_index: int) -> int:
     return _twos_complement(reg_value)
 
 
-def _read_regs(serial_port: str, print_result: bool) -> Dict[str, int]:
+def _read_regs(serial_port: str, print_result: bool, verbose: bool) -> Dict[str, int]:
     try:
         ser = serial.Serial(serial_port, BAUD_RATE, timeout=SERIAL_TIMEOUT)
     except serial.SerialException as e:
         print(f"Serial communication error when reading registers: {e}")
         return {}
-    ser.write(bytes([UART_READ_TRIG]))
+    num_bytes = ser.write(bytes([UART_READ_TRIG]))
+    if verbose:
+        print(f"Wrote {num_bytes} for triggering register dumping")
     regs = ser.read(NUM_OF_BYTES)
     regs = [i for i in regs]
     reg_values = {}
@@ -151,8 +174,9 @@ def _read_regs(serial_port: str, print_result: bool) -> Dict[str, int]:
 
 
 def _simulate(binary: str, trace: bool, print_result: bool) -> Dict[str, int]:
-    with open(binary, "rb") as f:
-        data = f.read()
+    data = _read_file_and_check_errors(binary)
+    if not data:
+        return
 
     rv = tinyrv.sim(xlen=WORD_LENGTH)
     rv.pc = 0x0
@@ -180,7 +204,7 @@ def _test_hw_one(args: argparse.Namespace) -> None:
     _load_prog(args)
     sleep(4)
     print("Dumping register file contents from the board...")
-    hw_result = _read_regs(args.serial_port, args.print_result)
+    hw_result = _read_regs(args.serial_port, args.print_result, args.verbose)
     sleep(1)
     print("Running simulation...")
     simulation_result = _simulate(args.binary, False, args.print_result)
@@ -216,7 +240,7 @@ def main():
     if args.command == "load_prog":
         _load_prog(args)
     elif args.command == "read_regs":
-        _read_regs(args.serial_port, True)
+        _read_regs(args.serial_port, True, args.verbose)
     elif args.command == "simulate":
         _simulate(args.binary, args.trace, True)
     elif args.command == "test_hw":

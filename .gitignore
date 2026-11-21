@@ -47,3 +47,4 @@ test_9_mixed
 test_9_mixed.o
 test_9_mixed.s
 riscv_assignment_defaults.qdf
+src/sw/__pycache__

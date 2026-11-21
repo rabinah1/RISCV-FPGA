@@ -3,3 +3,5 @@ vunit_hdl==4.7.1
 pyserial==3.5
 ruff==0.15.1
 tinyrv==0.1.0
+pytest==9.2.0
+pytest-mock==3.17.0

@@ -48,7 +48,8 @@ FILES_TO_REMOVE = \
 	test_9_mixed \
 	test_10_edge_cases.o \
 	test_10_edge_cases.s \
-	test_10_edge_cases
+	test_10_edge_cases \
+	__pycache__/
 
 sw:
 	@$(CC) $(COMPILER_ARGS) -S test.c
